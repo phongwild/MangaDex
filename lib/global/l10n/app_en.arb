@@ -1,0 +1,9 @@
+{
+    "demo1": "This is Demo1",
+    "makingAnAdvancePayment": "You are making an advance payment",
+    "advanceSubAccount": "Select advance sub-account",
+    "moneyCanBeAdvanced": "Sale money can be advanced",
+    "confirm": "Confirm",
+    "amountVND": "amount (VND)",
+    "howMuch": "How much is it?"
+}
