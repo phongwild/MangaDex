@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:app/global/router/router.dart';
 
 import '../screens/detail/detail_manga_page.dart';
+import '../screens/more/more_manga_page.dart';
 import '../screens/reading/read_chapter_page.dart';
 
 class NettromdexRouter extends RouterModule {
   static const bottomNav = '/bottom-nav';
   static const detailManga = '/detail-manga';
   static const readChapter = '/read-chapter';
+  static const moreManga = '/more-manga';
+
   @override
   Map<String, PageRoute> getRoutes(RouteSettings settings) {
     return {
@@ -38,7 +41,11 @@ class NettromdexRouter extends RouterModule {
           );
         },
         settings: settings,
-      )
+      ),
+      NettromdexRouter.moreManga: MaterialPageRoute(
+        builder: (_) => const MoreMangaPage(),
+        settings: settings,
+      ),
     };
   }
 }

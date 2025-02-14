@@ -1,5 +1,6 @@
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
+import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/home/widget/banner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,7 +64,9 @@ class _BodyPageState extends State<_BodyPage> {
                 ),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, NettromdexRouter.moreManga);
+                  },
                   child: Container(
                     alignment: Alignment.centerRight,
                     child: Text(

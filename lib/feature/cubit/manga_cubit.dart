@@ -20,7 +20,7 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
     required int limit,
     required int offset,
   }) async {
-    if (state is MangaLoading) return; // 🔥 Tránh gọi nhiều lần khi đang tải
+    if (state is MangaLoading) return;
 
     emit(MangaLoading());
 
@@ -30,16 +30,66 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
       limit,
       offset,
     ]).then((result) {
-      emit(MangaLoaded(result));
+      emit(MangaLoaded(
+        result['mangas'],
+        total: result['total'] as int?,
+      ));
     }).catchError((error) {
       dlog('Lỗi khi lấy Manga: $error');
       emit(MangaError(error.toString()));
     });
   }
+
+  Future<void> searchManga(String query, {List<String>? tags}) async {
+    try {
+      if (state is MangaLoading) return;
+      emit(MangaLoading());
+
+      final response = await callApiGet(
+        endPoint: '${baseUrl}manga',
+        json: {
+          'includes[]': 'cover_art',
+          'title': query,
+          'order[relevance]': 'desc',
+          'order[createdAt]': 'desc',
+          'limit': 10,
+          'offset': 0,
+          'availableTranslatedLanguage[]': 'vi',
+          if (tags != null && tags.isNotEmpty) 'includedTags[]': tags,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final rawData = response.data?['data'];
+
+        if (rawData is List && rawData.isNotEmpty) {
+          List<Manga> mangaList = rawData
+              .map<Manga>(
+                  (json) => Manga.fromJson(json as Map<String, dynamic>))
+              .toList();
+
+          emit(MangaLoaded(mangaList));
+        } else {
+          dlog('Không tìm thấy manga phù hợp.');
+          emit(const MangaError('Không tìm thấy manga phù hợp.'));
+        }
+      } else {
+        dlog('API trả về lỗi: ${response.statusCode} - ${response.data}');
+        emit(MangaError('Lỗi API: ${response.statusCode}'));
+      }
+    } catch (e, stackTrace) {
+      dlog('Lỗi tìm kiếm manga: $e\nStackTrace: $stackTrace');
+      emit(
+        const MangaError(
+          'Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại!',
+        ),
+      );
+    }
+  }
 }
 
 // 🛠 Hàm chạy trên Isolate để lấy Manga kèm số Chapter (Tối ưu batch request)
-Future<List<Manga>> _fetchManga(List<dynamic> param) async {
+Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
   try {
     bool isLatestUploadedChapter = param[0];
     String? translateLang = param[1];
@@ -61,18 +111,19 @@ Future<List<Manga>> _fetchManga(List<dynamic> param) async {
       List<Manga> mangaList = rawData
           .map<Manga>((json) => Manga.fromJson(json as Map<String, dynamic>))
           .toList();
+      final total = response.data?['total'] as int? ?? 0;
 
-      // 🔥 Chỉ lấy số chapter cho 10 manga đầu tiên để tránh overload
-      // await _fetchChapterCountInBatches(mangaList.take(10).toList());
-
-      return mangaList;
+      return {
+        'mangas': mangaList,
+        'total': total,
+      };
     } else {
       dlog('API Error: ${response.statusCode} - ${response.statusMessage}');
-      return [];
+      return {'mangas': [], 'total': 0};
     }
   } catch (e, stackTrace) {
     dlog('Error: $e\n$stackTrace');
-    return [];
+    return {'mangas': [], 'total': 0};
   }
 }
 

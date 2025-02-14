@@ -72,6 +72,17 @@ class __BodyPageState extends State<_BodyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffe5e7eb),
+      appBar: AppBar(
+        backgroundColor: const Color(0xffe5e7eb),
+        elevation: 0,
+        toolbarHeight: 30,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(IconlyBold.arrowLeft2),
+        ),
+      ),
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.only(
