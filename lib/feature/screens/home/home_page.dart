@@ -4,6 +4,7 @@ import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/home/widget/banner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'widget/list_manga_widget.dart';
 
 class HomePage extends StatelessWidget {
@@ -45,10 +46,24 @@ class _BodyPageState extends State<_BodyPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 10),
-                Text(
-                  'NetTromDex',
-                  style: AppsTextStyle.text18Weight700
-                      .copyWith(color: const Color(0xff374151)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'NetTromDex',
+                      style: AppsTextStyle.text18Weight700
+                          .copyWith(color: const Color(0xff374151)),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          NettromdexRouter.moreManga,
+                        );
+                      },
+                      child: const Icon(IconlyLight.moreSquare),
+                    )
+                  ],
                 ),
                 const Banners(),
                 const SizedBox(height: 30),

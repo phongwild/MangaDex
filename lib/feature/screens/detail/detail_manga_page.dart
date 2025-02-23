@@ -9,6 +9,7 @@ import 'package:app/feature/screens/detail/widget/large_cover_widget.dart';
 import 'package:app/feature/screens/detail/widget/list_chapter_widget.dart';
 import 'package:app/feature/screens/detail/widget/tag_widget.dart';
 import 'package:app/feature/screens/reading/read_chapter_page.dart';
+import 'package:app/feature/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -48,11 +49,12 @@ class _DetailMangaPageState extends State<DetailMangaPage> {
 }
 
 class _BodyPage extends StatefulWidget {
-  const _BodyPage(
-      {required this.idManga,
-      required this.coverArt,
-      required this.lastUpdate,
-      required this.title});
+  const _BodyPage({
+    required this.idManga,
+    required this.coverArt,
+    required this.lastUpdate,
+    required this.title,
+  });
   final String idManga;
   final String coverArt;
   final String lastUpdate;
@@ -70,6 +72,7 @@ class __BodyPageState extends State<_BodyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ValueNotifier<int> currentPage = ValueNotifier(1);
     return Scaffold(
       backgroundColor: const Color(0xffe5e7eb),
       appBar: AppBar(
@@ -109,16 +112,17 @@ class __BodyPageState extends State<_BodyPage> {
                   final List<Tag> tag = data.attributes.tags;
                   final description = data.attributes.description;
                   final String firstChapter = chapters.last.id;
+                  final int total = state.total;
                   return Column(
                     children: [
                       const SizedBox(height: 10),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
-                          height: MediaQuery.of(context).size.height,
+                          padding: const EdgeInsets.only(bottom: 12),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: const Color(0xffe5e7eb),
+                            color: const Color(0xffffffff),
                             boxShadow: [
                               BoxShadow(
                                 // ignore: deprecated_member_use
@@ -129,60 +133,71 @@ class __BodyPageState extends State<_BodyPage> {
                               )
                             ],
                           ),
-                          child: Stack(
+                          child: Column(
                             children: [
-                              LargeCoverWidget(coverArt: widget.coverArt),
-                              Positioned(
-                                top: MediaQuery.of(context).size.height * 0.25,
-                                left: 0,
-                                right: 0,
-                                child: Center(
-                                  child: Column(
-                                    children: [
-                                      CoverWidget(coverArt: widget.coverArt),
-                                      const SizedBox(height: 15),
-                                      Text(
-                                        widget.title,
-                                        style: AppsTextStyle.text18Weight700,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        (data.attributes.altTitles != null &&
-                                                data.attributes.altTitles!
-                                                    .isNotEmpty)
-                                            ? data.attributes.altTitles![0]
-                                            : 'N/a',
-                                        style: AppsTextStyle.text14Weight400,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          const Icon(IconlyLight.timeCircle),
-                                          const SizedBox(width: 5),
-                                          Text(
-                                            widget.lastUpdate,
-                                            style:
-                                                AppsTextStyle.text12Weight400,
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      TagWidget(listTag: tag),
-                                      const SizedBox(height: 10),
-                                      ButtonAppWidget(
+                              Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    coverManga(),
+                                    const SizedBox(height: 15),
+                                    Text(
+                                      widget.title,
+                                      style: AppsTextStyle.text18Weight700,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      (data.attributes.altTitles != null &&
+                                              data.attributes.altTitles!
+                                                  .isNotEmpty)
+                                          ? data.attributes.altTitles![0]
+                                          : 'N/a',
+                                      style: AppsTextStyle.text14Weight400,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Icon(IconlyLight.timeCircle),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          timeAgo(state
+                                                  .manga.attributes.updatedAt ??
+                                              ''),
+                                          style: AppsTextStyle.text12Weight400,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    TagWidget(
+                                      listTag: tag,
+                                      onTap: (id) {},
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: ButtonAppWidget(
                                         text: 'Theo dõi truyện',
                                         color: const Color(0xff2563eb),
                                         textColor: Colors.white,
+                                        isBoxShadow: false,
                                         onTap: () {},
                                       ),
-                                      const SizedBox(height: 10),
-                                      ButtonAppWidget(
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: ButtonAppWidget(
                                         text: 'Đọc từ chap 1',
                                         color: const Color(0xffd1d5db),
+                                        isBoxShadow: false,
                                         textColor: Colors.black,
                                         onTap: () {
                                           Navigator.pushNamed(
@@ -194,12 +209,8 @@ class __BodyPageState extends State<_BodyPage> {
                                               ));
                                         },
                                       ),
-                                      const SizedBox(height: 10),
-                                      DescriptionWidget(
-                                        desc: description,
-                                      )
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -207,10 +218,16 @@ class __BodyPageState extends State<_BodyPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
+                      DescriptionWidget(
+                        desc: description,
+                      ),
+                      const SizedBox(height: 10),
                       ListChapterWidget(
                         key: ValueKey(chapters.length),
                         listChapters: chapters,
                         idManga: widget.idManga,
+                        total: total,
+                        currentPage: currentPage,
                       ),
                     ],
                   );
@@ -220,6 +237,23 @@ class __BodyPageState extends State<_BodyPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget coverManga() {
+    return SizedBox(
+      height: 390,
+      child: Stack(
+        children: [
+          LargeCoverWidget(coverArt: widget.coverArt),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: CoverWidget(
+              coverArt: widget.coverArt,
+            ),
+          ),
+        ],
       ),
     );
   }

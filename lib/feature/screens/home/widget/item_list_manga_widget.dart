@@ -42,7 +42,7 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
                 height: 150,
                 width: 100,
                 placeholder: (context, url) =>
-                    const Center(child: VPBankLoading()),
+                    const Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => const Center(
                   child: Icon(
                     Icons.image_not_supported,

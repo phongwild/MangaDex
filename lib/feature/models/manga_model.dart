@@ -25,7 +25,6 @@ class Manga {
               ?.map((relJson) => Relationship.fromJson(relJson))
               .toList() ??
           [],
-        
     );
   }
 }
