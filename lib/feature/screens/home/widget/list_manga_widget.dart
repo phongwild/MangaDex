@@ -1,6 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:app/core_ui/widget/loading/loading.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/screens/detail/detail_manga_page.dart';
 import 'package:app/feature/screens/home/widget/item_list_manga_widget.dart';

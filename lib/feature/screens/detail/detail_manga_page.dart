@@ -149,9 +149,9 @@ class __BodyPageState extends State<_BodyPage> {
                                     const SizedBox(height: 10),
                                     Text(
                                       (data.attributes.altTitles != null &&
-                                              data.attributes.altTitles!
+                                              data.attributes.altTitles
                                                   .isNotEmpty)
-                                          ? data.attributes.altTitles![0]
+                                          ? data.attributes.altTitles[0]
                                           : 'N/a',
                                       style: AppsTextStyle.text14Weight400,
                                       textAlign: TextAlign.center,
