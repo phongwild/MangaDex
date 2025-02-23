@@ -9,7 +9,7 @@ import '../models/manga_model.dart';
 part 'manga_state.dart';
 
 String baseUrl = 'https://api.mangadex.org/';
-const int batchSize = 5; // 🛠 Giới hạn số request đồng thời tránh overload
+const int batchSize = 5;
 
 class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
   MangaCubit() : super(MangaStateInitial());
@@ -40,7 +40,8 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
     });
   }
 
-  Future<void> searchManga(String query, {List<String>? tags}) async {
+  Future<void> searchManga(String query,
+      {List<String>? tags, int? offset}) async {
     try {
       if (state is MangaLoading) return;
       emit(MangaLoading());
@@ -50,10 +51,9 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
         json: {
           'includes[]': 'cover_art',
           'title': query,
-          'order[relevance]': 'desc',
-          'order[createdAt]': 'desc',
+          'order[latestUploadedChapter]': 'desc',
           'limit': 10,
-          'offset': 0,
+          'offset': offset ?? 0,
           'availableTranslatedLanguage[]': 'vi',
           if (tags != null && tags.isNotEmpty) 'includedTags[]': tags,
         },
@@ -63,12 +63,26 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
         final rawData = response.data?['data'];
 
         if (rawData is List && rawData.isNotEmpty) {
-          List<Manga> mangaList = rawData
+          List<Manga> newMangaList = rawData
               .map<Manga>(
                   (json) => Manga.fromJson(json as Map<String, dynamic>))
               .toList();
+          final total = response.data?['total'] as int? ?? 0;
 
-          emit(MangaLoaded(mangaList));
+          // Giữ dữ liệu cũ nếu có, chỉ reset khi search mới
+          List<Manga> updatedList = [];
+          if (state is MangaLoaded &&
+              query.isEmpty &&
+              (tags == null || tags.isEmpty)) {
+            updatedList = [
+              ...(state as MangaLoaded).mangas,
+              ...newMangaList,
+            ];
+          } else {
+            updatedList = newMangaList;
+          }
+
+          emit(MangaLoaded(updatedList, total: total));
         } else {
           dlog('Không tìm thấy manga phù hợp.');
           emit(const MangaError('Không tìm thấy manga phù hợp.'));
@@ -80,15 +94,11 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
     } catch (e, stackTrace) {
       dlog('Lỗi tìm kiếm manga: $e\nStackTrace: $stackTrace');
       emit(
-        const MangaError(
-          'Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại!',
-        ),
-      );
+          const MangaError('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại!'));
     }
   }
 }
 
-// 🛠 Hàm chạy trên Isolate để lấy Manga kèm số Chapter (Tối ưu batch request)
 Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
   try {
     bool isLatestUploadedChapter = param[0];
@@ -98,16 +108,26 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
 
     final orderBy =
         isLatestUploadedChapter ? 'latestUploadedChapter' : 'createdAt';
-    final langParam = translateLang != null
-        ? '&availableTranslatedLanguage[]=$translateLang'
-        : '';
-    final url =
-        '${baseUrl}manga?includes[]=cover_art&order[$orderBy]=desc$langParam&limit=$limit&offset=$offset';
 
-    final response = await DioClient.create().get(url);
+    // Tạo query parameters dưới dạng JSON
+    final Map<String, dynamic> queryParams = {
+      'includes[]': ['cover_art'],
+      'order[$orderBy]': 'desc',
+      'limit': limit,
+      'offset': offset,
+    };
+
+    if (translateLang != null) {
+      queryParams['availableTranslatedLanguage[]'] = translateLang;
+    }
+
+    final response = await DioClient.create().get(
+      '${baseUrl}manga',
+      queryParameters: queryParams,
+    );
 
     if (response.statusCode == 200) {
-      final rawData = response.data?['data'] as List<dynamic>? ?? [];
+      final rawData = response.data?['data'];
       List<Manga> mangaList = rawData
           .map<Manga>((json) => Manga.fromJson(json as Map<String, dynamic>))
           .toList();
@@ -150,7 +170,6 @@ Future<void> _fetchChapterCountInBatches(List<Manga> mangaList) async {
   }
 }
 
-// 🛠 Hàm lấy số chapter của Manga (có retry nếu lỗi)
 Future<int> _fetchChapterCount(String mangaId, {int retry = 2}) async {
   try {
     final response = await DioClient.create().get(

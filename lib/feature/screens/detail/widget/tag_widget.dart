@@ -3,32 +3,49 @@ import 'package:app/feature/models/tag_model.dart';
 import 'package:flutter/material.dart';
 
 class TagWidget extends StatelessWidget {
-  const TagWidget({super.key, required this.listTag});
+  const TagWidget({super.key, required this.listTag, required this.onTap});
   final List<Tag> listTag;
+  final Function(Tag) onTap;
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8, // Khoảng cách ngang giữa các tag
-      runSpacing: 8, // Khoảng cách dọc giữa các dòng tag
+      spacing: 8,
+      runSpacing: 8,
       children: listTag.map((tag) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 4,
-                offset: const Offset(2, 2),
-              )
-            ],
-          ),
-          child: Text(
-            tag.attributes.name,
-            style: AppsTextStyle.text13Weight500,
-          ),
+        final selectedTagNotifier = ValueNotifier<bool>(false);
+
+        return ValueListenableBuilder<bool>(
+          valueListenable: selectedTagNotifier,
+          builder: (context, isSelected, _) {
+            return GestureDetector(
+              onTap: () {
+                selectedTagNotifier.value = !isSelected;
+                onTap(tag);
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xff2563eb) : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(2, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  tag.attributes.name,
+                  style: AppsTextStyle.text13Weight500.copyWith(
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
+            );
+          },
         );
       }).toList(),
     );

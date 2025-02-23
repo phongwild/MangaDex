@@ -1,55 +1,31 @@
+import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
+import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
+import 'package:app/feature/utils/time_utils.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../more/widget/item_offset_widget.dart';
 import '../../reading/read_chapter_page.dart';
 
 class ListChapterWidget extends StatefulWidget {
-  const ListChapterWidget(
-      {super.key, required this.listChapters, required this.idManga});
+  const ListChapterWidget({
+    super.key,
+    required this.listChapters,
+    required this.idManga,
+    required this.total,
+    required this.currentPage,
+  });
   final List<Chapter> listChapters;
   final String idManga;
+  final int total;
+  final ValueNotifier<int> currentPage;
   @override
   State<ListChapterWidget> createState() => _ListChapterWidgetState();
 }
 
 class _ListChapterWidgetState extends State<ListChapterWidget> {
-  String timeAgo(String utcDateTime) {
-    try {
-      // 1️⃣ Parse chuỗi thời gian từ UTC
-      DateTime utcTime = DateTime.parse(utcDateTime);
-
-      // 2️⃣ Chuyển sang múi giờ Việt Nam (GMT+7)
-      DateTime updateTime = utcTime.toUtc().add(const Duration(hours: 7));
-
-      // 3️⃣ Lấy thời gian hiện tại theo múi giờ Việt Nam
-      DateTime now = DateTime.now().toUtc().add(const Duration(hours: 7));
-
-      // 4️⃣ Tính khoảng cách thời gian
-      Duration difference = now.difference(updateTime);
-
-      // 5️⃣ Hiển thị thời gian theo kiểu "X năm X tháng X ngày X giờ X phút trước"
-      if (difference.inDays >= 365) {
-        int years = (difference.inDays / 365).floor();
-        return '$years năm trước';
-      } else if (difference.inDays >= 30) {
-        int months = (difference.inDays / 30).floor();
-        return '$months tháng trước';
-      } else if (difference.inDays > 0) {
-        return '${difference.inDays} ngày trước';
-      } else if (difference.inHours > 0) {
-        return '${difference.inHours} giờ trước';
-      } else if (difference.inMinutes > 0) {
-        return '${difference.inMinutes} phút trước';
-      } else {
-        return 'Vừa mới cập nhật';
-      }
-    } catch (e) {
-      return 'Lỗi định dạng ngày giờ';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,6 +61,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                         idChapter: widget.listChapters[index].id,
                         idManga: widget.idManga,
                         listChapters: widget.listChapters,
+                        chapter: widget.listChapters[index].chapter,
                       ));
                 },
                 child: Container(
@@ -145,8 +122,92 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
               );
             },
           ),
+          if (widget.total > 15) listPage(widget.total) else const SizedBox(),
         ],
       ),
     );
+  }
+
+  Widget listPage(int totals) {
+    final int totalPages = (totals / 15).ceil();
+    if (totalPages <= 1) return const SizedBox();
+
+    return ValueListenableBuilder<int>(
+      valueListenable: widget.currentPage,
+      builder: (context, page, child) {
+        List<Widget> items = [];
+
+        // Trang đầu tiên
+        items.add(ItemOffsetWidget(
+          text: '1',
+          isActive: page == 1,
+          onTap: () => changePage(1),
+        ));
+
+        if (totalPages <= 3) {
+          // Nếu tổng trang <= 3, hiển thị tất cả các trang
+          for (int i = 2; i <= totalPages; i++) {
+            items.add(ItemOffsetWidget(
+              text: '$i',
+              isActive: page == i,
+              onTap: () => changePage(i),
+            ));
+          }
+        } else {
+          // Nếu trang hiện tại > 3, hiển thị dấu `...`
+          if (page > 3) {
+            items.add(const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              child: Text('...', style: TextStyle(fontSize: 18)),
+            ));
+          }
+
+          // Hiển thị các trang xung quanh trang hiện tại
+          int start = (page - 1).clamp(2, totalPages - 3);
+          int end = (page + 1).clamp(4, totalPages - 1);
+
+          for (int i = start; i <= end; i++) {
+            items.add(ItemOffsetWidget(
+              text: '$i',
+              isActive: page == i,
+              onTap: () => changePage(i),
+            ));
+          }
+
+          // Dấu "..." trước trang cuối nếu cần
+          if (page < totalPages - 2) {
+            items.add(const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              child: Text('...', style: TextStyle(fontSize: 18)),
+            ));
+          }
+
+          // Trang cuối
+          items.add(ItemOffsetWidget(
+            text: '$totalPages',
+            isActive: page == totalPages,
+            onTap: () => changePage(totalPages),
+          ));
+        }
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: items,
+        );
+      },
+    );
+  }
+
+  void changePage(int newPage) {
+    if (newPage != widget.currentPage.value) {
+      dlog('changePage: $newPage');
+      widget.currentPage.value = newPage;
+      context.read<DetailMangaCubit>().getDetailManga(
+            widget.idManga,
+            true,
+            offset: (newPage - 1) * 15,
+          );
+    }
   }
 }

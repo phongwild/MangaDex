@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import 'tag_model.dart';
 
 class Attributes {
@@ -13,6 +15,8 @@ class Attributes {
   final List<Tag> tags;
   final String? createdAt;
   final String? updatedAt;
+  final String? lastVolume;
+  final String? lastChapter;
 
   Attributes({
     required this.title,
@@ -27,6 +31,8 @@ class Attributes {
     required this.tags,
     this.createdAt,
     this.updatedAt,
+    this.lastVolume,
+    this.lastChapter,
   });
 
   factory Attributes.fromJson(Map<String, dynamic> json) {
@@ -38,6 +44,8 @@ class Attributes {
           [],
       description: (json['description'] as Map<String, dynamic>?)?['vi'] ??
           (json['description'] as Map<String, dynamic>?)?['en'] ??
+          (json['description'] as Map<String, dynamic>?)?['ja'] ??
+          (json['description'] as Map<String, dynamic>?)?['ja-ro'] ??
           'No description',
       originalLanguage: json['originalLanguage'] as String? ?? "Unknown",
       status: json['status'] as String? ?? "Unknown",
@@ -55,6 +63,8 @@ class Attributes {
           [],
       createdAt: json['createdAt'] as String?,
       updatedAt: json['updatedAt'] as String?,
+      lastVolume: json['lastVolume'] as String?,
+      lastChapter: json['lastChapter'] as String?,
     );
   }
 }

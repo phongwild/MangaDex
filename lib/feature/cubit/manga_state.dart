@@ -15,7 +15,6 @@ class MangaLoaded extends MangaState {
   final List<Manga> mangas;
   final int? total;
 
-
   const MangaLoaded(this.mangas, {this.total});
 
   @override

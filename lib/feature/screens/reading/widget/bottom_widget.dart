@@ -12,10 +12,12 @@ class BottomCtrlReadChapterWidget extends StatefulWidget {
     required this.currentChapter,
     required this.listChapters,
     this.onTap,
+    required this.chapter,
   });
   final String currentChapter;
   final List<Chapter> listChapters;
   final VoidCallback? onTap;
+  final String chapter;
   @override
   State<BottomCtrlReadChapterWidget> createState() =>
       _BottomCtrlReadChapterWidgetState();
@@ -23,74 +25,95 @@ class BottomCtrlReadChapterWidget extends StatefulWidget {
 
 class _BottomCtrlReadChapterWidgetState
     extends State<BottomCtrlReadChapterWidget> {
+  void nextChapter(bool isNext) {
+    final currentIndex = widget.listChapters
+        .indexWhere((element) => element.id == widget.currentChapter);
+    if (currentIndex == -1) return;
+    final nextIndex = isNext ? currentIndex + 1 : currentIndex - 1;
+
+    if (nextIndex >= 0 && nextIndex < widget.listChapters.length) {
+      final nextChapter = widget.listChapters[nextIndex];
+      context.read<DetailMangaCubit>().getReadChapter(nextChapter.id);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DetailMangaCubit, DetailMangaState>(
       builder: (context, state) {
-        return Positioned(
-          bottom: 0,
-          child: Container(
-            height: 45,
-            width: MediaQuery.of(context).size.width,
-            color: const Color(0xffd1d5db),
-            padding: const EdgeInsets.only(left: 10, right: 10, top: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff1d4ed8),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      IconlyLight.arrowLeft2,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: widget.onTap,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff9ca3af),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Chap 1',
-                      style: AppsTextStyle.text14Weight500
-                          .copyWith(color: Colors.black),
+        if (state is ChapterStateLoaded) {
+          return Positioned(
+            bottom: 0,
+            child: Container(
+              height: 45,
+              width: MediaQuery.of(context).size.width,
+              color: const Color(0xffd1d5db),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 3),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      nextChapter(true);
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff1d4ed8),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        IconlyLight.arrowLeft2,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
-                ),
-                GestureDetector(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff1d4ed8),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      IconlyLight.arrowRight2,
-                      color: Colors.white,
-                      size: 20,
+                  GestureDetector(
+                    onTap: widget.onTap,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff9ca3af),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Chap ${widget.chapter}',
+                        style: AppsTextStyle.text14Weight500
+                            .copyWith(color: Colors.black),
+                      ),
                     ),
                   ),
-                )
-              ],
+                  GestureDetector(
+                    onTap: () {
+                      nextChapter(false);
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff1d4ed8),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        IconlyLight.arrowRight2,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        }
+        return const SizedBox();
       },
     );
   }

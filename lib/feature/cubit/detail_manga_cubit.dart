@@ -12,13 +12,14 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
   DetailMangaCubit() : super(DetailMangaStateInitial());
 
   static const String urlManga = 'https://api.mangadex.org/manga';
-  static const String urlReadChapter = 'https://api.mangadex.org/at-home/server';
+  static const String urlReadChapter =
+      'https://api.mangadex.org/at-home/server';
 
   Future<void> getDetailManga(
     String idManga,
     bool isFeed, {
     int limit = 10,
-    String offset = '0',
+    int offset = 0,
   }) async {
     try {
       emit(DetailMangaStateLoading());
@@ -28,7 +29,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
 
       if (response.data['data'] == null) {
         throw Exception('Không tìm thấy dữ liệu manga');
-      } 
+      }
       final manga = Manga.fromJson(response.data['data']);
 
       if (isFeed) {
@@ -36,9 +37,9 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
         final chaptersResponse = await callApiGet(
           endPoint: '$urlManga/$idManga/feed',
           json: {
-            // 'limit': limit.toString(),
             'offset': offset,
-            'translatedLanguage[]': ['vi'], 
+            'translatedLanguage[]': ['vi'],
+            'limit': 15,
             'order[chapter]': 'desc',
           },
         );
@@ -50,9 +51,11 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
             .map((e) => Chapter.fromJson(e))
             .toList();
 
-        emit(DetailMangaStateLoaded(manga, chapters));
+        final total = chaptersResponse.data['total'];
+
+        emit(DetailMangaStateLoaded(manga, chapters, total));
       } else {
-        emit(DetailMangaStateLoaded(manga, const []));
+        emit(DetailMangaStateLoaded(manga, const [], 0));
       }
     } catch (e) {
       dlog(e.toString());
