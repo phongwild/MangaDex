@@ -64,6 +64,8 @@ class __BodyPageState extends State<_BodyPage> {
   final ValueNotifier<int> currentPage = ValueNotifier(0);
   final ValueNotifier<bool> _showControls = ValueNotifier(true);
   final ValueNotifier<bool> styleReading = ValueNotifier(false);
+  final ValueNotifier<String> idCurrentChapter = ValueNotifier('');
+
   Timer? _hideTimer;
   int totalPages = 1;
 
@@ -84,7 +86,15 @@ class __BodyPageState extends State<_BodyPage> {
   @override
   void initState() {
     super.initState();
+    idCurrentChapter.value = widget.idChapter;
     _startHideTimer();
+  }
+
+  void updateChapter(String newId) {
+    if (idCurrentChapter.value != newId) {
+      idCurrentChapter.value = newId;
+      context.read<DetailMangaCubit>().getReadChapter(newId);
+    }
   }
 
   @override
@@ -104,6 +114,9 @@ class __BodyPageState extends State<_BodyPage> {
           child: Stack(
             children: [
               BlocBuilder<DetailMangaCubit, DetailMangaState>(
+                buildWhen: (previous, current) {
+                  return current is ChapterStateLoaded;
+                },
                 builder: (context, state) {
                   if (state is DetailMangaStateError) {
                     return Center(
@@ -228,9 +241,12 @@ class __BodyPageState extends State<_BodyPage> {
                           },
                         ),
                         BottomCtrlReadChapterWidget(
-                          currentChapter: '',
+                          currentChapter: idCurrentChapter.value,
                           listChapters: widget.listChapters,
                           chapter: widget.chapter ?? '',
+                          onChapterChange: (newId) {
+                            updateChapter(newId);
+                          },
                         ),
                       ],
                     ),

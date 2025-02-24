@@ -68,7 +68,10 @@ class __BodyPageState extends State<_BodyPage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(IconlyBold.arrowLeft2),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
+          ),
         ),
         actions: [
           IconButton(

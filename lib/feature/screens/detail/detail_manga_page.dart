@@ -5,7 +5,6 @@ import 'package:app/core_ui/widget/loading/loading.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/models/tag_model.dart';
-import 'package:app/feature/screens/detail/widget/large_cover_widget.dart';
 import 'package:app/feature/screens/detail/widget/list_chapter_widget.dart';
 import 'package:app/feature/screens/detail/widget/tag_widget.dart';
 import 'package:app/feature/screens/reading/read_chapter_page.dart';
@@ -15,7 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
 import '../../widgets/button_app_widget.dart';
-import 'widget/cover_widget.dart';
+import 'widget/cover_detail_widget.dart';
 import 'widget/description_widget.dart';
 
 class DetailMangaPage extends StatefulWidget {
@@ -136,7 +135,8 @@ class __BodyPageState extends State<_BodyPage> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    coverManga(),
+                                    CoverDetailWidget(
+                                        coverArt: widget.coverArt),
                                     const SizedBox(height: 15),
                                     Text(
                                       widget.title,
@@ -160,7 +160,10 @@ class __BodyPageState extends State<_BodyPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Icon(IconlyLight.timeCircle),
+                                        const Icon(
+                                          IconlyLight.timeCircle,
+                                          color: Color(0xff2563eb),
+                                        ),
                                         const SizedBox(width: 5),
                                         Text(
                                           timeAgo(state
@@ -171,10 +174,16 @@ class __BodyPageState extends State<_BodyPage> {
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    TagWidget(
-                                      listTag: tag,
-                                      isEnable: false,
-                                      onTap: (id) {},
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      child: TagWidget(
+                                        listTag: tag,
+                                        isEnable: false,
+                                        onTap: (id) {},
+                                      ),
                                     ),
                                     const SizedBox(height: 10),
                                     Container(
@@ -235,23 +244,6 @@ class __BodyPageState extends State<_BodyPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget coverManga() {
-    return SizedBox(
-      height: 390,
-      child: Stack(
-        children: [
-          LargeCoverWidget(coverArt: widget.coverArt),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: CoverWidget(
-              coverArt: widget.coverArt,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -91,27 +91,31 @@ class _BodyPageState extends State<_BodyPage> {
                 ),
                 const SizedBox(height: 20),
                 const SizedBox(
-                  height: 5 * 160,
+                  height: 800,
                   child: MangaList(),
                 ),
                 const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, NettromdexRouter.moreManga);
-                  },
-                  child: Container(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      'Xem danh sách truyện',
-                      style: AppsTextStyle.text14Weight600
-                          .copyWith(color: const Color(0xff4b5563)),
-                    ),
-                  ),
-                ),
+                more(),
                 const SizedBox(height: 100),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget more() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, NettromdexRouter.moreManga);
+      },
+      child: Container(
+        alignment: Alignment.centerRight,
+        child: Text(
+          'Xem danh sách truyện',
+          style: AppsTextStyle.text14Weight600
+              .copyWith(color: const Color(0xff4b5563)),
         ),
       ),
     );

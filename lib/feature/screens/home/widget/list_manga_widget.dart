@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:app/core_ui/widget/loading/loading.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/screens/detail/detail_manga_page.dart';
 import 'package:app/feature/screens/home/widget/item_list_manga_widget.dart';
@@ -17,11 +18,7 @@ class MangaList extends StatelessWidget with NetWorkMixin {
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         if (state is MangaLoading) {
-          return const Expanded(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return const VPBankLoading();
         } else if (state is MangaError) {
           return Center(
             child: Text(state.message),
@@ -31,6 +28,7 @@ class MangaList extends StatelessWidget with NetWorkMixin {
           int limit = 15;
           return GridView.builder(
             scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 5,
               crossAxisSpacing: 10,

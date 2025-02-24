@@ -131,7 +131,8 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
   }
 
   Widget listPage(int totals) {
-    final int totalPages = (totals / 15).ceil();
+    final int totalPages = (totals > 0) ? (totals / 15).ceil() : 1;
+    if (totalPages <= 0) return const SizedBox();
     if (totalPages <= 1) return const SizedBox();
 
     return ValueListenableBuilder<int>(
@@ -146,7 +147,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
           onTap: () => changePage(1),
         ));
 
-        if (totalPages <= 3) {
+        if (totalPages <= 5) {
           // Nếu tổng trang <= 3, hiển thị tất cả các trang
           for (int i = 2; i <= totalPages; i++) {
             items.add(ItemOffsetWidget(
@@ -165,8 +166,8 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
           }
 
           // Hiển thị các trang xung quanh trang hiện tại
-          int start = (page - 1).clamp(2, totalPages - 3);
-          int end = (page + 1).clamp(4, totalPages - 1);
+          int start = (page - 1).clamp(2, totalPages - 3).toInt();
+          int end = (page + 1).clamp(4, totalPages - 1).toInt();
 
           for (int i = start; i <= end; i++) {
             items.add(ItemOffsetWidget(
