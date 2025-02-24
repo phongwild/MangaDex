@@ -31,7 +31,7 @@ class Chapter {
     return Chapter(
       id: json['id'],
       volume: json['attributes']['volume'],
-      chapter: json['attributes']['chapter'],
+      chapter: json['attributes']['chapter'] ?? 'N/A',
       title: json['attributes']['title'],
       translatedLanguage: json['attributes']['translatedLanguage'],
       externalUrl: json['attributes']['externalUrl'],

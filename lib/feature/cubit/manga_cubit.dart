@@ -112,7 +112,16 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
       final mangaList =
           rawData.map<Manga>((json) => Manga.fromJson(json)).toList();
       final total = response.data?['total'] ?? 0;
-
+      // for (var manga in mangaList) {
+      //   final latestChapterId = manga.latestUploadedChapter;
+      //   if (latestChapterId != null) {
+      //     final chapterData = await _fetchChapter(latestChapterId);
+      //     manga.updateLatestChapterInfo(
+      //       chapterData['chapter'] ?? 'N/a',
+      //       chapterData['updatedAt'] ?? 'N/a',
+      //     );
+      //   }
+      // }
       return {
         'mangas': mangaList,
         'total': total,
@@ -166,5 +175,28 @@ Future<Map<String, dynamic>> _fetchSearchManga(
   } catch (e, stackTrace) {
     dlog('Search Manga Error: $e\n$stackTrace');
     return {'mangas': [], 'total': 0};
+  }
+}
+
+// Fetch chapter details
+Future<Map<String, dynamic>> _fetchChapter(String chapterId) async {
+  try {
+    final response = await DioClient.create().get(
+      '${baseUrl}chapter/$chapterId',
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data?['data']?['attributes'];
+      return {
+        'title': data?['title'],
+        'updatedAt': data?['updatedAt'],
+      };
+    } else {
+      dlog('Chapter API Error: ${response.statusCode}');
+      return {};
+    }
+  } catch (e) {
+    dlog('Fetch Chapter Error: $e');
+    return {};
   }
 }

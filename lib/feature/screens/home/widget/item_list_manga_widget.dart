@@ -52,7 +52,8 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
               ),
             ),
             const SizedBox(width: 10),
-            Expanded(
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 3.5,
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
