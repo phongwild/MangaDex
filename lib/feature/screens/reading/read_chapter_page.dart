@@ -5,9 +5,9 @@ import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/screens/reading/widget/bottom_widget.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 
 import 'widget/page_chapter_widget.dart';
 
@@ -32,7 +32,7 @@ class _ReadChapterPageState extends State<ReadChapterPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailMangaCubit(),
+      create: (context) => DetailMangaCubit()..getReadChapter(widget.idChapter),
       child: _BodyPage(
         idChapter: widget.idChapter,
         idManga: widget.idManga,
@@ -60,7 +60,7 @@ class _BodyPage extends StatefulWidget {
 }
 
 class __BodyPageState extends State<_BodyPage> {
-  final PageController _pageController = PageController(viewportFraction: 0.99);
+  final PreloadPageController _pageController = PreloadPageController();
   final ValueNotifier<int> currentPage = ValueNotifier(0);
   final ValueNotifier<bool> _showControls = ValueNotifier(true);
   final ValueNotifier<bool> styleReading = ValueNotifier(false);
@@ -84,7 +84,6 @@ class __BodyPageState extends State<_BodyPage> {
   @override
   void initState() {
     super.initState();
-    context.read<DetailMangaCubit>().getReadChapter(widget.idChapter);
     _startHideTimer();
   }
 
@@ -153,8 +152,10 @@ class __BodyPageState extends State<_BodyPage> {
                           top: 10,
                           left: 10,
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back,
-                                color: Colors.white),
+                            icon: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: Colors.white,
+                            ),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ),
@@ -227,7 +228,7 @@ class __BodyPageState extends State<_BodyPage> {
                           },
                         ),
                         BottomCtrlReadChapterWidget(
-                          currentChapter: widget.idChapter,
+                          currentChapter: '',
                           listChapters: widget.listChapters,
                           chapter: widget.chapter ?? '',
                         ),
@@ -246,56 +247,51 @@ class __BodyPageState extends State<_BodyPage> {
   Widget styleVertical(ChapterData chapterData) {
     return ListView.builder(
       itemCount: totalPages,
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
         final baseUrl = chapterData.baseUrl;
         final String listPage = chapterData.data[index];
         final urlImage = '$baseUrl/data/${chapterData.hash}/$listPage';
-
         // Cache image for better performance
-        return CachedNetworkImage(
-          imageUrl: urlImage,
-          placeholder: (context, url) => const Center(
-            child: VPBankLoading(),
-          ),
-          errorWidget: (context, url, error) => const Center(
-            child: Icon(Icons.error, color: Colors.red),
-          ),
-        );
+        return PageChapterWidget(urlImage: urlImage);
       },
-      // itemExtent: MediaQuery.of(context).size.height * 2.5,
     );
   }
 
   Widget styleHorizontal(ChapterData chapterData) {
+    final baseUrl = chapterData.baseUrl;
+    final hash = chapterData.hash;
     return Column(
       children: [
         Expanded(
-          child: PageView.builder(
+          child: PreloadPageView.builder(
             controller: _pageController,
             itemCount: totalPages,
+            preloadPagesCount: 2,
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             onPageChanged: (index) {
               currentPage.value = index;
               _startHideTimer();
             },
             itemBuilder: (context, index) {
-              final baseUrl = chapterData.baseUrl;
-              final String listPage = chapterData.data[index];
-              final urlImage = '$baseUrl/data/${chapterData.hash}/$listPage';
+              final urlImage = '$baseUrl/data/$hash/${chapterData.data[index]}';
               return PageChapterWidget(urlImage: urlImage);
             },
           ),
         ),
         ValueListenableBuilder<int>(
           valueListenable: currentPage,
-          builder: (context, page, child) {
-            double progress = (page + 1) / totalPages;
-            return LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[800],
-              color: Colors.blueAccent,
-              minHeight: 5,
-            );
-          },
+          builder: (context, page, _) => LinearProgressIndicator(
+            value: (page + 1) / totalPages,
+            backgroundColor: Colors.grey[800],
+            color: Colors.blueAccent,
+            minHeight: 5,
+          ),
         ),
       ],
     );

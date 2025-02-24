@@ -3,8 +3,6 @@ import 'package:app/feature/models/manga_model.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core_ui/widget/loading/loading.dart';
 import '../../../models/relationship_model.dart';
 import '../../detail/detail_manga_page.dart';
 
@@ -18,7 +16,7 @@ class ItemMangaWidget extends StatelessWidget {
       itemCount: mangaList.length > 15 ? 15 : mangaList.length,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      physics: const BouncingScrollPhysics(), // 🔥 Thêm hiệu ứng cuộn mượt
+      physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         final manga = mangaList[index];
         final coverArtId = manga.relationships.firstWhere(
@@ -46,9 +44,8 @@ class ItemMangaWidget extends StatelessWidget {
             );
           },
           child: Container(
-            width: double
-                .infinity, // 🔥 Tối ưu: dùng `double.infinity` thay vì `MediaQuery`
-            height: 160,
+            width: double.infinity,
+            height: 165,
             margin: const EdgeInsets.only(bottom: 5),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,10 +59,7 @@ class ItemMangaWidget extends StatelessWidget {
                     fit: BoxFit.cover,
                     height: 160,
                     width: 110,
-                    fadeInDuration: const Duration(
-                        milliseconds: 300), // 🔥 Tối ưu: Giảm giật khi load ảnh
-                    placeholder: (context, url) =>
-                        const Center(child: VPBankLoading()),
+                    fadeInDuration: const Duration(milliseconds: 300),
                     errorWidget: (context, url, error) => const Center(
                       child: Icon(
                         Icons.image_not_supported,

@@ -1,3 +1,4 @@
+import 'package:app/core_ui/widget/loading/loading.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -40,8 +41,7 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
                 fit: BoxFit.cover,
                 height: 150,
                 width: 100,
-                placeholder: (context, url) =>
-                    const Center(child: CircularProgressIndicator()),
+                fadeInDuration: const Duration(milliseconds: 300),
                 errorWidget: (context, url, error) => const Center(
                   child: Icon(
                     Icons.image_not_supported,
@@ -60,7 +60,7 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
                   children: [
                     Text(
                       widget.title,
-                      maxLines: 5,
+                      maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: AppsTextStyle.text14Weight600
                           .copyWith(color: const Color(0xff374151)),

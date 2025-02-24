@@ -3,9 +3,16 @@ import 'package:app/feature/models/tag_model.dart';
 import 'package:flutter/material.dart';
 
 class TagWidget extends StatelessWidget {
-  const TagWidget({super.key, required this.listTag, required this.onTap});
+  const TagWidget({
+    super.key,
+    required this.listTag,
+    required this.onTap,
+    this.isEnable = true,
+  });
+
   final List<Tag> listTag;
   final Function(Tag) onTap;
+  final bool isEnable;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +26,12 @@ class TagWidget extends StatelessWidget {
           valueListenable: selectedTagNotifier,
           builder: (context, isSelected, _) {
             return GestureDetector(
-              onTap: () {
-                selectedTagNotifier.value = !isSelected;
-                onTap(tag);
-              },
+              onTap: isEnable
+                  ? () {
+                      selectedTagNotifier.value = !isSelected;
+                      onTap(tag);
+                    }
+                  : null,
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

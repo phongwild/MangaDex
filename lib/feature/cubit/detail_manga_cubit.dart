@@ -3,6 +3,7 @@ import 'package:app/feature/dio/dio_client.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/models/manga_model.dart';
+import 'package:app/feature/utils/translate_lang.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +15,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
   static const String urlManga = 'https://api.mangadex.org/manga';
   static const String urlReadChapter =
       'https://api.mangadex.org/at-home/server';
-
+  final translateLang = TranslateLang();
   Future<void> getDetailManga(
     String idManga,
     bool isFeed, {
@@ -38,7 +39,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
           endPoint: '$urlManga/$idManga/feed',
           json: {
             'offset': offset,
-            'translatedLanguage[]': ['vi'],
+            'translatedLanguage[]': translateLang.language,
             'limit': 15,
             'order[chapter]': 'desc',
           },

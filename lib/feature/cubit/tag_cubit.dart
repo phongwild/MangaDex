@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../core/app_log.dart';
 import '../dio/dio_client.dart';
 import '../models/tag_model.dart';
