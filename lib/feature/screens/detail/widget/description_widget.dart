@@ -36,6 +36,7 @@ class _DescriptionWidgetState extends State<DescriptionWidget> {
 
     return Container(
       padding: const EdgeInsets.all(10),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),

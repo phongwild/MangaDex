@@ -40,7 +40,12 @@ class _BottomCtrlReadChapterWidgetState
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DetailMangaCubit, DetailMangaState>(
+      buildWhen: (previous, current) {
+        return current is ChapterStateLoaded;
+      },
       builder: (context, state) {
+        // final chapter = widget.listChapters
+        //     .firstWhere((element) => element.id == widget.currentChapter);
         if (state is ChapterStateLoaded) {
           return Positioned(
             bottom: 0,
@@ -83,7 +88,7 @@ class _BottomCtrlReadChapterWidgetState
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        'Chap ${widget.chapter}',
+                        'Chap ',
                         style: AppsTextStyle.text14Weight500
                             .copyWith(color: Colors.black),
                       ),

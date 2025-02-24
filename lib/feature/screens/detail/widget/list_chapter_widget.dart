@@ -65,7 +65,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                       ));
                 },
                 child: Container(
-                  height: 45,
+                  height: 50,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                       color: const Color(0xffedeef1),
@@ -78,8 +78,10 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                           offset: const Offset(0, 1),
                         )
                       ]),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 2,
+                  ),
                   margin: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,

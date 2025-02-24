@@ -1,3 +1,4 @@
+import 'package:app/core_ui/widget/loading/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +20,7 @@ class ListMoreMangaWidget extends StatelessWidget {
         if (state is MangaLoading) {
           return const Expanded(
             child: Center(
-              child: CircularProgressIndicator(),
+              child: VPBankLoading(),
             ),
           );
         }

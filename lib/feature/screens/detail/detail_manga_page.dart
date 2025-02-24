@@ -37,7 +37,11 @@ class _DetailMangaPageState extends State<DetailMangaPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailMangaCubit(),
+      create: (context) => DetailMangaCubit()
+        ..getDetailManga(
+          widget.idManga,
+          true,
+        ),
       child: _BodyPage(
         idManga: widget.idManga,
         coverArt: widget.coverArt,
@@ -65,12 +69,6 @@ class _BodyPage extends StatefulWidget {
 
 class __BodyPageState extends State<_BodyPage> {
   @override
-  void initState() {
-    super.initState();
-    context.read<DetailMangaCubit>().getDetailManga(widget.idManga, true);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final ValueNotifier<int> currentPage = ValueNotifier(1);
     return Scaffold(
@@ -78,12 +76,12 @@ class __BodyPageState extends State<_BodyPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xffe5e7eb),
         elevation: 0,
-        toolbarHeight: 30,
+        toolbarHeight: 40,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(IconlyBold.arrowLeft2),
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
         ),
       ),
       body: SafeArea(
@@ -115,7 +113,6 @@ class __BodyPageState extends State<_BodyPage> {
                   final int total = state.total;
                   return Column(
                     children: [
-                      const SizedBox(height: 10),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
@@ -176,6 +173,7 @@ class __BodyPageState extends State<_BodyPage> {
                                     const SizedBox(height: 10),
                                     TagWidget(
                                       listTag: tag,
+                                      isEnable: false,
                                       onTap: (id) {},
                                     ),
                                     const SizedBox(height: 10),

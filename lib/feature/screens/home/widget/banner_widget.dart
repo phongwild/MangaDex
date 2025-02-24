@@ -1,4 +1,3 @@
-import 'package:app/core_ui/widget/loading/loading.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/models/manga_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,10 +28,9 @@ class _BannersState extends State<Banners> {
           final mangas = state.mangas.take(5).toList();
           return Column(
             children: [
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: 200,
-                margin: const EdgeInsets.only(top: 30),
                 child: banner(mangas),
               ),
               const SizedBox(height: 10),
@@ -86,12 +84,10 @@ class _BannersState extends State<Banners> {
             (coverArt ?? '').isNotEmpty
                 ? 'https://uploads.mangadex.org/covers/${manga.id}/$coverArt'
                 : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
-            manga.attributes.title.isNotEmpty
-                  ? manga.attributes.title
-                  : 'N/a',
+            manga.attributes.title.isNotEmpty ? manga.attributes.title : 'N/a',
             manga.attributes.description.isNotEmpty
-                  ? manga.attributes.description
-                  : 'N/a',
+                ? manga.attributes.description
+                : 'N/a',
             manga.id,
           ),
         );
@@ -99,7 +95,8 @@ class _BannersState extends State<Banners> {
     );
   }
 
-  Widget bannerItem(String imageUrl, String title, String desc, String idManga) {
+  Widget bannerItem(
+      String imageUrl, String title, String desc, String idManga) {
     return Stack(
       children: [
         SizedBox(
@@ -112,9 +109,7 @@ class _BannersState extends State<Banners> {
               width: 200,
               height: 200,
               fit: BoxFit.cover,
-              placeholder: (context, url) =>const Center(
-                child: VPBankLoading()
-              ),
+              fadeInDuration: const Duration(milliseconds: 300),
               errorWidget: (context, url, error) => const Center(
                 child: Icon(
                   Icons.image_not_supported,

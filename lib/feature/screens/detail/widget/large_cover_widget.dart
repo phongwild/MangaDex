@@ -14,8 +14,7 @@ class LargeCoverWidget extends StatelessWidget {
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.3,
       fit: BoxFit.cover,
-      placeholder: (context, url) =>
-          const Center(child: CircularProgressIndicator()),
+      fadeInDuration: const Duration(milliseconds: 300),
       errorWidget: (context, url, error) => const Center(
         child: Icon(
           Icons.image_not_supported,

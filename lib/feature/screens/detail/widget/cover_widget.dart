@@ -29,8 +29,9 @@ class _CoverWidgetState extends State<CoverWidget> {
         borderRadius: BorderRadius.circular(12),
         child: CachedNetworkImage(
           imageUrl: widget.coverArt,
+          fadeInDuration: const Duration(milliseconds: 300),
           fit: BoxFit.cover,
-          height: 200,
+          height: 210,
           width: 150,
         ),
       ),
