@@ -28,8 +28,8 @@ flutter run
 
 ## Chức năng chính
 
-Đọc truyện: Xem các chương truyện trực tiếp từ MangaDex.
-Tìm kiếm: Tìm kiếm theo tên truyện, tác giả, thể loại, ...
+- Đọc truyện: Xem các chương truyện trực tiếp từ MangaDex.
+- Tìm kiếm: Tìm kiếm theo tên truyện, tác giả, thể loại, ...
 
 ## Ảnh xem trước
 
