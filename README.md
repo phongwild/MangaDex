@@ -1,16 +1,40 @@
 # app
 
-A new Flutter project.
+NettromDex
 
-## Getting Started
+## Giới thiệu
 
-This project is a starting point for a Flutter application.
+NettromDex là dự án ứng dụng đọc Manga online được xây dựng bằng Flutter, dữ liệu được lấy hoàn toàn từ MangaDex.
+Giao diện mượt mà và thân thiện, có thể:
 
-A few resources to get you started if this is your first Flutter project:
+- Tìm kiếm và đọc toàn bộ truyện có trên MangaDex trong ứng dụng.
+- Cập nhật chap mới nhất theo thời gian thực.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Cài đặt
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Hướng dẫn cài đặt và chạy project:
+
+```bash
+# Clone repository
+git clone https://github.com/phongwild/NettromDex
+
+# Chuyển vào thư mục project
+cd NettromDex
+
+# Cài đặt dependencies
+flutter pub get
+
+# Chạy ứng dụng
+flutter run
+```
+
+## Chức năng chính
+
+Đọc truyện: Xem các chương truyện trực tiếp từ MangaDex.
+Tìm kiếm: Tìm kiếm theo tên truyện, tác giả, thể loại, ...
+
+## Ảnh xem trước
+
+| Trang chủ                                       | Chi tiết truyện                                         | Tìm kiếm (Filter)                                | Đọc truyện (Dọc)                                        | Đọc truyện (Ngang)                                      |
+| ----------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------- |
+| ![Trang chủ](assets/images/screenshot_home.png) | ![Chi tiết truyện](assets/images/screenshot_detail.png) | ![Tìm kiếm](assets/images/screenshot_search.png) | ![Đọc truyện dọc](assets/images/screenshot_classic.png) | ![Đọc truyện ngang](assets/images/screenshot_zenui.png) |
