@@ -1,6 +1,4 @@
-# app
-
-NettromDex
+# NettromDex
 
 ## Giới thiệu
 
@@ -46,5 +44,5 @@ Tìm kiếm: Tìm kiếm theo tên truyện, tác giả, thể loại, ...
 
 ## License
 
-Dữ liệu được lấy từ [MangaDex](https://mangadex.org) và tuân theo[Điều khoản sử dụng của MangaDex](https://mangadex.org/about).
+Dữ liệu được lấy từ [MangaDex](https://mangadex.org) và tuân theo [Điều khoản sử dụng của MangaDex](https://mangadex.org/about).
 Ứng dụng này không thuộc sở hữu của MangaDex.
