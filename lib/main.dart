@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:app/core/cache/shared_prefs.dart';
-import 'package:app/feature/utils/translate_lang.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

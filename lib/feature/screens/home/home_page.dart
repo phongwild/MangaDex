@@ -2,6 +2,7 @@ import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/home/widget/banner_widget.dart';
+import 'package:app/feature/screens/home/widget/list_manga_by_genre_widget.dart';
 import 'package:app/feature/utils/translate_lang.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +18,7 @@ class HomePage extends StatelessWidget {
       create: (context) => MangaCubit()
         ..getManga(
           isLatestUploadedChapter: true,
-          limit: 25,
+          limit: 15,
           offset: 0,
         ),
       child: const _BodyPage(),
@@ -78,6 +79,7 @@ class _BodyPageState extends State<_BodyPage> {
           margin: const EdgeInsets.only(top: 0),
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -96,6 +98,8 @@ class _BodyPageState extends State<_BodyPage> {
                 ),
                 const SizedBox(height: 10),
                 more(),
+                const SizedBox(height: 10),
+                ListMangaByGenreWidget(title: 'One shot'),
                 const SizedBox(height: 100),
               ],
             ),
