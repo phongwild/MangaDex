@@ -99,7 +99,7 @@ class ItemMangaWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          'C. null',
+                          'C. ${manga.attributes.lastChapter ?? 'N/a'}',
                           maxLines: 5,
                           overflow: TextOverflow.ellipsis,
                           style: AppsTextStyle.text14Weight600

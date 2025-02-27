@@ -50,7 +50,7 @@ class ListMangaByGenreWidget extends StatelessWidget {
       child: Container(
         alignment: Alignment.centerRight,
         child: Text(
-          'Xem danh sách truyện',
+          'Xem thêm',
           style: AppsTextStyle.text14Weight600
               .copyWith(color: const Color(0xff4b5563)),
         ),

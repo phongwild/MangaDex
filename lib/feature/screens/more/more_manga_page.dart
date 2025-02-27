@@ -73,7 +73,7 @@ class __BodyPageState extends State<_BodyPage> {
           },
           icon: const Icon(
             Icons.arrow_back_ios_rounded,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
         actions: [
@@ -81,7 +81,7 @@ class __BodyPageState extends State<_BodyPage> {
             onPressed: () {
               showBottomSheet(context);
             },
-            icon: const Icon(IconlyLight.filter),
+            icon: const Icon(IconlyLight.filter, color: Colors.white),
           ),
         ],
       ),
