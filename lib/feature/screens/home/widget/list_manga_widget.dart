@@ -21,7 +21,7 @@ class MangaList extends StatelessWidget with NetWorkMixin {
           return const VPBankLoading();
         } else if (state is MangaError) {
           return Center(
-            child: Text(state.message),
+            child: Text('Error: ${state.message}'),
           );
         } else if (state is MangaLoaded) {
           final mangas = state.mangas;

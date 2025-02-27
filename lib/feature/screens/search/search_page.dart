@@ -33,12 +33,6 @@ class _BodyPage extends StatefulWidget {
 class __BodyPageState extends State<_BodyPage> {
   final TextEditingController _searchCtrl = TextEditingController();
   @override
-  void initState() {
-    super.initState();
-    // context.read<MangaCubit>().searchManga('');
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffd1d5db),

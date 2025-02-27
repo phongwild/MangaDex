@@ -94,6 +94,8 @@ class __BodyPageState extends State<_BodyPage> {
     if (idCurrentChapter.value != newId) {
       idCurrentChapter.value = newId;
       context.read<DetailMangaCubit>().getReadChapter(newId);
+      _pageController.jumpToPage(0);
+      currentPage.value = 0;
     }
   }
 
