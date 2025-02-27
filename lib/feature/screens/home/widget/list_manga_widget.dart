@@ -14,6 +14,11 @@ class MangaList extends StatelessWidget with NetWorkMixin {
   const MangaList({super.key});
   @override
   Widget build(BuildContext context) {
+    context.read<MangaCubit>().getManga(
+          isLatestUploadedChapter: true,
+          limit: 15,
+          offset: 0,
+        );
     return BlocBuilder<MangaCubit, MangaState>(
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {

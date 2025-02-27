@@ -31,7 +31,9 @@ class TagWidget extends StatelessWidget {
                       selectedTagNotifier.value = !isSelected;
                       onTap(tag);
                     }
-                  : null,
+                  : () {
+                      onTap(tag);
+                    },
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

@@ -15,12 +15,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MangaCubit()
-        ..getManga(
-          isLatestUploadedChapter: true,
-          limit: 15,
-          offset: 0,
-        ),
+      create: (context) => MangaCubit(),
       child: const _BodyPage(),
     );
   }
@@ -99,7 +94,27 @@ class _BodyPageState extends State<_BodyPage> {
                 const SizedBox(height: 10),
                 more(),
                 const SizedBox(height: 10),
-                // ListMangaByGenreWidget(title: 'One shot'),
+                const SizedBox(
+                  height: 220,
+                  child: ListMangaByGenreWidget(
+                    title: 'One shot',
+                    tag: '0234a31e-a729-4e28-9d6a-3f87c4966b9e',
+                  ),
+                ),
+                const SizedBox(
+                  height: 220,
+                  child: ListMangaByGenreWidget(
+                    title: 'Romcom',
+                    tag: '423e2eae-a7a2-4a8b-ac03-a8351462d71d',
+                  ),
+                ),
+                const SizedBox(
+                  height: 220,
+                  child: ListMangaByGenreWidget(
+                    title: 'Action',
+                    tag: '391b0423-d847-456f-aff0-8b0cfc03066b',
+                  ),
+                ),
                 const SizedBox(height: 100),
               ],
             ),
