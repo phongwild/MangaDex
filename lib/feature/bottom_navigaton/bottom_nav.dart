@@ -1,5 +1,6 @@
 import 'package:app/feature/screens/home/home_page.dart';
 import 'package:app/feature/screens/search/search_page.dart';
+import 'package:app/feature/screens/user/user_page.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -18,7 +19,7 @@ class _BottomNavState extends State<BottomNav> {
   final List<Widget> _screens = [
     const HomePage(),
     const SearchPage(),
-    const Text('Tôi'),
+    const UserPage(),
   ];
 
   void _onItemTapped(int index) {

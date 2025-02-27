@@ -23,6 +23,7 @@ class BottomCtrlReadChapterWidget extends StatefulWidget {
 class _BottomCtrlReadChapterWidgetState
     extends State<BottomCtrlReadChapterWidget> {
   final ValueNotifier<String> idCurrentChapter = ValueNotifier('');
+  final ValueNotifier<bool> isLimit = ValueNotifier(false);
   @override
   void initState() {
     super.initState();
@@ -50,6 +51,14 @@ class _BottomCtrlReadChapterWidgetState
     }
   }
 
+  bool isFirstChapter() {
+    return widget.listChapters.last.id == idCurrentChapter.value;
+  }
+
+  bool isLastChapter() {
+    return widget.listChapters.first.id == idCurrentChapter.value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -65,9 +74,9 @@ class _BottomCtrlReadChapterWidgetState
           children: [
             GestureDetector(
               onTap: () {
-                nextChapter(true);
+                isFirstChapter() ? null : nextChapter(true);
               },
-              child: buildButton(IconlyLight.arrowLeft2),
+              child: buildButton(IconlyLight.arrowLeft2, isFirstChapter()),
             ),
             ValueListenableBuilder(
               valueListenable: idCurrentChapter,
@@ -96,9 +105,9 @@ class _BottomCtrlReadChapterWidgetState
             ),
             GestureDetector(
               onTap: () {
-                nextChapter(false);
+                isLastChapter() ? null : nextChapter(false);
               },
-              child: buildButton(IconlyLight.arrowRight2),
+              child: buildButton(IconlyLight.arrowRight2, isLastChapter()),
             )
           ],
         ),
@@ -106,13 +115,13 @@ class _BottomCtrlReadChapterWidgetState
     );
   }
 
-  Widget buildButton(IconData icon) {
+  Widget buildButton(IconData icon, bool isLimit) {
     return Container(
       width: 40,
       height: 40,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xff1d4ed8),
+        color: !isLimit ? const Color(0xff1d4ed8) : Colors.grey,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icon, color: Colors.white, size: 20),

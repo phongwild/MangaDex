@@ -99,7 +99,7 @@ class _BodyPageState extends State<_BodyPage> {
                 const SizedBox(height: 10),
                 more(),
                 const SizedBox(height: 10),
-                ListMangaByGenreWidget(title: 'One shot'),
+                // ListMangaByGenreWidget(title: 'One shot'),
                 const SizedBox(height: 100),
               ],
             ),
