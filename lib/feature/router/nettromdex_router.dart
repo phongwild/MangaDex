@@ -43,7 +43,14 @@ class NettromdexRouter extends RouterModule {
         settings: settings,
       ),
       NettromdexRouter.moreManga: MaterialPageRoute(
-        builder: (_) => const MoreMangaPage(),
+        builder: (context) {
+          final args = settings.arguments;
+          if (args is MoreMangaPage) {
+            return MoreMangaPage(tag: args.tag);
+          } else {
+            return const MoreMangaPage(); // Không có tag thì dùng mặc định
+          }
+        },
         settings: settings,
       ),
     };

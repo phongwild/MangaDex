@@ -5,8 +5,10 @@ import 'package:app/core_ui/widget/loading/loading.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/models/tag_model.dart';
+import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/detail/widget/list_chapter_widget.dart';
 import 'package:app/feature/screens/detail/widget/tag_widget.dart';
+import 'package:app/feature/screens/more/more_manga_page.dart';
 import 'package:app/feature/screens/reading/read_chapter_page.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:flutter/material.dart';
@@ -182,7 +184,14 @@ class __BodyPageState extends State<_BodyPage> {
                                       child: TagWidget(
                                         listTag: tag,
                                         isEnable: false,
-                                        onTap: (id) {},
+                                        onTap: (id) {
+                                          Navigator.pushNamed(
+                                            context,
+                                            NettromdexRouter.moreManga,
+                                            arguments:
+                                                MoreMangaPage(tag: id.id),
+                                          );
+                                        },
                                       ),
                                     ),
                                     const SizedBox(height: 10),

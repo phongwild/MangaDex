@@ -22,6 +22,11 @@ class _BannersState extends State<Banners> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<MangaCubit>().getManga(
+          isLatestUploadedChapter: true,
+          limit: 15,
+          offset: 0,
+        );
     return BlocBuilder<MangaCubit, MangaState>(
       builder: (context, state) {
         if (state is MangaLoaded) {

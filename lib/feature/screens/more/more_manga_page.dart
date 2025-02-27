@@ -14,7 +14,8 @@ import 'widget/item_offset_widget.dart';
 import 'widget/list_more_manga_widget.dart';
 
 class MoreMangaPage extends StatefulWidget {
-  const MoreMangaPage({super.key});
+  const MoreMangaPage({super.key, this.tag});
+  final String? tag;
   @override
   State<MoreMangaPage> createState() => _MoreMangaPageState();
 }
@@ -25,7 +26,9 @@ class _MoreMangaPageState extends State<MoreMangaPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => MangaCubit()..searchManga(''),
+          create: (context) => MangaCubit()
+            ..searchManga('',
+                tags: (widget.tag?.isNotEmpty ?? false) ? [widget.tag!] : []),
         ),
         BlocProvider(
           create: (context) => TagCubit()..getTag(),
