@@ -22,37 +22,37 @@ class _BannersState extends State<Banners> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<MangaCubit>().getManga(
-          isLatestUploadedChapter: true,
-          limit: 15,
-          offset: 0,
-        );
-    return BlocBuilder<MangaCubit, MangaState>(
-      builder: (context, state) {
-        if (state is MangaLoaded) {
-          final mangas = state.mangas.take(5).toList();
-          return Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                height: 200,
-                child: banner(mangas),
-              ),
-              const SizedBox(height: 10),
-              ValueListenableBuilder<int>(
-                valueListenable: activeIndexNotifier,
-                builder: (BuildContext context, int value, Widget? child) {
-                  return dotIndicator(
-                    value,
-                    mangas,
-                  );
-                },
-              )
-            ],
-          );
-        }
-        return const SizedBox();
-      },
+    return BlocProvider(
+      create: (context) =>
+          MangaCubit()..searchManga('', followedCount: true, limit: 5),
+      child: BlocBuilder<MangaCubit, MangaState>(
+        buildWhen: (previous, current) => current is MangaLoaded,
+        builder: (context, state) {
+          if (state is MangaLoaded) {
+            final mangas = state.mangas.take(5).toList();
+            return Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: 200,
+                  child: banner(mangas),
+                ),
+                const SizedBox(height: 10),
+                ValueListenableBuilder<int>(
+                  valueListenable: activeIndexNotifier,
+                  builder: (BuildContext context, int value, Widget? child) {
+                    return dotIndicator(
+                      value,
+                      mangas,
+                    );
+                  },
+                )
+              ],
+            );
+          }
+          return const SizedBox();
+        },
+      ),
     );
   }
 
