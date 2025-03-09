@@ -46,6 +46,8 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
     String query, {
     List<String>? tags,
     int? offset,
+    int limit = 10,
+    bool followedCount = false,
   }) async {
     if (state is MangaLoading) return;
     emit(MangaLoading());
@@ -54,7 +56,9 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
       'query': query,
       'tags': tags ?? [],
       'offset': offset ?? 0,
+      'limit': limit,
       'translateLang': translateLang.language,
+      'followedCount': followedCount,
     }).then((result) {
       final newMangaList = result['mangas'] as List<Manga>;
       final total = result['total'] as int? ?? 0;
@@ -112,16 +116,6 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
       final mangaList =
           rawData.map<Manga>((json) => Manga.fromJson(json)).toList();
       final total = response.data?['total'] ?? 0;
-      // for (var manga in mangaList) {
-      //   final latestChapterId = manga.latestUploadedChapter;
-      //   if (latestChapterId != null) {
-      //     final chapterData = await _fetchChapter(latestChapterId);
-      //     manga.updateLatestChapterInfo(
-      //       chapterData['chapter'] ?? 'N/a',
-      //       chapterData['updatedAt'] ?? 'N/a',
-      //     );
-      //   }
-      // }
       return {
         'mangas': mangaList,
         'total': total,
@@ -143,15 +137,19 @@ Future<Map<String, dynamic>> _fetchSearchManga(
     final query = params['query'] as String;
     final tags = params['tags'] as List<String>;
     final offset = params['offset'] as int;
+    final limit = params['limit'] as int;
     final translateLang = params['translateLang'] as String?;
+    final followedCount = params['followedCount'] as bool;
+
+    final orderBy = followedCount ? 'followedCount' : 'latestUploadedChapter';
 
     final response = await DioClient.create().get(
       '${baseUrl}manga',
       queryParameters: {
         'includes[]': 'cover_art',
         'title': query,
-        'order[latestUploadedChapter]': 'desc',
-        'limit': 10,
+        'order[$orderBy]': 'desc',
+        'limit': limit,
         'offset': offset,
         'availableTranslatedLanguage[]': translateLang,
         if (tags.isNotEmpty) 'includedTags[]': tags,
@@ -175,28 +173,5 @@ Future<Map<String, dynamic>> _fetchSearchManga(
   } catch (e, stackTrace) {
     dlog('Search Manga Error: $e\n$stackTrace');
     return {'mangas': [], 'total': 0};
-  }
-}
-
-// Fetch chapter details
-Future<Map<String, dynamic>> _fetchChapter(String chapterId) async {
-  try {
-    final response = await DioClient.create().get(
-      '${baseUrl}chapter/$chapterId',
-    );
-
-    if (response.statusCode == 200) {
-      final data = response.data?['data']?['attributes'];
-      return {
-        'title': data?['title'],
-        'updatedAt': data?['updatedAt'],
-      };
-    } else {
-      dlog('Chapter API Error: ${response.statusCode}');
-      return {};
-    }
-  } catch (e) {
-    dlog('Fetch Chapter Error: $e');
-    return {};
   }
 }
