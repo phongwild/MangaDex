@@ -1,5 +1,5 @@
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
-import 'package:app/core_ui/widget/loading/loading.dart';
+import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/screens/search/widgets/item_manga_widget.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +67,7 @@ class __BodyPageState extends State<_BodyPage> {
               BlocBuilder<MangaCubit, MangaState>(
                 builder: (context, state) {
                   if (state is MangaLoading) {
-                    return const Center(child: VPBankLoading());
+                    return Center(child: LoadingShimmer().loadingCircle());
                   }
                   if (state is MangaError) {
                     return Center(

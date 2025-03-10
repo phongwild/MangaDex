@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:app/feature/utils/image_app.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core_ui/app_theme.dart/app_text_style.dart';
@@ -35,13 +35,11 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: CachedNetworkImage(
+              child: ImageApp(
                 imageUrl: widget.coverArt,
-                fit: BoxFit.cover,
                 height: 150,
                 width: 100,
-                fadeInDuration: const Duration(milliseconds: 300),
-                errorWidget: (context, url, error) => const Center(
+                errorWidget: const Center(
                   child: Icon(
                     Icons.image_not_supported,
                     color: Colors.white54,

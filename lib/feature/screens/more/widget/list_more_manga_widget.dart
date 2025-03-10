@@ -1,4 +1,4 @@
-import 'package:app/core_ui/widget/loading/loading.dart';
+import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,10 +18,8 @@ class ListMoreMangaWidget extends StatelessWidget {
     return BlocBuilder<MangaCubit, MangaState>(
       builder: (context, state) {
         if (state is MangaLoading) {
-          return const Expanded(
-            child: Center(
-              child: VPBankLoading(),
-            ),
+          return Center(
+            child: LoadingShimmer().loadingCircle(),
           );
         }
         if (state is MangaError) {

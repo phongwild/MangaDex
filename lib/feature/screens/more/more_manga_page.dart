@@ -2,7 +2,7 @@
 import 'dart:math';
 
 import 'package:app/core/app_log.dart';
-import 'package:app/core_ui/widget/loading/loading.dart';
+import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/cubit/tag_cubit.dart';
 import 'package:app/feature/widgets/bottom_sheet_app_widget.dart';
@@ -223,7 +223,7 @@ class __BodyPageState extends State<_BodyPage> {
                       },
                     );
                   }
-                  return const Center(child: VPBankLoading());
+                  return Center(child: LoadingShimmer().loadingCircle());
                 },
               );
             },
