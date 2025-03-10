@@ -31,6 +31,7 @@ class _CoverWidgetState extends State<CoverWidget> {
           imageUrl: widget.coverArt,
           width: 150,
           height: 210,
+          fit: BoxFit.cover,
         ),
       ),
     );

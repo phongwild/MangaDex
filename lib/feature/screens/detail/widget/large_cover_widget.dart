@@ -11,6 +11,7 @@ class LargeCoverWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ImageApp(
       imageUrl: coverArt,
+      fit: BoxFit.cover,
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.3,
       errorWidget: const Center(
