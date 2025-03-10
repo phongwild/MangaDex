@@ -1,6 +1,6 @@
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/models/manga_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:app/feature/utils/image_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -109,13 +109,11 @@ class _BannersState extends State<Banners> {
           height: double.infinity,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: CachedNetworkImage(
+            child: ImageApp(
               imageUrl: imageUrl,
               width: 200,
               height: 200,
-              fit: BoxFit.cover,
-              fadeInDuration: const Duration(milliseconds: 300),
-              errorWidget: (context, url, error) => const Center(
+              errorWidget: const Center(
                 child: Icon(
                   Icons.image_not_supported,
                   color: Colors.white54,
