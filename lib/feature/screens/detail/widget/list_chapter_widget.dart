@@ -42,91 +42,96 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
             style: AppsTextStyle.text14Weight600,
           ),
           const SizedBox(height: 10),
-          ListView.builder(
-            itemCount: widget.listChapters.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
-              String countryCode =
-                  widget.listChapters[index].translatedLanguage.toUpperCase();
-              if (countryCode == 'VI') {
-                countryCode = 'VN';
-              } else if (countryCode == 'EN') {
-                countryCode = 'US';
-              }
-              return GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/read-chapter',
-                      arguments: ReadChapterPage(
-                        idChapter: widget.listChapters[index].id,
-                        idManga: widget.idManga,
-                        listChapters: widget.listChapters,
-                        chapter: widget.listChapters[index].chapter,
-                      ));
-                },
-                child: Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      color: const Color(0xffedeef1),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 2,
-                          spreadRadius: 1,
-                          offset: const Offset(0, 1),
-                        )
-                      ]),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 2,
-                  ),
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CountryFlag.fromCountryCode(
-                        countryCode,
-                        height: 20,
-                        width: 30,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'C. ${widget.listChapters[index].chapter}',
-                        style: AppsTextStyle.text14Weight600,
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              widget.listChapters[index].title ?? 'N/a',
-                              style: AppsTextStyle.text14Weight400,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                                timeAgo(widget.listChapters[index].updatedAt
-                                    .toString()),
-                                style: AppsTextStyle.text12Weight400
-                                    .copyWith(color: const Color(0xff6b7280))),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+          listChap(),
           if (widget.total > 15) listPage(widget.total) else const SizedBox(),
         ],
       ),
+    );
+  }
+
+  //danh sách chương
+  Widget listChap() {
+    return ListView.builder(
+      itemCount: widget.listChapters.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (BuildContext context, int index) {
+        String countryCode =
+            widget.listChapters[index].translatedLanguage.toUpperCase();
+        if (countryCode == 'VI') {
+          countryCode = 'VN';
+        } else if (countryCode == 'EN') {
+          countryCode = 'US';
+        }
+        return GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/read-chapter',
+                arguments: ReadChapterPage(
+                  idChapter: widget.listChapters[index].id,
+                  idManga: widget.idManga,
+                  listChapters: widget.listChapters,
+                  chapter: widget.listChapters[index].chapter,
+                ));
+          },
+          child: Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: const Color(0xffedeef1),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 2,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 1),
+                  )
+                ]),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 2,
+            ),
+            margin: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CountryFlag.fromCountryCode(
+                  countryCode,
+                  height: 20,
+                  width: 30,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'C. ${widget.listChapters[index].chapter}',
+                  style: AppsTextStyle.text14Weight600,
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.listChapters[index].title ?? 'N/a',
+                        style: AppsTextStyle.text14Weight400,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                          timeAgo(
+                              widget.listChapters[index].updatedAt.toString()),
+                          style: AppsTextStyle.text12Weight400
+                              .copyWith(color: const Color(0xff6b7280))),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

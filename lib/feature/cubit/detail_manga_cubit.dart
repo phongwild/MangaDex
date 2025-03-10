@@ -52,8 +52,13 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
             .map((e) => Chapter.fromJson(e))
             .toList();
 
-        final total = chaptersResponse.data['total'];
+        // Lấy tổng số chương
+        final total = chaptersResponse.data['total'] ?? 0;
 
+        if (chapters.isEmpty && total == 0) {
+          emit(DetailMangaStateLoaded(manga, const [], total));
+          return;
+        }
         emit(DetailMangaStateLoaded(manga, chapters, total));
       } else {
         emit(DetailMangaStateLoaded(manga, const [], 0));

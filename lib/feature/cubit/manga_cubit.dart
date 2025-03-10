@@ -100,6 +100,7 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
       'order[$orderBy]': 'desc',
       'limit': limit,
       'offset': offset,
+      // 'contentRating[]': 'pornographic'
     };
 
     if (translateLang != null) {
