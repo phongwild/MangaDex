@@ -11,6 +11,7 @@ import 'package:app/feature/screens/detail/widget/tag_widget.dart';
 import 'package:app/feature/screens/more/more_manga_page.dart';
 import 'package:app/feature/screens/reading/read_chapter_page.dart';
 import 'package:app/feature/utils/time_utils.dart';
+import 'package:app/feature/utils/toast_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -110,7 +111,8 @@ class __BodyPageState extends State<_BodyPage> {
                   final List<Chapter> chapters = state.chapters;
                   final List<Tag> tag = data.attributes.tags;
                   final description = data.attributes.description;
-                  final String firstChapter = chapters.last.id;
+                  final String? firstChapter =
+                      chapters.isNotEmpty ? chapters.last.id : null;
                   final int total = state.total;
                   return Column(
                     children: [
@@ -203,7 +205,12 @@ class __BodyPageState extends State<_BodyPage> {
                                         color: const Color(0xff2563eb),
                                         textColor: Colors.white,
                                         isBoxShadow: false,
-                                        onTap: () {},
+                                        onTap: () {
+                                          showToast(
+                                            'Chức năng đang phát triển >.< !!',
+                                            isError: true,
+                                          );
+                                        },
                                       ),
                                     ),
                                     const SizedBox(height: 10),
@@ -216,6 +223,14 @@ class __BodyPageState extends State<_BodyPage> {
                                         isBoxShadow: false,
                                         textColor: Colors.black,
                                         onTap: () {
+                                          if (firstChapter == null) {
+                                            showToast(
+                                              'Truyện chưa có chương nào :<',
+                                              isError: true,
+                                            );
+                                            return;
+                                          }
+
                                           Navigator.pushNamed(
                                               context, '/read-chapter',
                                               arguments: ReadChapterPage(
@@ -238,13 +253,16 @@ class __BodyPageState extends State<_BodyPage> {
                         desc: description,
                       ),
                       const SizedBox(height: 10),
-                      ListChapterWidget(
-                        key: ValueKey(chapters.length),
-                        listChapters: chapters,
-                        idManga: widget.idManga,
-                        total: total,
-                        currentPage: currentPage,
-                      ),
+                      if (chapters.isNotEmpty && total > 0)
+                        ListChapterWidget(
+                          key: ValueKey(chapters.length),
+                          listChapters: chapters,
+                          idManga: widget.idManga,
+                          total: total,
+                          currentPage: currentPage,
+                        )
+                      else
+                        listNull(),
                     ],
                   );
                 }
@@ -252,6 +270,32 @@ class __BodyPageState extends State<_BodyPage> {
               },
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget listNull() {
+    return Container(
+      width: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        width: double.infinity,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color(0xffedeef1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          'Truyện chưa có chương nào :((',
+          style: AppsTextStyle.text14Weight400
+              .copyWith(color: const Color(0xff6b7280)),
         ),
       ),
     );

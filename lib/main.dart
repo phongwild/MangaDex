@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/core/app_log.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'app.dart';
 import 'core/http_override/custom_http_override.dart';
 import 'global/init_app/injector.dart' as di;
@@ -38,7 +39,9 @@ Future<void> main() async {
     HttpOverrides.global = CustomHttpOverrides();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
         .then((_) {
-      runApp(const MyApp());
+      runApp(const OverlaySupport.global(
+        child: MyApp(),
+      ));
     });
   }, (error, stackTrace) {
     dlog('❎ ERROR OTHER   :$error');
