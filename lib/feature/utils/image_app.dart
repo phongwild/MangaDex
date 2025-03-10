@@ -11,9 +11,11 @@ class ImageApp extends StatefulWidget {
     this.height,
     this.errorWidget,
     this.placeholder,
+    this.fit,
   });
 
   final String imageUrl;
+  final BoxFit? fit;
   final double? width;
   final double? height;
   final Widget? errorWidget;
@@ -51,7 +53,7 @@ class _ImageAppState extends State<ImageApp> {
       height: widget.height,
       width: widget.width,
       fadeInDuration: const Duration(milliseconds: 300),
-      fit: BoxFit.cover,
+      fit: widget.fit,
       cacheManager: customCacheManager,
     );
   }

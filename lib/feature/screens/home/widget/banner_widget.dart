@@ -113,6 +113,7 @@ class _BannersState extends State<Banners> {
               imageUrl: imageUrl,
               width: 200,
               height: 200,
+              fit: BoxFit.cover,
               errorWidget: const Center(
                 child: Icon(
                   Icons.image_not_supported,

@@ -59,6 +59,7 @@ class ItemMangaWidget extends StatelessWidget {
                         : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
                     height: 160,
                     width: 110,
+                    fit: BoxFit.cover,
                     errorWidget: const Center(
                       child: Icon(
                         Icons.image_not_supported,

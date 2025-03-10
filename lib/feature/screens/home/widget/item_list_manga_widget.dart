@@ -39,6 +39,7 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
                 imageUrl: widget.coverArt,
                 height: 150,
                 width: 100,
+                fit: BoxFit.cover,
                 errorWidget: const Center(
                   child: Icon(
                     Icons.image_not_supported,
