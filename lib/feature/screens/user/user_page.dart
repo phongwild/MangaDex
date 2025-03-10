@@ -1,3 +1,4 @@
+import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:flutter/material.dart';
 
 class UserPage extends StatelessWidget {
@@ -25,12 +26,7 @@ class __BodyPageState extends State<_BodyPage> {
         child: Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              buildUserInfo(),
-            ],
-          ),
+          child: buildUserInfo(),
         ),
       ),
     );
@@ -40,6 +36,11 @@ class __BodyPageState extends State<_BodyPage> {
 Widget buildUserInfo() {
   return Container(
     padding: const EdgeInsets.all(16),
-    child: const SizedBox(),
+    alignment: Alignment.center,
+    width: double.infinity,
+    child: Text(
+      'Tính năng đang phát triển :))',
+      style: AppsTextStyle.text14Weight400,
+    ),
   );
 }
