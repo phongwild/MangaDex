@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
-import 'package:app/core_ui/widget/loading/loading.dart';
+import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
@@ -129,7 +129,7 @@ class __BodyPageState extends State<_BodyPage> {
                     );
                   }
                   if (state is DetailMangaStateLoading) {
-                    return const Center(child: VPBankLoading());
+                    return Center(child: LoadingShimmer().loadingCircle());
                   }
                   if (state is ChapterStateLoaded) {
                     final chapterData = state.chapterData;

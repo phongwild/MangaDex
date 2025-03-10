@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:app/feature/utils/image_app.dart';
 import 'package:flutter/material.dart';
 
 class CoverWidget extends StatefulWidget {
@@ -27,12 +27,10 @@ class _CoverWidgetState extends State<CoverWidget> {
       ]),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: CachedNetworkImage(
+        child: ImageApp(
           imageUrl: widget.coverArt,
-          fadeInDuration: const Duration(milliseconds: 300),
-          fit: BoxFit.cover,
-          height: 210,
           width: 150,
+          height: 210,
         ),
       ),
     );

@@ -1,4 +1,3 @@
-import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:flutter/material.dart';
 
 class UserPage extends StatelessWidget {
@@ -6,13 +5,41 @@ class UserPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return const _BodyPage();
+  }
+}
+
+class _BodyPage extends StatefulWidget {
+  const _BodyPage();
+
+  @override
+  State<_BodyPage> createState() => __BodyPageState();
+}
+
+class __BodyPageState extends State<_BodyPage> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(
-          'Tính năng đang phát triển',
-          style: AppsTextStyle.text14Weight500,
+      backgroundColor: const Color(0xffd1d5db),
+      body: SafeArea(
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              buildUserInfo(),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+Widget buildUserInfo() {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    child: const SizedBox(),
+  );
 }
