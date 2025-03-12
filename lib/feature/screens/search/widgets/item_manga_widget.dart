@@ -1,5 +1,6 @@
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/models/manga_model.dart';
+import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/image_app.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,7 +31,7 @@ class ItemMangaWidget extends StatelessWidget {
           onTap: () {
             Navigator.pushNamed(
               context,
-              '/detail-manga',
+              NettromdexRouter.detailManga,
               arguments: DetailMangaPage(
                 idManga: manga.id,
                 coverArt:

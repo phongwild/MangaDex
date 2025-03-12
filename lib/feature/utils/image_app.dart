@@ -29,8 +29,8 @@ class _ImageAppState extends State<ImageApp> {
   static final BaseCacheManager customCacheManager = CacheManager(
     Config(
       'customCacheKey',
-      stalePeriod: const Duration(hours: 12),
-      maxNrOfCacheObjects: 100, // Tối đa 100 ảnh
+      stalePeriod: const Duration(hours: 6),
+      maxNrOfCacheObjects: 3000,
     ),
   );
 

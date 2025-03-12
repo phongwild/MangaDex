@@ -1,5 +1,6 @@
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/models/manga_model.dart';
+import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/image_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -150,7 +151,7 @@ class _BannersState extends State<Banners> {
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  '/detail-manga',
+                  NettromdexRouter.detailManga,
                   arguments: DetailMangaPage(
                     idManga: idManga,
                     coverArt: imageUrl,

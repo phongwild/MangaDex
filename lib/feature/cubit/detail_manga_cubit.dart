@@ -27,42 +27,52 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
 
       // Gọi API lấy chi tiết manga
       final response = await callApiGet(endPoint: '$urlManga/$idManga');
-
       if (response.data['data'] == null) {
         throw Exception('Không tìm thấy dữ liệu manga');
       }
+
       final manga = Manga.fromJson(response.data['data']);
 
-      if (isFeed) {
-        // Nếu isFeed == true, gọi thêm API lấy danh sách chương
-        final chaptersResponse = await callApiGet(
-          endPoint: '$urlManga/$idManga/feed',
-          json: {
-            'offset': offset,
-            'translatedLanguage[]': translateLang.language,
-            'limit': 15,
-            'order[chapter]': 'desc',
-          },
-        );
-        if (chaptersResponse.data['data'] == null) {
-          throw Exception('Không tìm thấy danh sách chương');
-        }
-
-        final chapters = (chaptersResponse.data['data'] as List)
-            .map((e) => Chapter.fromJson(e))
-            .toList();
-
-        // Lấy tổng số chương
-        final total = chaptersResponse.data['total'] ?? 0;
-
-        if (chapters.isEmpty && total == 0) {
-          emit(DetailMangaStateLoaded(manga, const [], total));
-          return;
-        }
-        emit(DetailMangaStateLoaded(manga, chapters, total));
-      } else {
-        emit(DetailMangaStateLoaded(manga, const [], 0));
+      if (!isFeed) {
+        emit(DetailMangaStateLoaded(manga, const [], 0, ''));
+        return;
       }
+
+      // Gọi API lấy danh sách chương và chương đầu tiên
+      final chaptersResponse = await callApiGet(
+        endPoint: '$urlManga/$idManga/feed',
+        json: {
+          'offset': offset,
+          'translatedLanguage[]': translateLang.language,
+          'limit': 15,
+          'order[chapter]': 'desc',
+        },
+      );
+
+      final firstChapterResponse = await callApiGet(
+        endPoint: '$urlManga/$idManga/feed',
+        json: {
+          'translatedLanguage[]': translateLang.language,
+          'limit': 1,
+          'order[chapter]': 'asc',
+        },
+      );
+
+      final List<dynamic>? chaptersData = chaptersResponse.data['data'];
+      final List<dynamic>? firstChapterData = firstChapterResponse.data['data'];
+
+      if (chaptersData == null || firstChapterData == null) {
+        throw Exception('Không tìm thấy danh sách chương');
+      }
+
+      // Chuyển đổi dữ liệu
+      final chapters = chaptersData.map((e) => Chapter.fromJson(e)).toList();
+      final String firstChapter =
+          firstChapterData.isNotEmpty ? firstChapterData.first['id'] : '';
+
+      final int total = chaptersResponse.data['total'] ?? 0;
+
+      emit(DetailMangaStateLoaded(manga, chapters, total, firstChapter));
     } catch (e) {
       dlog(e.toString());
       emit(DetailMangaStateError(e.toString()));
@@ -73,7 +83,6 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
     try {
       emit(DetailMangaStateLoading());
       final response = await callApiGet(endPoint: '$urlReadChapter/$idChapter');
-      // dlog(response.data);
       if (response.statusCode == 200) {
         final data = ChapterData.fromJson(response.data);
         emit(ChapterStateLoaded(data));

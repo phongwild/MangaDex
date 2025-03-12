@@ -111,8 +111,7 @@ class __BodyPageState extends State<_BodyPage> {
                   final List<Chapter> chapters = state.chapters;
                   final List<Tag> tag = data.attributes.tags;
                   final description = data.attributes.description;
-                  final String? firstChapter =
-                      chapters.isNotEmpty ? chapters.last.id : null;
+                  final String firstChapter = state.firstChapter;
                   final int total = state.total;
                   return Column(
                     children: [
@@ -231,8 +230,8 @@ class __BodyPageState extends State<_BodyPage> {
                                             return;
                                           }
 
-                                          Navigator.pushNamed(
-                                              context, '/read-chapter',
+                                          Navigator.pushNamed(context,
+                                              NettromdexRouter.readChapter,
                                               arguments: ReadChapterPage(
                                                 idChapter: firstChapter,
                                                 idManga: widget.idManga,

@@ -24,11 +24,17 @@ class DetailMangaStateLoaded extends DetailMangaState {
   final Manga manga;
   final List<Chapter> chapters; // Danh sách chương
   final int total;
+  final String firstChapter;
 
-  const DetailMangaStateLoaded(this.manga, this.chapters, this.total);
+  const DetailMangaStateLoaded(
+    this.manga,
+    this.chapters,
+    this.total,
+    this.firstChapter,
+  );
 
   @override
-  List<Object> get props => [manga, chapters];
+  List<Object> get props => [manga, chapters, firstChapter];
 }
 
 class ChapterStateLoaded extends DetailMangaState {

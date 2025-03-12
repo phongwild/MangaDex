@@ -1,25 +1,26 @@
 import 'package:app/feature/bottom_navigaton/bottom_nav.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:app/global/router/router.dart';
 
 import '../screens/detail/detail_manga_page.dart';
 import '../screens/more/more_manga_page.dart';
 import '../screens/reading/read_chapter_page.dart';
+import '../utils/web/web_view_screen.dart';
 
 class NettromdexRouter extends RouterModule {
   static const bottomNav = '/bottom-nav';
   static const detailManga = '/detail-manga';
   static const readChapter = '/read-chapter';
   static const moreManga = '/more-manga';
-
+  static const webView = '/web-view';
   @override
   Map<String, PageRoute> getRoutes(RouteSettings settings) {
     return {
-      NettromdexRouter.bottomNav: MaterialPageRoute(
+      NettromdexRouter.bottomNav: CupertinoPageRoute(
         builder: (_) => const BottomNav(),
         settings: settings,
       ),
-      NettromdexRouter.detailManga: MaterialPageRoute(
+      NettromdexRouter.detailManga: CupertinoPageRoute(
         builder: (context) {
           final args = settings.arguments as DetailMangaPage;
           return DetailMangaPage(
@@ -31,7 +32,7 @@ class NettromdexRouter extends RouterModule {
         },
         settings: settings,
       ),
-      NettromdexRouter.readChapter: MaterialPageRoute(
+      NettromdexRouter.readChapter: CupertinoPageRoute(
         builder: (context) {
           final args = settings.arguments as ReadChapterPage;
           return ReadChapterPage(
@@ -42,7 +43,7 @@ class NettromdexRouter extends RouterModule {
         },
         settings: settings,
       ),
-      NettromdexRouter.moreManga: MaterialPageRoute(
+      NettromdexRouter.moreManga: CupertinoPageRoute(
         builder: (context) {
           final args = settings.arguments;
           if (args is MoreMangaPage) {
@@ -53,6 +54,12 @@ class NettromdexRouter extends RouterModule {
         },
         settings: settings,
       ),
+      NettromdexRouter.webView: CupertinoPageRoute(
+        builder: (context) {
+          final args = settings.arguments as String;
+          return WebViewScreen(initialUrl: args);
+        },
+      )
     };
   }
 }

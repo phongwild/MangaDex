@@ -10,10 +10,12 @@ class BottomCtrlReadChapterWidget extends StatefulWidget {
     required this.listChapters,
     required this.onChapterChange,
     required this.chapter,
+    required this.onLoadMore,
   });
   final String currentChapter;
   final List<Chapter> listChapters;
   final Function(String) onChapterChange;
+  final Function() onLoadMore;
   final String chapter;
   @override
   State<BottomCtrlReadChapterWidget> createState() =>

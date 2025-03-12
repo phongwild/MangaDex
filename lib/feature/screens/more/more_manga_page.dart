@@ -34,14 +34,14 @@ class _MoreMangaPageState extends State<MoreMangaPage> {
           create: (context) => TagCubit()..getTag(),
         ),
       ],
-      child: const _BodyPage(),
+      child: _BodyPage(widget.tag),
     );
   }
 }
 
 class _BodyPage extends StatefulWidget {
-  const _BodyPage();
-
+  const _BodyPage(this.tag);
+  final String? tag;
   @override
   State<_BodyPage> createState() => __BodyPageState();
 }
@@ -191,7 +191,7 @@ class __BodyPageState extends State<_BodyPage> {
       context.read<MangaCubit>().searchManga(
             '',
             offset: (newPage - 1) * limit,
-            tags: selectedTags,
+            tags: selectedTags.isNotEmpty ? selectedTags : [widget.tag!],
           );
     }
   }

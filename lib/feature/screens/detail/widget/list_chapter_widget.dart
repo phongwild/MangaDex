@@ -2,6 +2,7 @@ import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
+import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
         }
         return GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/read-chapter',
+            Navigator.pushNamed(context, NettromdexRouter.readChapter,
                 arguments: ReadChapterPage(
                   idChapter: widget.listChapters[index].id,
                   idManga: widget.idManga,
@@ -164,9 +165,9 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
         } else {
           // Nếu trang hiện tại > 3, hiển thị dấu `...`
           if (page > 3) {
-            items.add(const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6),
-              child: Text('...', style: TextStyle(fontSize: 18)),
+            items.add(Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text('...', style: AppsTextStyle.text18Weight400),
             ));
           }
 
@@ -184,9 +185,9 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
 
           // Dấu "..." trước trang cuối nếu cần
           if (page < totalPages - 2) {
-            items.add(const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6),
-              child: Text('...', style: TextStyle(fontSize: 18)),
+            items.add(Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text('...', style: AppsTextStyle.text18Weight400),
             ));
           }
 
@@ -209,7 +210,6 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
 
   void changePage(int newPage) {
     if (newPage != widget.currentPage.value) {
-      dlog('changePage: $newPage');
       widget.currentPage.value = newPage;
       context.read<DetailMangaCubit>().getDetailManga(
             widget.idManga,
