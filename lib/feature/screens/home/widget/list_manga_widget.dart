@@ -2,6 +2,7 @@
 
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
+import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/detail/detail_manga_page.dart';
 import 'package:app/feature/screens/home/widget/item_list_manga_widget.dart';
 import 'package:app/feature/utils/time_utils.dart';
@@ -61,7 +62,7 @@ class MangaList extends StatelessWidget with NetWorkMixin {
                 onTap: () {
                   Navigator.pushNamed(
                     context,
-                    '/detail-manga',
+                    NettromdexRouter.detailManga,
                     arguments: DetailMangaPage(
                       idManga: manga.id,
                       coverArt:

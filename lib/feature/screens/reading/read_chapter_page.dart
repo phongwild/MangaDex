@@ -249,6 +249,13 @@ class __BodyPageState extends State<_BodyPage> {
                           onChapterChange: (newId) {
                             updateChapter(newId);
                           },
+                          onLoadMore: () {
+                            context.read<DetailMangaCubit>().getDetailManga(
+                                  widget.idManga,
+                                  true,
+                                  offset: 1,
+                                );
+                          },
                         ),
                       ],
                     ),

@@ -1,6 +1,7 @@
 import 'package:app/feature/screens/home/home_page.dart';
 import 'package:app/feature/screens/search/search_page.dart';
 import 'package:app/feature/screens/user/user_page.dart';
+import 'package:app/feature/utils/toast_app.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -15,7 +16,7 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   final PageController _pageController = PageController();
-
+  DateTime? lastBackPressTime; // Lưu thời điểm nhấn back gần nhất
   final List<Widget> _screens = [
     const HomePage(),
     const SearchPage(),
@@ -27,10 +28,21 @@ class _BottomNavState extends State<BottomNav> {
     _pageController.jumpToPage(index);
   }
 
+  Future<bool> _onWillPop() async {
+    DateTime now = DateTime.now();
+    if (lastBackPressTime == null ||
+        now.difference(lastBackPressTime!) > const Duration(seconds: 2)) {
+      lastBackPressTime = now;
+      showToast('Nhấn lần nữa để thoát!!');
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => Future.value(false),
+      onWillPop: () => _onWillPop(),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Stack(

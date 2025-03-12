@@ -96,7 +96,7 @@ class ListMangaByGenreWidget extends StatelessWidget {
                 onTap: () {
                   Navigator.pushNamed(
                     context,
-                    '/detail-manga',
+                    NettromdexRouter.detailManga,
                     arguments: DetailMangaPage(
                       idManga: manga.id,
                       coverArt:

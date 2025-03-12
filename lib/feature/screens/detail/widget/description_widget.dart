@@ -1,4 +1,8 @@
+import 'package:app/feature/router/nettromdex_router.dart';
+import 'package:app/feature/utils/toast_app.dart';
+import 'package:app/feature/utils/web/web_view_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import '../../../../core_ui/app_theme.dart/app_text_style.dart';
 
 class DescriptionWidget extends StatefulWidget {
@@ -53,8 +57,37 @@ class _DescriptionWidgetState extends State<DescriptionWidget> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.desc,
+                Linkify(
+                  onOpen: (link) async {
+                    String fixedUrl = link.url.trim(); // Loại bỏ khoảng trắng
+
+                    // Xử lý URL sai định dạng
+                    while (fixedUrl.endsWith(")") ||
+                        fixedUrl.endsWith(".") ||
+                        fixedUrl.endsWith(",")) {
+                      fixedUrl = fixedUrl.substring(0, fixedUrl.length - 1);
+                    }
+
+                    // Kiểm tra URL hợp lệ
+                    Uri? uri;
+                    try {
+                      uri = Uri.parse(fixedUrl);
+                      if (uri.scheme.isEmpty) {
+                        throw Exception("URL không có scheme (http/https)");
+                      }
+                    } catch (e) {
+                      showToast('Link không hợp lệ: $fixedUrl', isError: true);
+                      return;
+                    }
+
+                    // Mở WebView
+                    Navigator.pushNamed(
+                      context,
+                      NettromdexRouter.webView,
+                      arguments: fixedUrl,
+                    );
+                  },
+                  text: widget.desc,
                   style: textStyle,
                   textAlign: TextAlign.justify,
                   maxLines: expanded ? null : 5,
