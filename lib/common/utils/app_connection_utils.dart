@@ -1,28 +1,22 @@
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 class ConnectionUtils {
   static final ConnectionUtils _singleton = ConnectionUtils._internal();
-
-  factory ConnectionUtils() {
-    return _singleton;
-  }
-
+  factory ConnectionUtils() => _singleton;
   ConnectionUtils._internal();
 
-  StreamSubscription<ConnectivityResult>? _subscription;
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
 
   ConnectivityResult? _type;
 
   bool get isActive => _type != null && _type != ConnectivityResult.none;
-
   bool get isDataPlan => _type == ConnectivityResult.mobile;
-
   ConnectivityResult get type => _type ?? ConnectivityResult.none;
 
-  final _callbacks = <void Function(bool isActive)>[];
+  final List<void Function(bool isActive)> _callbacks = [];
 
   void addListener(void Function(bool isActive) callback,
       {bool addLastEvent = false}) {
@@ -45,11 +39,10 @@ class ConnectionUtils {
       {bool? defaultValue = true, int delay = 0}) async {
     try {
       if (delay > 0) await Future.delayed(Duration(seconds: delay));
-
-      final result = await Connectivity().checkConnectivity();
-
-      return result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi;
+      final results = await _connectivity.checkConnectivity();
+      return results.isNotEmpty &&
+          (results.contains(ConnectivityResult.mobile) ||
+              results.contains(ConnectivityResult.wifi));
     } catch (e, stackTrace) {
       debugPrintStack(stackTrace: stackTrace);
       return defaultValue ?? true;
@@ -59,16 +52,20 @@ class ConnectionUtils {
   Future<void> init() async {
     if (_subscription != null) return;
 
-    _subscription = Connectivity().onConnectivityChanged.listen(
-      (result) {
-        if (_type != result) {
-          _type = result;
+    // Gán trạng thái mạng ban đầu (fix lỗi)
+    final results = await _connectivity.checkConnectivity();
+    _type = results.isNotEmpty ? results.first : ConnectivityResult.none;
 
-          for (var e in _callbacks) {
-            e.call(isActive);
-          }
+    // Lắng nghe thay đổi kết nối mạng
+    _subscription = _connectivity.onConnectivityChanged.listen((results) {
+      final result =
+          results.isNotEmpty ? results.first : ConnectivityResult.none;
+      if (_type != result) {
+        _type = result;
+        for (var callback in _callbacks) {
+          callback.call(isActive);
         }
-      },
-    );
+      }
+    });
   }
 }

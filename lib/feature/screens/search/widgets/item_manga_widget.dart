@@ -17,7 +17,7 @@ class ItemMangaWidget extends StatelessWidget {
     return ListView.builder(
       itemCount: mangaList.length > 15 ? 15 : mangaList.length,
       scrollDirection: Axis.vertical,
-      shrinkWrap: true,
+      // shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         final manga = mangaList[index];
@@ -71,7 +71,7 @@ class ItemMangaWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Expanded(
+                Flexible(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Column(

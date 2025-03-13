@@ -93,27 +93,30 @@ class __BodyPageState extends State<_BodyPage> {
             right: 8,
             bottom: 10,
           ),
-          child: SingleChildScrollView(
-            child: BlocBuilder<DetailMangaCubit, DetailMangaState>(
-              builder: (context, state) {
-                if (state is DetailMangaStateLoading) {
-                  return Center(
+          child: BlocBuilder<DetailMangaCubit, DetailMangaState>(
+            buildWhen: (previous, current) => current is DetailMangaStateLoaded,
+            builder: (context, state) {
+              if (state is DetailMangaStateLoading) {
+                return Flexible(
+                  child: Center(
                     child: LoadingShimmer().loadingCircle(),
-                  );
-                }
-                if (state is DetailMangaStateError) {
-                  return Center(
-                    child: Text(state.message),
-                  );
-                }
-                if (state is DetailMangaStateLoaded) {
-                  final data = state.manga;
-                  final List<Chapter> chapters = state.chapters;
-                  final List<Tag> tag = data.attributes.tags;
-                  final description = data.attributes.description;
-                  final String firstChapter = state.firstChapter;
-                  final int total = state.total;
-                  return Column(
+                  ),
+                );
+              }
+              if (state is DetailMangaStateError) {
+                return Center(
+                  child: Text(state.message),
+                );
+              }
+              if (state is DetailMangaStateLoaded) {
+                final data = state.manga;
+                final List<Chapter> chapters = state.chapters;
+                final List<Tag> tag = data.attributes.tags;
+                final description = data.attributes.description;
+                final String firstChapter = state.firstChapter;
+                final int total = state.total;
+                return SingleChildScrollView(
+                  child: Column(
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
@@ -229,7 +232,6 @@ class __BodyPageState extends State<_BodyPage> {
                                             );
                                             return;
                                           }
-
                                           Navigator.pushNamed(context,
                                               NettromdexRouter.readChapter,
                                               arguments: ReadChapterPage(
@@ -263,11 +265,11 @@ class __BodyPageState extends State<_BodyPage> {
                       else
                         listNull(),
                     ],
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
+                  ),
+                );
+              }
+              return const SizedBox();
+            },
           ),
         ),
       ),

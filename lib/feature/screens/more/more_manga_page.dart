@@ -53,7 +53,6 @@ class __BodyPageState extends State<_BodyPage> {
   List<String> selectedTags = [];
 
   void filterManga(List<String> tags) {
-    dlog('Tag selected: $tags');
     selectedTags = tags;
     currentPage.value = 1;
     context.read<MangaCubit>().searchManga('', tags: tags);
@@ -101,6 +100,7 @@ class __BodyPageState extends State<_BodyPage> {
                 left: 0,
                 right: 0,
                 child: BlocBuilder<MangaCubit, MangaState>(
+                  buildWhen: (previous, current) => current is MangaLoaded,
                   builder: (context, state) {
                     if (state is MangaLoaded) {
                       totals.value = state.total ?? 0;
@@ -188,10 +188,16 @@ class __BodyPageState extends State<_BodyPage> {
   void changePage(int newPage) {
     if (newPage != currentPage.value) {
       currentPage.value = newPage;
+
+      // Nếu tag bị null thì truyền vào một list rỗng thay vì ép buộc null
+      List<String> tags = selectedTags.isNotEmpty
+          ? selectedTags
+          : (widget.tag != null ? [widget.tag!] : []);
+
       context.read<MangaCubit>().searchManga(
             '',
             offset: (newPage - 1) * limit,
-            tags: selectedTags.isNotEmpty ? selectedTags : [widget.tag!],
+            tags: tags,
           );
     }
   }

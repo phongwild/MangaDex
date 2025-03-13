@@ -1,3 +1,4 @@
+import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/screens/home/widget/item_list_manga_widget.dart';
@@ -63,12 +64,11 @@ class ListMangaByGenreWidget extends StatelessWidget {
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         if (state is MangaLoading) {
-          return LoadingShimmer().loadingCircle();
+          return Center(child: LoadingShimmer().loadingCircle());
         }
         if (state is MangaError) {
-          return Center(
-            child: Text('Error: ${state.message}'),
-          );
+          dlog('Lỗi: ${state.message}');
+          return Center(child: LoadingShimmer().loadingCircle());
         }
         if (state is MangaLoaded) {
           final mangas = state.mangas;

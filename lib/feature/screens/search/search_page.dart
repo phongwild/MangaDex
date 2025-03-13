@@ -1,3 +1,4 @@
+import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
@@ -67,14 +68,17 @@ class __BodyPageState extends State<_BodyPage> {
               BlocBuilder<MangaCubit, MangaState>(
                 builder: (context, state) {
                   if (state is MangaLoading) {
-                    return Center(child: LoadingShimmer().loadingCircle());
+                    return Flexible(
+                      child: Center(
+                        child: LoadingShimmer().loadingCircle(),
+                      ),
+                    );
                   }
                   if (state is MangaError) {
-                    return Center(
-                      child: Text(
-                        'Error: ${state.message}',
-                        style: AppsTextStyle.text16Weight600
-                            .copyWith(color: const Color(0xff374151)),
+                    dlog('Error: ${state.message}');
+                    return Flexible(
+                      child: Center(
+                        child: LoadingShimmer().loadingCircle(),
                       ),
                     );
                   }

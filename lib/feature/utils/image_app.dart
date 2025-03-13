@@ -46,8 +46,7 @@ class _ImageAppState extends State<ImageApp> {
     return CachedNetworkImage(
       imageUrl: widget.imageUrl,
       errorWidget: (context, url, error) =>
-          widget.errorWidget ??
-          const Icon(Icons.broken_image, color: Colors.red),
+          widget.errorWidget ?? const Icon(Icons.broken_image),
       placeholder: (context, url) =>
           widget.placeholder ?? LoadingShimmer().loadingCircle(),
       height: widget.height,
