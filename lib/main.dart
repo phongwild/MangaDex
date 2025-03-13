@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:app/common/utils/app_connection_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,7 @@ Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
     await di.init();
     await Future.delayed(const Duration(seconds: 1));
+    await ConnectionUtils().init();
     // await SharedPref.getInstance();
     // await TranslateLang().init();
     disableErrorWidget();

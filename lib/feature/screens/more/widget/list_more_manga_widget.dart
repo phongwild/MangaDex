@@ -18,13 +18,17 @@ class ListMoreMangaWidget extends StatelessWidget {
     return BlocBuilder<MangaCubit, MangaState>(
       builder: (context, state) {
         if (state is MangaLoading) {
-          return Center(
-            child: LoadingShimmer().loadingCircle(),
+          return Flexible(
+            child: Center(
+              child: LoadingShimmer().loadingCircle(),
+            ),
           );
         }
         if (state is MangaError) {
-          return Center(
-            child: Text(state.message),
+          return Flexible(
+            child: Center(
+              child: Text(state.message),
+            ),
           );
         }
         if (state is MangaLoaded) {

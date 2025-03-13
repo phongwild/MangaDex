@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
@@ -24,12 +25,13 @@ class MangaList extends StatelessWidget with NetWorkMixin {
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         if (state is MangaLoading) {
-          return LoadingShimmer().loadingCircle();
-        } else if (state is MangaError) {
-          return Center(
-            child: Text('Error: ${state.message}'),
-          );
-        } else if (state is MangaLoaded) {
+          return Center(child: LoadingShimmer().loadingCircle());
+        }
+        if (state is MangaError) {
+          dlog('Lỗi: ${state.message}');
+          return Center(child: LoadingShimmer().loadingCircle());
+        }
+        if (state is MangaLoaded) {
           final mangas = state.mangas;
           int limit = 15;
           return GridView.builder(

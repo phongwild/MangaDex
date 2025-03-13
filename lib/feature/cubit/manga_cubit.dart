@@ -5,15 +5,57 @@ import 'package:app/feature/dio/dio_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../common/utils/app_connection_utils.dart';
 import '../models/manga_model.dart';
 
 part 'manga_state.dart';
 
 String baseUrl = 'https://api.mangadex.org/';
 final translateLang = TranslateLang();
+final ConnectionUtils connectionUtils = ConnectionUtils();
 
 class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
-  MangaCubit() : super(MangaStateInitial());
+  MangaCubit() : super(MangaStateInitial()) {
+    connectionUtils.addListener(_onNetworkChanged);
+  }
+  bool _isWaitingForNetwork = false;
+  Map<String, dynamic>? _lastFetchParams;
+  bool isDisposed = false; // 🛡 Tránh gọi API khi Cubit bị dispose
+
+  @override
+  Future<void> close() {
+    isDisposed = true; // Đánh dấu đã dispose
+    connectionUtils.removeListener(_onNetworkChanged);
+    return super.close();
+  }
+
+  void _onNetworkChanged(bool isConnected) {
+    if (isConnected && _isWaitingForNetwork && _lastFetchParams != null) {
+      _isWaitingForNetwork = false;
+      _retryLastRequest();
+    }
+  }
+
+  void _retryLastRequest() {
+    if (isDisposed || _lastFetchParams == null) return;
+
+    final method = _lastFetchParams!['method'];
+    if (method == 'getManga') {
+      getManga(
+        isLatestUploadedChapter: _lastFetchParams!['isLatestUploadedChapter'],
+        limit: _lastFetchParams!['limit'],
+        offset: _lastFetchParams!['offset'],
+      );
+    } else if (method == 'searchManga') {
+      searchManga(
+        _lastFetchParams!['query'],
+        tags: _lastFetchParams!['tags'],
+        offset: _lastFetchParams!['offset'],
+        limit: _lastFetchParams!['limit'],
+        followedCount: _lastFetchParams!['followedCount'],
+      );
+    }
+  }
 
   // Lấy danh sách manga (dùng Isolate để xử lý API call)
   void getManga({
@@ -21,21 +63,36 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
     required int limit,
     required int offset,
   }) async {
-    if (state is MangaLoading) return;
+    if (state is MangaLoading || isDisposed) return;
+
+    if (!connectionUtils.isActive) {
+      _isWaitingForNetwork = true;
+      _lastFetchParams = {
+        'method': 'getManga',
+        'isLatestUploadedChapter': isLatestUploadedChapter,
+        'limit': limit,
+        'offset': offset,
+      };
+      emit(const MangaError('Không có kết nối mạng!'));
+      return;
+    }
 
     emit(MangaLoading());
 
-    compute(_fetchManga, [
+    final result = compute(_fetchManga, [
       isLatestUploadedChapter,
       translateLang.language,
       limit,
       offset,
-    ]).then((result) {
+    ]);
+    if (isDisposed) return; //Kiểm tra trc khi emit
+    result.then((result) {
       emit(MangaLoaded(
         result['mangas'],
         total: result['total'] as int? ?? 0,
       ));
     }).catchError((error) {
+      if (isDisposed) return; //Kiểm tra trc khi emit
       dlog('Lỗi khi lấy Manga: $error');
       emit(MangaError(error.toString()));
     });
@@ -49,17 +106,35 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
     int limit = 10,
     bool followedCount = false,
   }) async {
-    if (state is MangaLoading) return;
+    if (state is MangaLoading || isDisposed) return;
+
+    if (!connectionUtils.isActive) {
+      _isWaitingForNetwork = true;
+      _lastFetchParams = {
+        'method': 'searchManga',
+        'query': query,
+        'tags': tags ?? [],
+        'offset': offset ?? 0,
+        'limit': limit,
+        'followedCount': followedCount,
+      };
+      emit(const MangaError(
+          "Không có kết nối mạng! Đợi kết nối lại để tải dữ liệu."));
+      return;
+    }
+
     emit(MangaLoading());
 
-    compute(_fetchSearchManga, {
+    final result = compute(_fetchSearchManga, {
       'query': query,
       'tags': tags ?? [],
       'offset': offset ?? 0,
       'limit': limit,
       'translateLang': translateLang.language,
       'followedCount': followedCount,
-    }).then((result) {
+    });
+    if (isDisposed) return; //Kiểm tra trc khi emit
+    result.then((result) {
       final newMangaList = result['mangas'] as List<Manga>;
       final total = result['total'] as int? ?? 0;
 
@@ -78,6 +153,7 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
 
       emit(MangaLoaded(updatedList, total: total));
     }).catchError((error) {
+      if (isDisposed) return; //Kiểm tra trc khi emit
       dlog('Lỗi khi tìm kiếm Manga: $error');
       emit(MangaError('Lỗi: $error'));
     });

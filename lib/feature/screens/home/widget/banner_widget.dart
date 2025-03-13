@@ -1,3 +1,4 @@
+import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/models/manga_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
@@ -51,7 +52,13 @@ class _BannersState extends State<Banners> {
               ],
             );
           }
-          return const SizedBox();
+          return SizedBox(
+            width: double.infinity,
+            height: 217,
+            child: Center(
+              child: LoadingShimmer().loadingCircle(),
+            ),
+          );
         },
       ),
     );
