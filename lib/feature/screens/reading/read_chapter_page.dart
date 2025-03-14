@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 import 'widget/page_chapter_widget.dart';
+import 'widget/vertical_style_widget.dart';
 
 class ReadChapterPage extends StatefulWidget {
   const ReadChapterPage({
@@ -141,7 +142,8 @@ class __BodyPageState extends State<_BodyPage> {
                         if (styleReading.value == false) {
                           return styleHorizontal(chapterData);
                         } else {
-                          return styleVertical(chapterData);
+                          return vertical_widget(
+                              totalPages: totalPages, chapterData: chapterData);
                         }
                       },
                     );
@@ -266,23 +268,6 @@ class __BodyPageState extends State<_BodyPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget styleVertical(ChapterData chapterData) {
-    return ListView.builder(
-      itemCount: totalPages,
-      physics: const BouncingScrollPhysics(
-        parent: AlwaysScrollableScrollPhysics(),
-      ),
-      scrollDirection: Axis.vertical,
-      itemBuilder: (context, index) {
-        final baseUrl = chapterData.baseUrl;
-        final String listPage = chapterData.data[index];
-        final urlImage = '$baseUrl/data/${chapterData.hash}/$listPage';
-        // Cache image for better performance
-        return PageChapterWidget(urlImage: urlImage);
-      },
     );
   }
 

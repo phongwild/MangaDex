@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:app/core/app_log.dart';
 import 'package:app/feature/dio/dio_client.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
@@ -9,13 +11,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'detail_manga_state.dart';
 
+const String urlManga = 'https://api.mangadex.org/manga';
+const String urlReadChapter = 'https://api.mangadex.org/at-home/server';
+final translateLang = TranslateLang();
+
 class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
   DetailMangaCubit() : super(DetailMangaStateInitial());
-
-  static const String urlManga = 'https://api.mangadex.org/manga';
-  static const String urlReadChapter =
-      'https://api.mangadex.org/at-home/server';
-  final translateLang = TranslateLang();
   Future<void> getDetailManga(
     String idManga,
     bool isFeed, {
@@ -79,6 +80,27 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
     }
   }
 
+  Future<void> getAllChapter(String idManga) async {
+    try {
+      final ReceivePort receivePort = ReceivePort();
+      await Isolate.spawn(_fetchChapters, [receivePort.sendPort, idManga]);
+
+      receivePort.listen((message) {
+        if (message is List<Chapter>) {
+          final currentState = state;
+          if (currentState is DetailMangaStateLoaded) {
+            emit(currentState.copyWith(chapters: message));
+          }
+        } else {
+          dlog('Received unknown message type: $message');
+        }
+      });
+    } catch (e) {
+      dlog('Lỗi khi tải chương: $e');
+      emit(const DetailMangaStateError('Không thể tải danh sách chương!'));
+    }
+  }
+
   Future<void> getReadChapter(String idChapter) async {
     try {
       emit(DetailMangaStateLoading());
@@ -94,4 +116,52 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       emit(DetailMangaStateError('Error: $e'));
     }
   }
+}
+
+Future<void> _fetchChapters(List<dynamic> args) async {
+  SendPort sendPort = args[0];
+  String idManga = args[1];
+
+  List<Chapter> allChapter = [];
+  int offset = 0;
+  int limit = 100;
+  bool hasMore = true;
+  int totalChapter = 0;
+
+  while (hasMore) {
+    final response = await DioClient.create().get(
+      '$urlManga/$idManga/feed',
+      queryParameters: {
+        'offset': offset,
+        'translatedLanguage[]': translateLang.language,
+        'limit': limit,
+        'order[chapter]': 'desc',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic>? chaptersData = response.data['data'];
+      totalChapter = response.data['total'] ?? 0; // Tổng số chapter có thể lấy
+
+      if (chaptersData == null || chaptersData.isEmpty) {
+        hasMore = false;
+        break;
+      }
+
+      final chapters = chaptersData.map((e) => Chapter.fromJson(e)).toList();
+      allChapter.addAll(chapters);
+      offset += limit;
+
+      // Kiểm tra nếu đã lấy đủ chapter thì dừng lại
+      if (allChapter.length >= totalChapter) {
+        hasMore = false;
+      }
+    } else {
+      hasMore = false;
+    }
+  }
+
+  // Gửi dữ liệu về main thread
+  dlog('Isolate fetched ${allChapter.length} chapters, sending back...');
+  sendPort.send(allChapter);
 }
