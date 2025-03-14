@@ -32,9 +32,17 @@ class DetailMangaStateLoaded extends DetailMangaState {
     this.total,
     this.firstChapter,
   );
+  DetailMangaStateLoaded copyWith({List<Chapter>? chapters}) {
+    return DetailMangaStateLoaded(
+      manga,
+      chapters ?? this.chapters,
+      total,
+      firstChapter,
+    );
+  }
 
   @override
-  List<Object> get props => [manga, chapters, firstChapter];
+  List<Object> get props => [manga, chapters, total, firstChapter];
 }
 
 class ChapterStateLoaded extends DetailMangaState {

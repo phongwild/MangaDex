@@ -1,4 +1,3 @@
-import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
@@ -27,6 +26,16 @@ class ListChapterWidget extends StatefulWidget {
 }
 
 class _ListChapterWidgetState extends State<ListChapterWidget> {
+  final int chaptersPerPage = 15; // Số chap mỗi trang
+  final ValueNotifier<List<Chapter>> chaptersNotifier =
+      ValueNotifier<List<Chapter>>([]);
+
+  @override
+  void initState() {
+    super.initState();
+    updateChapters(); // Load danh sách chương ban đầu
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,22 +52,33 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
             style: AppsTextStyle.text14Weight600,
           ),
           const SizedBox(height: 10),
-          listChap(),
-          if (widget.total > 15) listPage(widget.total) else const SizedBox(),
+          ValueListenableBuilder<List<Chapter>>(
+            valueListenable: chaptersNotifier,
+            builder: (context, list, child) {
+              return listChap(list);
+            },
+          ),
+          if (widget.total > 15) listPage() else const SizedBox(),
         ],
       ),
     );
   }
 
-  //danh sách chương
-  Widget listChap() {
+  // Cập nhật danh sách chương theo trang hiện tại
+  void updateChapters() {
+    final start = (widget.currentPage.value - 1) * chaptersPerPage;
+    final end = (start + chaptersPerPage).clamp(0, widget.listChapters.length);
+    chaptersNotifier.value = widget.listChapters.sublist(start, end);
+  }
+
+  // Danh sách chương
+  Widget listChap(List<Chapter> list) {
     return ListView.builder(
-      itemCount: widget.listChapters.length,
+      itemCount: list.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
-        String countryCode =
-            widget.listChapters[index].translatedLanguage.toUpperCase();
+        String countryCode = list[index].translatedLanguage.toUpperCase();
         if (countryCode == 'VI') {
           countryCode = 'VN';
         } else if (countryCode == 'EN') {
@@ -68,10 +88,10 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
           onTap: () {
             Navigator.pushNamed(context, NettromdexRouter.readChapter,
                 arguments: ReadChapterPage(
-                  idChapter: widget.listChapters[index].id,
+                  idChapter: list[index].id,
                   idManga: widget.idManga,
                   listChapters: widget.listChapters,
-                  chapter: widget.listChapters[index].chapter,
+                  chapter: list[index].chapter,
                 ));
           },
           child: Container(
@@ -104,7 +124,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'C. ${widget.listChapters[index].chapter}',
+                  'C. ${list[index].chapter}',
                   style: AppsTextStyle.text14Weight600,
                 ),
                 const SizedBox(width: 20),
@@ -114,15 +134,13 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        widget.listChapters[index].title ?? 'N/a',
+                        list[index].title ?? 'N/a',
                         style: AppsTextStyle.text14Weight400,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 5),
-                      Text(
-                          timeAgo(
-                              widget.listChapters[index].updatedAt.toString()),
+                      Text(timeAgo(list[index].updatedAt.toString()),
                           style: AppsTextStyle.text12Weight400
                               .copyWith(color: const Color(0xff6b7280))),
                     ],
@@ -136,8 +154,8 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
     );
   }
 
-  Widget listPage(int totals) {
-    final int totalPages = (totals > 0) ? (totals / 15).ceil() : 1;
+  Widget listPage() {
+    final totalPages = (widget.listChapters.length / chaptersPerPage).ceil();
     if (totalPages <= 0) return const SizedBox();
     if (totalPages <= 1) return const SizedBox();
 
@@ -146,7 +164,6 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
       builder: (context, page, child) {
         List<Widget> items = [];
 
-        // Trang đầu tiên
         items.add(ItemOffsetWidget(
           text: '1',
           isActive: page == 1,
@@ -154,7 +171,6 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
         ));
 
         if (totalPages <= 5) {
-          // Nếu tổng trang <= 3, hiển thị tất cả các trang
           for (int i = 2; i <= totalPages; i++) {
             items.add(ItemOffsetWidget(
               text: '$i',
@@ -163,7 +179,6 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
             ));
           }
         } else {
-          // Nếu trang hiện tại > 3, hiển thị dấu `...`
           if (page > 3) {
             items.add(Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -171,7 +186,6 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
             ));
           }
 
-          // Hiển thị các trang xung quanh trang hiện tại
           int start = (page - 1).clamp(2, totalPages - 3).toInt();
           int end = (page + 1).clamp(4, totalPages - 1).toInt();
 
@@ -183,7 +197,6 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
             ));
           }
 
-          // Dấu "..." trước trang cuối nếu cần
           if (page < totalPages - 2) {
             items.add(Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -191,7 +204,6 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
             ));
           }
 
-          // Trang cuối
           items.add(ItemOffsetWidget(
             text: '$totalPages',
             isActive: page == totalPages,
@@ -211,11 +223,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
   void changePage(int newPage) {
     if (newPage != widget.currentPage.value) {
       widget.currentPage.value = newPage;
-      context.read<DetailMangaCubit>().getDetailManga(
-            widget.idManga,
-            true,
-            offset: (newPage - 1) * 15,
-          );
+      updateChapters(); // Cập nhật danh sách chapter khi đổi trang
     }
   }
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
@@ -43,7 +44,8 @@ class _DetailMangaPageState extends State<DetailMangaPage> {
         ..getDetailManga(
           widget.idManga,
           true,
-        ),
+        )
+        ..getAllChapter(widget.idManga),
       child: _BodyPage(
         idManga: widget.idManga,
         coverArt: widget.coverArt,
@@ -70,9 +72,11 @@ class _BodyPage extends StatefulWidget {
 }
 
 class __BodyPageState extends State<_BodyPage> {
+  final ValueNotifier<int> currentPage = ValueNotifier(1);
+  final ValueNotifier<List<Chapter>> listAllChapters = ValueNotifier([]);
+
   @override
   Widget build(BuildContext context) {
-    final ValueNotifier<int> currentPage = ValueNotifier(1);
     return Scaffold(
       backgroundColor: const Color(0xffe5e7eb),
       appBar: AppBar(
@@ -97,10 +101,14 @@ class __BodyPageState extends State<_BodyPage> {
             buildWhen: (previous, current) => current is DetailMangaStateLoaded,
             builder: (context, state) {
               if (state is DetailMangaStateLoading) {
-                return Flexible(
-                  child: Center(
-                    child: LoadingShimmer().loadingCircle(),
-                  ),
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: LoadingShimmer().loadingCircle(),
+                      ),
+                    ),
+                  ],
                 );
               }
               if (state is DetailMangaStateError) {
@@ -238,6 +246,7 @@ class __BodyPageState extends State<_BodyPage> {
                                                 idChapter: firstChapter,
                                                 idManga: widget.idManga,
                                                 listChapters: chapters,
+                                                chapter: '1',
                                               ));
                                         },
                                       ),
