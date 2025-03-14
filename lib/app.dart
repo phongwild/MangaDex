@@ -1,9 +1,6 @@
 import 'dart:async';
 
-import 'package:app/core/app_log.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
-import 'package:app/feature/utils/network_sevices/network_overlay.dart';
-import 'package:app/feature/utils/network_sevices/network_service.dart';
 import 'package:app/feature/utils/toast_app.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:app/global/l10n/gen/app_localizations.dart';

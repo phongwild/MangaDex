@@ -4,7 +4,7 @@ import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
-import 'package:app/feature/screens/reading/widget/bottom_widget.dart';
+import 'package:app/feature/screens/reading/widget/chapter_control_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preload_page_view/preload_page_view.dart';

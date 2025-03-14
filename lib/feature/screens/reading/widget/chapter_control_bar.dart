@@ -41,24 +41,30 @@ class _BottomCtrlReadChapterWidgetState
   }
 
   void nextChapter(bool isNext) {
-    int currentIndex = widget.listChapters
-        .indexWhere((element) => element.id == idCurrentChapter.value);
+    int currentIndex =
+        widget.listChapters.indexWhere((e) => e.id == idCurrentChapter.value);
     if (currentIndex == -1) return;
 
     final nextIndex = isNext ? currentIndex + 1 : currentIndex - 1;
-    if (nextIndex >= 0 && nextIndex < widget.listChapters.length) {
-      final nextChapter = widget.listChapters[nextIndex];
-      idCurrentChapter.value = nextChapter.id;
-      widget.onChapterChange(nextChapter.id);
-    }
+
+    // Kiểm tra giới hạn trước khi thay đổi
+    if (nextIndex < 0 || nextIndex >= widget.listChapters.length) return;
+
+    final nextChapter = widget.listChapters[nextIndex];
+    idCurrentChapter.value = nextChapter.id;
+    widget.onChapterChange(nextChapter.id);
   }
 
   bool isFirstChapter() {
-    return widget.listChapters.last.id == idCurrentChapter.value;
+    int currentIndex =
+        widget.listChapters.indexWhere((e) => e.id == idCurrentChapter.value);
+    return currentIndex >= widget.listChapters.length - 1;
   }
 
   bool isLastChapter() {
-    return widget.listChapters.first.id == idCurrentChapter.value;
+    int currentIndex =
+        widget.listChapters.indexWhere((e) => e.id == idCurrentChapter.value);
+    return currentIndex <= 0;
   }
 
   @override
