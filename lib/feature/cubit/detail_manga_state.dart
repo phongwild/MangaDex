@@ -42,7 +42,7 @@ class DetailMangaStateLoaded extends DetailMangaState {
   }
 
   @override
-  List<Object> get props => [manga, chapters, total, firstChapter];
+  List<Object> get props => [manga, chapters, firstChapter];
 }
 
 class ChapterStateLoaded extends DetailMangaState {

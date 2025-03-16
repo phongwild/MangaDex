@@ -1,11 +1,10 @@
+import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
-import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../more/widget/item_offset_widget.dart';
 import '../../reading/read_chapter_page.dart';
 
@@ -33,7 +32,8 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
   @override
   void initState() {
     super.initState();
-    updateChapters(); // Load danh sách chương ban đầu
+    widget.currentPage.addListener(updateChapters);
+    WidgetsBinding.instance.addPostFrameCallback((_) => updateChapters());
   }
 
   @override
@@ -58,17 +58,58 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
               return listChap(list);
             },
           ),
-          if (widget.total > 15) listPage() else const SizedBox(),
+          if (widget.total > 15) listPage(widget.total) else const SizedBox(),
         ],
       ),
     );
   }
 
-  // Cập nhật danh sách chương theo trang hiện tại
   void updateChapters() {
-    final start = (widget.currentPage.value - 1) * chaptersPerPage;
+    if (!mounted) return;
+
+    if (widget.listChapters.isEmpty) {
+      debugPrint('⚠️ Không có dữ liệu chương, giữ danh sách cũ.');
+      return;
+    }
+
+    final totalPages = (widget.listChapters.length / chaptersPerPage).ceil();
+    final currentPage = widget.currentPage.value;
+
+    // Nếu trang quá lớn, reset về trang hợp lệ
+    if (currentPage > totalPages) {
+      debugPrint('⚠️ Trang $currentPage quá lớn, reset về trang cuối.');
+      widget.currentPage.value = totalPages;
+      return; // Không gọi lại updateChapters() ngay lập tức để tránh vòng lặp vô hạn
+    }
+
+    final start = (currentPage - 1) * chaptersPerPage;
     final end = (start + chaptersPerPage).clamp(0, widget.listChapters.length);
-    chaptersNotifier.value = widget.listChapters.sublist(start, end);
+
+    final newChapters = widget.listChapters.sublist(start, end);
+
+    // Chỉ cập nhật nếu danh sách thực sự thay đổi
+    if (newChapters != chaptersNotifier.value) {
+      debugPrint('🔄 Cập nhật danh sách chương: từ $start đến $end');
+      chaptersNotifier.value = newChapters;
+    }
+  }
+
+  void changePage(int newPage) {
+    if (newPage < 1 || newPage > (widget.total / chaptersPerPage).ceil()) {
+      debugPrint('⚠️ Trang $newPage không hợp lệ.');
+      return;
+    }
+
+    if (newPage == widget.currentPage.value) return;
+
+    widget.currentPage.value = newPage;
+
+    // Chỉ cập nhật nếu đã có dữ liệu
+    if (widget.listChapters.isNotEmpty) {
+      Future.microtask(updateChapters);
+    } else {
+      debugPrint('⚠️ Danh sách chương trống, chờ cập nhật dữ liệu.');
+    }
   }
 
   // Danh sách chương
@@ -154,8 +195,8 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
     );
   }
 
-  Widget listPage() {
-    final totalPages = (widget.listChapters.length / chaptersPerPage).ceil();
+  Widget listPage(int total) {
+    final totalPages = (total / chaptersPerPage).ceil();
     if (totalPages <= 0) return const SizedBox();
     if (totalPages <= 1) return const SizedBox();
 
@@ -218,12 +259,5 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
         );
       },
     );
-  }
-
-  void changePage(int newPage) {
-    if (newPage != widget.currentPage.value) {
-      widget.currentPage.value = newPage;
-      updateChapters(); // Cập nhật danh sách chapter khi đổi trang
-    }
   }
 }

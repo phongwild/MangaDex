@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:isolate';
 
 import 'package:app/core/app_log.dart';
@@ -20,7 +21,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
   Future<void> getDetailManga(
     String idManga,
     bool isFeed, {
-    int limit = 10,
+    int limit = 100,
     int offset = 0,
   }) async {
     try {
@@ -82,19 +83,34 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
 
   Future<void> getAllChapter(String idManga) async {
     try {
-      final ReceivePort receivePort = ReceivePort();
-      await Isolate.spawn(_fetchChapters, [receivePort.sendPort, idManga]);
+      const int batchSize = 300;
+      final int totalChapter = await _getTotalChapters(idManga);
 
-      receivePort.listen((message) {
-        if (message is List<Chapter>) {
-          final currentState = state;
-          if (currentState is DetailMangaStateLoaded) {
-            emit(currentState.copyWith(chapters: message));
-          }
-        } else {
-          dlog('Received unknown message type: $message');
-        }
-      });
+      if (totalChapter == 0) {
+        emit(const DetailMangaStateError('Không tìm thấy chương nào!'));
+        return;
+      }
+
+      final int batchCount = (totalChapter / batchSize).ceil();
+
+      // Tạo danh sách các Isolate chạy song song
+      List<Future<List<Chapter>>> futures = [];
+      for (int i = 0; i < batchCount; i++) {
+        int offset = i * batchSize;
+        futures.add(_fetchChaptersInIsolate(idManga, offset, batchSize));
+      }
+
+      // Chạy tất cả batch song song
+      final results = await Future.wait(futures);
+
+      // Gộp tất cả chương lại
+      final List<Chapter> allChapters = results.expand((e) => e).toList();
+
+      // Emit state với danh sách chương
+      final currentState = state;
+      if (currentState is DetailMangaStateLoaded) {
+        emit(currentState.copyWith(chapters: allChapters));
+      }
     } catch (e) {
       dlog('Lỗi khi tải chương: $e');
       emit(const DetailMangaStateError('Không thể tải danh sách chương!'));
@@ -118,17 +134,49 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
   }
 }
 
-Future<void> _fetchChapters(List<dynamic> args) async {
+Future<int> _getTotalChapters(String idManga) async {
+  try {
+    final response = await DioClient.create().get(
+      '$urlManga/$idManga/feed',
+      queryParameters: {'limit': 1},
+    );
+
+    if (response.statusCode == 200) {
+      return response.data['total'] ?? 0;
+    }
+  } catch (e) {
+    dlog('Lỗi khi lấy tổng số chương: $e');
+  }
+  return 0;
+}
+
+Future<List<Chapter>> _fetchChaptersInIsolate(
+    String idManga, int offset, int limit) async {
+  final ReceivePort receivePort = ReceivePort();
+  final Completer<List<Chapter>> completer = Completer<List<Chapter>>();
+
+  receivePort.listen((message) {
+    if (message is List<Chapter>) {
+      completer.complete(message);
+    } else {
+      dlog('Lỗi khi nhận dữ liệu từ Isolate');
+      completer.complete([]);
+    }
+  });
+
+  await Isolate.spawn(
+      _fetchChaptersBatch, [receivePort.sendPort, idManga, offset, limit]);
+
+  return completer.future;
+}
+
+Future<void> _fetchChaptersBatch(List<dynamic> args) async {
   SendPort sendPort = args[0];
   String idManga = args[1];
+  int offset = args[2];
+  int limit = args[3];
 
-  List<Chapter> allChapter = [];
-  int offset = 0;
-  int limit = 100;
-  bool hasMore = true;
-  int totalChapter = 0;
-
-  while (hasMore) {
+  try {
     final response = await DioClient.create().get(
       '$urlManga/$idManga/feed',
       queryParameters: {
@@ -141,27 +189,15 @@ Future<void> _fetchChapters(List<dynamic> args) async {
 
     if (response.statusCode == 200) {
       final List<dynamic>? chaptersData = response.data['data'];
-      totalChapter = response.data['total'] ?? 0; // Tổng số chapter có thể lấy
-
-      if (chaptersData == null || chaptersData.isEmpty) {
-        hasMore = false;
-        break;
+      if (chaptersData != null) {
+        final chapters = chaptersData.map((e) => Chapter.fromJson(e)).toList();
+        sendPort.send(chapters);
+        return;
       }
-
-      final chapters = chaptersData.map((e) => Chapter.fromJson(e)).toList();
-      allChapter.addAll(chapters);
-      offset += limit;
-
-      // Kiểm tra nếu đã lấy đủ chapter thì dừng lại
-      if (allChapter.length >= totalChapter) {
-        hasMore = false;
-      }
-    } else {
-      hasMore = false;
     }
+    sendPort.send([]); // Trả về danh sách rỗng nếu có lỗi
+  } catch (e) {
+    dlog('Lỗi trong Isolate: $e');
+    sendPort.send([]);
   }
-
-  // Gửi dữ liệu về main thread
-  dlog('Isolate fetched ${allChapter.length} chapters, sending back...');
-  sendPort.send(allChapter);
 }

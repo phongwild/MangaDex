@@ -40,12 +40,13 @@ class _DetailMangaPageState extends State<DetailMangaPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailMangaCubit()
-        ..getDetailManga(
-          widget.idManga,
-          true,
-        )
-        ..getAllChapter(widget.idManga),
+      create: (context) {
+        final cubit = DetailMangaCubit();
+        cubit.getDetailManga(widget.idManga, true).then((_) {
+          cubit.getAllChapter(widget.idManga);
+        });
+        return cubit;
+      },
       child: _BodyPage(
         idManga: widget.idManga,
         coverArt: widget.coverArt,
@@ -123,6 +124,7 @@ class __BodyPageState extends State<_BodyPage> {
                 final description = data.attributes.description;
                 final String firstChapter = state.firstChapter;
                 final int total = state.total;
+                dlog('Tổng chương: ${chapters.length},,, $total');
                 return SingleChildScrollView(
                   child: Column(
                     children: [
