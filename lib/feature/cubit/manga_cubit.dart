@@ -125,39 +125,101 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
 
     emit(MangaLoading());
 
-    final result = compute(_fetchSearchManga, {
-      'query': query,
-      'tags': tags ?? [],
-      'offset': offset ?? 0,
-      'limit': limit,
-      'translateLang': translateLang.language,
-      'followedCount': followedCount,
-    });
-    if (isDisposed) return; //Kiểm tra trc khi emit
-    result.then((result) {
-      final newMangaList = result['mangas'] as List<Manga>;
-      final total = result['total'] as int? ?? 0;
+    try {
+      Map<String, dynamic> result;
 
-      // Giữ dữ liệu cũ nếu scroll hoặc tìm kiếm mới
-      List<Manga> updatedList = [];
-      if (state is MangaLoaded &&
-          query.isEmpty &&
-          (tags == null || tags.isEmpty)) {
-        updatedList = [
-          ...(state as MangaLoaded).mangas,
-          ...newMangaList,
-        ];
+      if (limit > 5) {
+        // 🔥 Chạy trên Isolate nếu limit lớn
+        result = await compute(_fetchSearchManga, {
+          'query': query,
+          'tags': tags ?? [],
+          'offset': offset ?? 0,
+          'limit': limit,
+          'translateLang': translateLang.language,
+          'followedCount': followedCount,
+        });
       } else {
-        updatedList = newMangaList;
+        // 🚀 Gọi trực tiếp nếu limit nhỏ để giảm overhead
+        result = await _fetchSearchManga({
+          'query': query,
+          'tags': tags ?? [],
+          'offset': offset ?? 0,
+          'limit': limit,
+          'translateLang': translateLang.language,
+          'followedCount': followedCount,
+        });
       }
 
-      emit(MangaLoaded(updatedList, total: total));
-    }).catchError((error) {
-      if (isDisposed) return; //Kiểm tra trc khi emit
+      emit(MangaLoaded(
+        result['mangas'] as List<Manga>,
+        total: result['total'] as int? ?? 0,
+      ));
+    } catch (error) {
+      if (isDisposed) return;
       dlog('Lỗi khi tìm kiếm Manga: $error');
       emit(MangaError('Lỗi: $error'));
-    });
+    }
   }
+
+  // Future<void> searchManga(
+  //   String query, {
+  //   List<String>? tags,
+  //   int? offset,
+  //   int limit = 10,
+  //   bool followedCount = false,
+  // }) async {
+  //   if (state is MangaLoading || isDisposed) return;
+
+  //   if (!connectionUtils.isActive) {
+  //     _isWaitingForNetwork = true;
+  //     _lastFetchParams = {
+  //       'method': 'searchManga',
+  //       'query': query,
+  //       'tags': tags ?? [],
+  //       'offset': offset ?? 0,
+  //       'limit': limit,
+  //       'followedCount': followedCount,
+  //     };
+  //     emit(const MangaError(
+  //         "Không có kết nối mạng! Đợi kết nối lại để tải dữ liệu."));
+  //     return;
+  //   }
+
+  //   emit(MangaLoading());
+
+  //   final result = compute(_fetchSearchManga, {
+  //     'query': query,
+  //     'tags': tags ?? [],
+  //     'offset': offset ?? 0,
+  //     'limit': limit,
+  //     'translateLang': translateLang.language,
+  //     'followedCount': followedCount,
+  //   });
+  //   if (isDisposed) return; //Kiểm tra trc khi emit
+  //   result.then((result) {
+  //     final newMangaList = result['mangas'] as List<Manga>;
+  //     final total = result['total'] as int? ?? 0;
+
+  //     // Giữ dữ liệu cũ nếu scroll hoặc tìm kiếm mới
+  //     List<Manga> updatedList = [];
+  //     if (state is MangaLoaded &&
+  //         query.isEmpty &&
+  //         (tags == null || tags.isEmpty)) {
+  //       updatedList = [
+  //         ...(state as MangaLoaded).mangas,
+  //         ...newMangaList,
+  //       ];
+  //     } else {
+  //       updatedList = newMangaList;
+  //     }
+
+  //     emit(MangaLoaded(updatedList, total: total));
+  //   }).catchError((error) {
+  //     if (isDisposed) return; //Kiểm tra trc khi emit
+  //     dlog('Lỗi khi tìm kiếm Manga: $error');
+  //     emit(MangaError('Lỗi: $error'));
+  //   });
+  // }
 }
 
 // Hàm xử lý API call cho Isolate (fetch manga)
