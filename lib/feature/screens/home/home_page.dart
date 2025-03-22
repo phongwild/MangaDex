@@ -36,10 +36,11 @@ class _BodyPageState extends State<_BodyPage> {
     return Scaffold(
       backgroundColor: const Color(0xffd1d5db),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'NetTromDex',
+          'NettromDex',
           style: AppsTextStyle.text18Weight700
               .copyWith(color: const Color(0xff374151)),
         ),

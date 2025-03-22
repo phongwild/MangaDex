@@ -1,4 +1,3 @@
-import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';

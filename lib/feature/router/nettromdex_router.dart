@@ -1,21 +1,29 @@
 import 'package:app/feature/bottom_navigaton/bottom_nav.dart';
+import 'package:app/feature/screens/login_register/main_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:app/global/router/router.dart';
 
 import '../screens/detail/detail_manga_page.dart';
 import '../screens/more/more_manga_page.dart';
 import '../screens/reading/read_chapter_page.dart';
+import '../screens/settings/setting_page.dart';
 import '../utils/web/web_view_screen.dart';
 
 class NettromdexRouter extends RouterModule {
+  static const mainLogin = '/main-login';
   static const bottomNav = '/bottom-nav';
   static const detailManga = '/detail-manga';
   static const readChapter = '/read-chapter';
   static const moreManga = '/more-manga';
+  static const setting = '/setting';
   static const webView = '/web-view';
   @override
   Map<String, PageRoute> getRoutes(RouteSettings settings) {
     return {
+      NettromdexRouter.mainLogin: CupertinoPageRoute(
+        builder: (_) => const MainView(),
+        settings: settings,
+      ),
       NettromdexRouter.bottomNav: CupertinoPageRoute(
         builder: (_) => const BottomNav(),
         settings: settings,
@@ -52,6 +60,10 @@ class NettromdexRouter extends RouterModule {
             return const MoreMangaPage(); // Không có tag thì dùng mặc định
           }
         },
+        settings: settings,
+      ),
+      NettromdexRouter.setting: CupertinoPageRoute(
+        builder: (context) => const SettingPage(),
         settings: settings,
       ),
       NettromdexRouter.webView: CupertinoPageRoute(
