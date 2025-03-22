@@ -4,6 +4,7 @@ import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
+import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/models/tag_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
@@ -11,6 +12,7 @@ import 'package:app/feature/screens/detail/widget/list_chapter_widget.dart';
 import 'package:app/feature/screens/detail/widget/tag_widget.dart';
 import 'package:app/feature/screens/more/more_manga_page.dart';
 import 'package:app/feature/screens/reading/read_chapter_page.dart';
+import 'package:app/feature/utils/is_login.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:app/feature/utils/toast_app.dart';
 import 'package:flutter/material.dart';
@@ -39,14 +41,21 @@ class DetailMangaPage extends StatefulWidget {
 class _DetailMangaPageState extends State<DetailMangaPage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final cubit = DetailMangaCubit();
-        cubit.getDetailManga(widget.idManga, true).then((_) {
-          cubit.getAllChapter(widget.idManga);
-        });
-        return cubit;
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) {
+            final cubit = DetailMangaCubit();
+            cubit.getDetailManga(widget.idManga, true).then((_) {
+              cubit.getAllChapter(widget.idManga);
+            });
+            return cubit;
+          },
+        ),
+        BlocProvider(
+          create: (context) => UserCubit(),
+        ),
+      ],
       child: _BodyPage(
         idManga: widget.idManga,
         coverArt: widget.coverArt,
@@ -75,6 +84,23 @@ class _BodyPage extends StatefulWidget {
 class __BodyPageState extends State<_BodyPage> {
   final ValueNotifier<int> currentPage = ValueNotifier(1);
   final ValueNotifier<List<Chapter>> listAllChapters = ValueNotifier([]);
+  final IsLogin _isLogin = IsLogin.getInstance();
+  @override
+  void initState() {
+    super.initState();
+    context.read<UserCubit>().addToHistory(widget.idManga);
+  }
+
+  // Hàm xử lý các trạng thái UserState
+  void handleUserState(UserState state) {
+    if (state is UserError) {
+      showToast('Bạn cần đăng nhập để theo dõi truyện !!', isError: true);
+    } else if (state is AlreadyFollowedManga) {
+      showToast('Truyện đã được theo dõi !!', isError: true);
+    } else if (state is FollowMangaSuccess) {
+      showToast('Theo dõi thành công !!');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,17 +238,28 @@ class __BodyPageState extends State<_BodyPage> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10),
-                                      child: ButtonAppWidget(
-                                        text: 'Theo dõi truyện',
-                                        color: const Color(0xff2563eb),
-                                        textColor: Colors.white,
-                                        isBoxShadow: false,
-                                        onTap: () {
-                                          showToast(
-                                            'Chức năng đang phát triển >.< !!',
-                                            isError: true,
-                                          );
+                                      child: BlocListener<UserCubit, UserState>(
+                                        listener: (context, state) {
+                                          dlog("State mới: $state");
+                                          handleUserState(state);
                                         },
+                                        child: ButtonAppWidget(
+                                          text: 'Theo dõi truyện',
+                                          color: const Color(0xff2563eb),
+                                          textColor: Colors.white,
+                                          isBoxShadow: false,
+                                          onTap: () {
+                                            if (_isLogin.isLoggedIn) {
+                                              showToast(
+                                                  'Bạn cần đăng nhập để theo dõi truyện !!',
+                                                  isError: true);
+                                              return;
+                                            }
+                                            context
+                                                .read<UserCubit>()
+                                                .followManga(widget.idManga);
+                                          },
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(height: 10),

@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-
 import 'tag_model.dart';
 
 class Attributes {

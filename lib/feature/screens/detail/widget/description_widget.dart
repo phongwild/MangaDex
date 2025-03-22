@@ -1,6 +1,5 @@
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/toast_app.dart';
-import 'package:app/feature/utils/web/web_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import '../../../../core_ui/app_theme.dart/app_text_style.dart';

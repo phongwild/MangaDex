@@ -49,7 +49,10 @@ class AppScaffold extends StatelessWidget {
                 child: Container(
                     padding: const EdgeInsets.all(8),
                     color: Colors.transparent,
-                    child: const Icon(Icons.arrow_back_ios))),
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.white,
+                    ))),
             const Expanded(child: SizedBox.shrink())
           ]),
         ));

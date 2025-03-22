@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "515834641326",
+    "firebase_url": "https://assignmentdanentang-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "assignmentdanentang",
+    "storage_bucket": "assignmentdanentang.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515834641326:android:02903795e00db93d25663f",
+        "android_client_info": {
+          "package_name": "com.phongzero.nettromdex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJcXUUTDyq9V3kdZuR0vE-NgYXKEfPtRk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
