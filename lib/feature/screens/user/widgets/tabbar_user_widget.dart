@@ -22,9 +22,9 @@ class Tabbar_user_widget extends StatelessWidget {
         borderSide: BorderSide(width: 4, color: Color(0xff1d64f1)),
         insets: EdgeInsets.symmetric(horizontal: 16),
       ),
-      tabs: [
-        const Tab(text: 'Truyện đã lưu'),
-        const Tab(text: 'Lịch sử đọc'),
+      tabs: const [
+        Tab(text: 'Truyện đã lưu'),
+        Tab(text: 'Lịch sử đọc'),
       ],
     );
   }

@@ -1,15 +1,18 @@
-import 'package:app/feature/screens/detail/widget/tag_widget.dart';
 import 'package:app/feature/widgets/button_app_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../core_ui/widget/loading/shimmer.dart';
+import '../cubit/tag_cubit.dart';
 import '../models/tag_model.dart';
+import '../screens/detail/widget/tag_widget.dart';
 
 class BottomSheetAppWidget extends StatefulWidget {
   const BottomSheetAppWidget({
     super.key,
-    required this.listTags,
     required this.onSelectTags,
   });
-  final List<Tag> listTags;
+
   final Function(Set<String>) onSelectTags;
 
   @override
@@ -31,6 +34,10 @@ class _BottomSheetAppWidgetState extends State<BottomSheetAppWidget> {
 
   @override
   Widget build(BuildContext context) {
+    return buildBottomSheet(context);
+  }
+
+  Widget buildBottomSheet(BuildContext context) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(12),
@@ -56,15 +63,22 @@ class _BottomSheetAppWidgetState extends State<BottomSheetAppWidget> {
             Expanded(
               child: Stack(
                 children: [
-                  Positioned.fill(
-                    child: SingleChildScrollView(
-                      child: TagWidget(
-                        listTag: widget.listTags,
-                        onTap: (tag) {
-                          toggleTagSelection(tag.id);
-                        },
-                      ),
-                    ),
+                  BlocBuilder<TagCubit, TagState>(
+                    builder: (context, state) {
+                      if (state is TagLoaded) {
+                        return Positioned.fill(
+                          child: SingleChildScrollView(
+                            child: TagWidget(
+                              listTag: state.tags,
+                              onTap: (tag) {
+                                toggleTagSelection(tag.id);
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                      return Center(child: LoadingShimmer().loadingCircle());
+                    },
                   ),
                   Positioned(
                     bottom: 10,
@@ -100,7 +114,7 @@ class _BottomSheetAppWidgetState extends State<BottomSheetAppWidget> {
             height: 45,
             width: MediaQuery.of(context).size.width * 0.4,
             child: ButtonAppWidget(
-              text: 'Cancel',
+              text: 'Huỷ',
               color: const Color(0xffffffff),
               isBoxShadow: true,
               onTap: () {
@@ -114,7 +128,7 @@ class _BottomSheetAppWidgetState extends State<BottomSheetAppWidget> {
             height: 45,
             width: MediaQuery.of(context).size.width * 0.4,
             child: ButtonAppWidget(
-              text: 'Save',
+              text: 'Chọn',
               color: const Color(0xff2563eb),
               isBoxShadow: true,
               onTap: () {

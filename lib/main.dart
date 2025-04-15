@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:app/common/utils/app_connection_utils.dart';
 import 'package:app/core/cache/shared_prefs.dart';
+import 'package:app/core_ui/app_theme.dart/app_theme.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:flutter/foundation.dart';
@@ -37,6 +38,7 @@ Future<void> main() async {
     await di.init(); // Chờ inject dependencies
     await Future.delayed(const Duration(seconds: 1));
     await ConnectionUtils().init();
+    AppTheme().changeTheme(TypeTheme.light);
     // await SharedPref.init();
     await IsLogin.getInstance().loadSession();
     disableErrorWidget();

@@ -19,6 +19,37 @@ final ConnectionUtils connectionUtils = ConnectionUtils();
 class UserCubit extends Cubit<UserState> with NetWorkMixin {
   UserCubit() : super(UserInitial());
 
+  Future<List<String>> checkListFollowManga(
+      {int limit = 500, int offset = 0}) async {
+    try {
+      final uid = await SharedPref.getString('uid');
+      final response = await callApiGet(
+        endPoint: '$baseUrl/follow/$uid',
+        json: {
+          'offset': offset,
+          'limit': limit,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final listIdManga =
+            (response.data['data'] as List).map((e) => e.toString()).toList();
+
+        emit(CheckFollowManga(listIdManga));
+        dlog('✅ Emit CheckFollowManga: $listIdManga');
+
+        return listIdManga;
+      } else {
+        dlog('❌ API error: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      dlog('💥 Exception: $e');
+      emit(UserError('Lỗi: $e'));
+      return [];
+    }
+  }
+
   Future<void> listFollowManga({int offset = 0, int limit = 10}) async {
     if (state is ListFollowMangaLoaded) return;
     try {
@@ -131,8 +162,13 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     try {
       emit(UserLoading());
       String uid = await SharedPref.getString('uid');
-      final historyResponse =
-          await callApiGet(endPoint: '$baseUrl/history/$uid');
+      final historyResponse = await callApiGet(
+        endPoint: '$baseUrl/history/$uid',
+        json: {
+          'offset': offset,
+          'limit': limit,
+        },
+      );
 
       if (historyResponse.statusCode == 200) {
         List<dynamic> rawData = historyResponse.data['data'];

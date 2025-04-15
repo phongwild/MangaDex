@@ -177,6 +177,8 @@ Future<void> _fetchChaptersBatch(List<dynamic> args) async {
   int limit = args[3];
 
   try {
+    dlog('Current language: ${translateLang.language}');
+
     final response = await DioClient.create().get(
       '$urlManga/$idManga/feed',
       queryParameters: {

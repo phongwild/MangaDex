@@ -72,7 +72,7 @@ class AppColors {
 
 Map<String, Map<String, Color>> _themeColor = {
   TypeTheme.light.name: mapColorLight,
-  TypeTheme.dark.name: mapColorDark
+  // TypeTheme.dark.name: mapColorDark
 };
 
 Color colorApp(String keyValue) {

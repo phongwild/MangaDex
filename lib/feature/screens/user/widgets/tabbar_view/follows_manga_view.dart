@@ -65,6 +65,5 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
               ),
             ],
           );
-    ;
   }
 }
