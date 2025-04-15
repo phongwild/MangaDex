@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/screens/reading/widget/chapter_control_bar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preload_page_view/preload_page_view.dart';
@@ -135,6 +137,7 @@ class __BodyPageState extends State<_BodyPage> {
                   if (state is ChapterStateLoaded) {
                     final chapterData = state.chapterData;
                     totalPages = chapterData.data.length;
+                    preloadImages(chapterData.data, chapterData);
                     return ValueListenableBuilder<bool>(
                       valueListenable: styleReading,
                       builder: (context, value, child) {
@@ -143,7 +146,9 @@ class __BodyPageState extends State<_BodyPage> {
                           return styleHorizontal(chapterData);
                         } else {
                           return vertical_widget(
-                              totalPages: totalPages, chapterData: chapterData);
+                            totalPages: totalPages,
+                            chapterData: chapterData,
+                          );
                         }
                       },
                     );
@@ -271,6 +276,13 @@ class __BodyPageState extends State<_BodyPage> {
     );
   }
 
+  void preloadImages(List<String> imageUrls, ChapterData chapterData) {
+    for (var url in imageUrls) {
+      final imageUrl = '${chapterData.baseUrl}/data/${chapterData.hash}/$url';
+      precacheImage(CachedNetworkImageProvider(imageUrl), context);
+    }
+  }
+
   Widget styleHorizontal(ChapterData chapterData) {
     final baseUrl = chapterData.baseUrl;
     final hash = chapterData.hash;
@@ -280,13 +292,17 @@ class __BodyPageState extends State<_BodyPage> {
           child: PreloadPageView.builder(
             controller: _pageController,
             itemCount: totalPages,
-            preloadPagesCount: 2,
+            preloadPagesCount: min(5, totalPages - 1),
             physics: const BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics(),
             ),
             onPageChanged: (index) {
-              currentPage.value = index;
-              _startHideTimer();
+              if (index + 1 < totalPages) {
+                // final image = NetworkImage(chapterData.data[index]);
+                // precacheImage(image, context);
+                currentPage.value = index;
+                _startHideTimer();
+              }
             },
             itemBuilder: (context, index) {
               final urlImage = '$baseUrl/data/$hash/${chapterData.data[index]}';

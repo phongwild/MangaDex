@@ -36,6 +36,14 @@ class ListFollowMangaLoaded extends UserState {
   List<Object> get props => [mangas];
 }
 
+class CheckFollowManga extends UserState {
+  final List<String> listId;
+  const CheckFollowManga(this.listId);
+
+  @override
+  List<Object> get props => [listId];
+}
+
 class ListHistoryMangaLoaded extends UserState {
   final List<Manga> mangas;
   const ListHistoryMangaLoaded(this.mangas);

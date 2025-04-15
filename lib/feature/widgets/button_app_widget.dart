@@ -12,7 +12,8 @@ class ButtonAppWidget extends StatefulWidget {
     required this.isBoxShadow,
     this.width = double.infinity,
     this.height = 45,
-    this.leadingIcon, // Thêm thuộc tính mới
+    this.leadingIcon,
+    this.isDisable = false,
   });
 
   final String text;
@@ -22,7 +23,8 @@ class ButtonAppWidget extends StatefulWidget {
   final VoidCallback onTap;
   final double? width;
   final double? height;
-  final Widget? leadingIcon; // Widget tùy chọn
+  final Widget? leadingIcon;
+  final bool isDisable;
 
   @override
   State<ButtonAppWidget> createState() => _ButtonAppWidgetState();
@@ -32,7 +34,7 @@ class _ButtonAppWidgetState extends State<ButtonAppWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: widget.isDisable ? null : widget.onTap,
       child: Container(
         width: widget.width,
         height: widget.height,

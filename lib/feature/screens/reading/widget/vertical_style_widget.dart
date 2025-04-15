@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:flutter/cupertino.dart';
 
 import '../../../models/chapter_data_model.dart';
@@ -20,6 +22,7 @@ class vertical_widget extends StatelessWidget {
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
       ),
+      cacheExtent: 2000,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
         final baseUrl = chapterData.baseUrl;

@@ -5,6 +5,7 @@ import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/cubit/tag_cubit.dart';
+import 'package:app/feature/screens/more/widget/filter_bottomsheet.dart';
 import 'package:app/feature/widgets/bottom_sheet_app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -212,29 +213,12 @@ class __BodyPageState extends State<_BodyPage> {
       isScrollControlled: true,
       builder: (context) {
         return BlocProvider.value(
-          value: tagCubit,
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            maxChildSize: 0.9,
-            minChildSize: 0.2,
-            expand: true,
-            builder: (context, scrollController) {
-              return BlocBuilder<TagCubit, TagState>(
-                builder: (context, state) {
-                  if (state is TagLoaded && state.tags.isNotEmpty) {
-                    return BottomSheetAppWidget(
-                      listTags: state.tags,
-                      onSelectTags: (listTag) {
-                        filterManga(listTag.toList());
-                      },
-                    );
-                  }
-                  return Center(child: LoadingShimmer().loadingCircle());
-                },
-              );
-            },
-          ),
-        );
+            value: tagCubit,
+            child: FilterBottomSheet(
+              onSelected: (listtag) {
+                filterManga(listtag.toList());
+              },
+            ));
       },
     );
   }

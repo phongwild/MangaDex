@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class ColorDefine {
   ///Background
-  static const Color bgLight = Color(0xffffffff);
+  static const Color bgLight = Color(0xffd1d5db);
   static const Color bgDark = Color(0xff14141E);
-  static const Color bgPopupLight = Color(0xffffffff);
+  static const Color bgPopupLight = Color(0xffd1d5db);
   static const Color bgPopupDark = Color(0xff1C1C28);
 
   ///HightLight
@@ -84,15 +84,15 @@ class ColorDefine {
   static const Color purple16 = Color(0x29ff00ff);
   static const Color purpleChartLight = Color(0xFFDBB7FF);
 
-  static const Color blue = Color(0xff6BBAF9);
-  static const Color blueLight = Color(0xff6BBAF9);
-  static const Color blueDark = Color(0xff6BBAF9);
+  static const Color blue = Color(0xff2563eb);
+  static const Color blueLight = Color(0xff2563eb);
+  static const Color blueDark = Color(0xff2563eb);
   static const Color blue16 = Color(0x298bb8e8);
 
   static const Color black = Color(0xff0f0f0f);
   static const Color gray900 = Color(0xff212121);
-  static const Color gray700 = Color(0xff616161);
-  static const Color gray500 = Color(0xff9E9E9E);
+  static const Color gray700 = Color(0xff6b7280);
+  static const Color gray500 = Color(0xffedeef1);
   static const Color gray400 = Color(0xffC7C7CC);
   static const Color gray300 = Color(0xffE0E0E0);
   static const Color gray100 = Color(0xffEAEBEA);

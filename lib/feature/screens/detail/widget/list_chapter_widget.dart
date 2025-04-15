@@ -1,3 +1,4 @@
+import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
@@ -39,7 +40,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(10),
@@ -142,7 +143,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: AppColors.black.withOpacity(0.3),
                     blurRadius: 2,
                     spreadRadius: 1,
                     offset: const Offset(0, 1),
@@ -182,7 +183,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                       const SizedBox(height: 5),
                       Text(timeAgo(list[index].updatedAt.toString()),
                           style: AppsTextStyle.text12Weight400
-                              .copyWith(color: const Color(0xff6b7280))),
+                              .copyWith(color: AppColors.gray700)),
                     ],
                   ),
                 )

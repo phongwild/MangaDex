@@ -1,3 +1,4 @@
+import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/models/tag_model.dart';
 import 'package:flutter/material.dart';
@@ -38,11 +39,11 @@ class TagWidget extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xff2563eb) : Colors.white,
+                  color: isSelected ? AppColors.blue : AppColors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: AppColors.black.withOpacity(0.1),
                       blurRadius: 4,
                       offset: const Offset(2, 2),
                     ),
@@ -51,7 +52,7 @@ class TagWidget extends StatelessWidget {
                 child: Text(
                   tag.attributes.name,
                   style: AppsTextStyle.text13Weight500.copyWith(
-                    color: isSelected ? Colors.white : Colors.black,
+                    color: isSelected ? AppColors.white : AppColors.black,
                   ),
                 ),
               ),
