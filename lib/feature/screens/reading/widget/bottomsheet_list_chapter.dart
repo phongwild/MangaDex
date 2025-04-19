@@ -57,7 +57,7 @@ class BottomsheetListChapter extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        chapter.attributes.translatedLanguage ?? 'N/a',
+                        chapter.attributes.translatedLanguage,
                         style: AppsTextStyle.text14Weight400.copyWith(
                           color: isSelected
                               ? const Color(0xff1d64f1)

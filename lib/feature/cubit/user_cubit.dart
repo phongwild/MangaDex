@@ -51,7 +51,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
   }
 
   Future<void> listFollowManga({int offset = 0, int limit = 10}) async {
-    if (state is ListFollowMangaLoaded) return;
+    // if (state is ListFollowMangaLoaded) return;
     try {
       emit(UserLoading());
 
@@ -66,17 +66,20 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
 
       if (response.statusCode == 200) {
         final List<dynamic> listIdManga = response.data['data'];
+        final total = response.data['total'];
+        final currentPage = response.data['currentPage'];
+        final totalPages = response.data['totalPages'];
 
         if (listIdManga.isEmpty) {
-          emit(const ListFollowMangaLoaded([]));
+          emit(const ListFollowMangaLoaded([], 0, 0, 0));
           return;
         }
 
         // 🔥 Chạy xử lý trên Isolate
         List<Manga> listManga =
-            await compute(fetchMangaList, listIdManga.reversed.toList());
+            await compute(fetchMangaList, listIdManga.toList());
 
-        emit(ListFollowMangaLoaded(listManga));
+        emit(ListFollowMangaLoaded(listManga, total, totalPages, currentPage));
       } else {
         emit(const UserError('Lỗi khi lấy danh sách manga'));
       }
@@ -158,7 +161,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
   }
 
   Future<void> listHistory({int offset = 0, int limit = 10}) async {
-    if (state is ListHistoryMangaLoaded) return;
+    // if (state is ListHistoryMangaLoaded) return;
     try {
       emit(UserLoading());
       String uid = await SharedPref.getString('uid');
@@ -176,16 +179,21 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
             rawData.map((e) => e['mangaId'].toString()).toList();
 
         if (listIdManga.isEmpty) {
-          emit(const ListHistoryMangaLoaded([]));
+          emit(const ListHistoryMangaLoaded([], 0, 0, 0));
           return;
         }
 
         // 🔥 Chạy xử lý trên Isolate
         List<Manga> listManga =
-            await compute(fetchMangaList, listIdManga.reversed.toList());
+            await compute(fetchMangaList, listIdManga.toList());
 
         // Emit state sau khi fetch thành công
-        emit(ListHistoryMangaLoaded(listManga));
+        emit(ListHistoryMangaLoaded(
+          listManga,
+          historyResponse.data['total'],
+          historyResponse.data['totalPages'],
+          historyResponse.data['currentPage'],
+        ));
       } else {
         emit(UserError('Lỗi API: ${historyResponse.statusCode}'));
       }

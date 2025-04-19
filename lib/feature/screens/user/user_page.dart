@@ -1,3 +1,4 @@
+import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/user/widgets/build_user_info_widget.dart';
@@ -8,17 +9,17 @@ import 'widgets/tabbar_user_widget.dart';
 import 'widgets/tabbar_view_widget.dart';
 
 class UserPage extends StatelessWidget {
-  const UserPage({super.key});
-
+  const UserPage({super.key, required this.isNavVisible});
+  final ValueNotifier<bool> isNavVisible;
   @override
   Widget build(BuildContext context) {
-    return const _BodyPage();
+    return _BodyPage(isNavVisible);
   }
 }
 
 class _BodyPage extends StatefulWidget {
-  const _BodyPage();
-
+  const _BodyPage(this.isNavVisible);
+  final ValueNotifier<bool> isNavVisible;
   @override
   State<_BodyPage> createState() => __BodyPageState();
 }
@@ -34,6 +35,9 @@ class __BodyPageState extends State<_BodyPage>
       vsync: this,
       animationDuration: const Duration(milliseconds: 500),
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // widget.isNavVisible.value = false;
+    });
   }
 
   @override
@@ -60,7 +64,7 @@ class __BodyPageState extends State<_BodyPage>
             onTap: () {
               Navigator.pushNamed(context, NettromdexRouter.setting);
             },
-            child: const Icon(IconlyLight.moreSquare),
+            child: const Icon(IconlyLight.setting),
           ),
           const SizedBox(width: 10),
         ],
@@ -69,13 +73,47 @@ class __BodyPageState extends State<_BodyPage>
         child: Container(
           margin: const EdgeInsets.only(top: 0),
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+          child: Stack(
             children: [
-              const UserInfoWidget(),
-              Tabbar_user_widget(tabController: _tabController),
-              const SizedBox(height: 10),
-              TabbarView_widget(tabController: _tabController)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const UserInfoWidget(),
+                  Tabbar_user_widget(tabController: _tabController),
+                  const SizedBox(height: 10),
+                  TabbarView_widget(tabController: _tabController),
+                ],
+              ),
+              Positioned(
+                bottom: 100,
+                right: 50,
+                left: 50,
+                child: ValueListenableBuilder(
+                  valueListenable: widget.isNavVisible,
+                  builder: (context, value, child) {
+                    return GestureDetector(
+                      onTap: () => widget.isNavVisible.value = false,
+                      child: Visibility(
+                        visible: widget.isNavVisible.value,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            'Nhấn để tạm ẩn thanh điều hướng.\nKéo sang phải để hiện lại!!',
+                            textAlign: TextAlign.center,
+                            style: AppsTextStyle.text14Weight400.copyWith(
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
             ],
           ),
         ),
