@@ -1,5 +1,4 @@
 import 'package:app/core/app_log.dart';
-import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/screens/search/widgets/item_manga_widget.dart';

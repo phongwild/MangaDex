@@ -30,10 +30,18 @@ class AlreadyRemovedManga extends UserState {}
 
 class ListFollowMangaLoaded extends UserState {
   final List<Manga> mangas;
-  const ListFollowMangaLoaded(this.mangas);
+  final int total;
+  final int totalPages;
+  final int currentPage;
+  const ListFollowMangaLoaded(
+    this.mangas,
+    this.total,
+    this.totalPages,
+    this.currentPage,
+  );
 
   @override
-  List<Object> get props => [mangas];
+  List<Object> get props => [mangas, total, totalPages, currentPage];
 }
 
 class CheckFollowManga extends UserState {
@@ -46,8 +54,16 @@ class CheckFollowManga extends UserState {
 
 class ListHistoryMangaLoaded extends UserState {
   final List<Manga> mangas;
-  const ListHistoryMangaLoaded(this.mangas);
+  final int total;
+  final int totalPages;
+  final int currentPage;
+  const ListHistoryMangaLoaded(
+    this.mangas,
+    this.total,
+    this.totalPages,
+    this.currentPage,
+  );
 
   @override
-  List<Object> get props => [mangas];
+  List<Object> get props => [mangas, total, totalPages, currentPage];
 }

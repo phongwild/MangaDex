@@ -70,73 +70,70 @@ class _BottomCtrlReadChapterWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 0,
-      child: Container(
-        height: 45,
-        width: MediaQuery.of(context).size.width,
-        color: const Color(0xffd1d5db),
-        padding: const EdgeInsets.only(left: 10, right: 10, top: 3),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                isFirstChapter() ? null : nextChapter(true);
-              },
-              child: buildButton(IconlyLight.arrowLeft2, isFirstChapter()),
-            ),
-            ValueListenableBuilder(
-              valueListenable: idCurrentChapter,
-              builder: (context, currentId, _) {
-                final chapter = widget.listChapters
-                    .firstWhere((element) => element.id == currentId)
-                    .attributes
-                    .chapter;
-                return GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(16)),
-                      ),
-                      builder: (_) => BottomsheetListChapter(
-                        chapters: widget.listChapters,
-                        currentChapterId: idCurrentChapter.value,
-                        onSelected: (id) {
-                          idCurrentChapter.value = id;
-                          widget.onChapterChange(id);
-                        },
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff9ca3af),
-                      borderRadius: BorderRadius.circular(10),
+    return Container(
+      height: 45,
+      width: MediaQuery.of(context).size.width,
+      color: const Color(0xffd1d5db),
+      padding: const EdgeInsets.only(left: 10, right: 10, top: 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              isFirstChapter() ? null : nextChapter(true);
+            },
+            child: buildButton(IconlyLight.arrowLeft2, isFirstChapter()),
+          ),
+          ValueListenableBuilder(
+            valueListenable: idCurrentChapter,
+            builder: (context, currentId, _) {
+              final chapter = widget.listChapters
+                  .firstWhere((element) => element.id == currentId)
+                  .attributes
+                  .chapter;
+              return GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(16)),
                     ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Chap $chapter',
-                      style: AppsTextStyle.text14Weight500
-                          .copyWith(color: Colors.black),
+                    builder: (_) => BottomsheetListChapter(
+                      chapters: widget.listChapters,
+                      currentChapterId: idCurrentChapter.value,
+                      onSelected: (id) {
+                        idCurrentChapter.value = id;
+                        widget.onChapterChange(id);
+                      },
                     ),
+                  );
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xff9ca3af),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                );
-              },
-            ),
-            GestureDetector(
-              onTap: () {
-                isLastChapter() ? null : nextChapter(false);
-              },
-              child: buildButton(IconlyLight.arrowRight2, isLastChapter()),
-            )
-          ],
-        ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Chap $chapter',
+                    style: AppsTextStyle.text14Weight500
+                        .copyWith(color: Colors.black),
+                  ),
+                ),
+              );
+            },
+          ),
+          GestureDetector(
+            onTap: () {
+              isLastChapter() ? null : nextChapter(false);
+            },
+            child: buildButton(IconlyLight.arrowRight2, isLastChapter()),
+          )
+        ],
       ),
     );
   }

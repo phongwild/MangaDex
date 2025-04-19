@@ -1,17 +1,16 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/screens/reading/widget/chapter_control_bar.dart';
+import 'package:app/feature/screens/reading/widget/horizontal_style_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preload_page_view/preload_page_view.dart';
-
-import 'widget/page_chapter_widget.dart';
+import 'widget/style_reading_widget.dart';
 import 'widget/vertical_style_widget.dart';
 
 class ReadChapterPage extends StatefulWidget {
@@ -127,7 +126,9 @@ class __BodyPageState extends State<_BodyPage> {
                     return Center(
                       child: Text(
                         state.message,
-                        style: const TextStyle(color: Colors.white),
+                        style: AppsTextStyle.text14Weight500.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
                     );
                   }
@@ -143,7 +144,13 @@ class __BodyPageState extends State<_BodyPage> {
                       builder: (context, value, child) {
                         // Kiểm tra xem kiểu đọc có phải là ngang hay dọc
                         if (styleReading.value == false) {
-                          return styleHorizontal(chapterData);
+                          return HorizontalStyleWidget(
+                            chapterData: chapterData,
+                            pageController: _pageController,
+                            currentPage: currentPage,
+                            totalPages: totalPages,
+                            showControls: _showControls,
+                          );
                         } else {
                           return vertical_widget(
                             totalPages: totalPages,
@@ -166,108 +173,70 @@ class __BodyPageState extends State<_BodyPage> {
               ValueListenableBuilder<bool>(
                 valueListenable: _showControls,
                 builder: (context, showControls, child) {
-                  return Visibility(
-                    visible: showControls,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back_ios_rounded,
-                              color: Colors.white,
-                            ),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: styleReading,
-                          builder: (context, value, child) {
-                            return Positioned(
-                              top: 15,
-                              left: 100,
-                              right: 100,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  height: 40,
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            styleReading.value =
-                                                !styleReading.value;
-                                          },
-                                          child: Container(
-                                            color: styleReading.value
-                                                ? const Color(0xff2563eb)
-                                                : const Color(0xff18212f),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              'Classic UI',
-                                              style: AppsTextStyle
-                                                  .text14Weight600
-                                                  .copyWith(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            styleReading.value =
-                                                !styleReading.value;
-                                          },
-                                          child: Container(
-                                            color: styleReading.value
-                                                ? const Color(0xff18212f)
-                                                : const Color(0xff2563eb),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              'Zen UI',
-                                              style: AppsTextStyle
-                                                  .text14Weight600
-                                                  .copyWith(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                  return AnimatedSlide(
+                    offset: showControls
+                        ? Offset.zero
+                        : const Offset(0, -0.2), // Trượt lên khi ẩn
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: AnimatedOpacity(
+                      opacity: showControls ? 1.0 : 0.0, // Mờ dần khi ẩn
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 10,
+                            left: 10,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back_ios_rounded,
+                                color: Colors.white,
                               ),
-                            );
-                          },
-                        ),
-                        BottomCtrlReadChapterWidget(
-                          currentChapter: idCurrentChapter.value,
-                          listChapters: widget.listChapters,
-                          chapter: widget.chapter ?? '',
-                          onChapterChange: (newId) {
-                            updateChapter(newId);
-                          },
-                          onLoadMore: () {
-                            context.read<DetailMangaCubit>().getDetailManga(
-                                  widget.idManga,
-                                  true,
-                                  offset: 1,
-                                );
-                          },
-                        ),
-                      ],
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: styleReading,
+                            builder: (context, value, child) {
+                              return StyleReading(styleReading: styleReading);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _showControls,
+                  builder: (context, value, child) {
+                    return AnimatedSlide(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      offset: _showControls.value
+                          ? Offset.zero
+                          : const Offset(0, 1),
+                      child: BottomCtrlReadChapterWidget(
+                        currentChapter: idCurrentChapter.value,
+                        listChapters: widget.listChapters,
+                        chapter: widget.chapter ?? '',
+                        onChapterChange: (newId) {
+                          updateChapter(newId);
+                        },
+                        onLoadMore: () {
+                          context.read<DetailMangaCubit>().getDetailManga(
+                                widget.idManga,
+                                true,
+                                offset: 1,
+                              );
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -281,45 +250,5 @@ class __BodyPageState extends State<_BodyPage> {
       final imageUrl = '${chapterData.baseUrl}/data/${chapterData.hash}/$url';
       precacheImage(CachedNetworkImageProvider(imageUrl), context);
     }
-  }
-
-  Widget styleHorizontal(ChapterData chapterData) {
-    final baseUrl = chapterData.baseUrl;
-    final hash = chapterData.hash;
-    return Column(
-      children: [
-        Expanded(
-          child: PreloadPageView.builder(
-            controller: _pageController,
-            itemCount: totalPages,
-            preloadPagesCount: min(5, totalPages - 1),
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            onPageChanged: (index) {
-              if (index + 1 < totalPages) {
-                // final image = NetworkImage(chapterData.data[index]);
-                // precacheImage(image, context);
-                currentPage.value = index;
-                _startHideTimer();
-              }
-            },
-            itemBuilder: (context, index) {
-              final urlImage = '$baseUrl/data/$hash/${chapterData.data[index]}';
-              return PageChapterWidget(urlImage: urlImage);
-            },
-          ),
-        ),
-        ValueListenableBuilder<int>(
-          valueListenable: currentPage,
-          builder: (context, page, _) => LinearProgressIndicator(
-            value: (page + 1) / totalPages,
-            backgroundColor: Colors.grey[800],
-            color: Colors.blueAccent,
-            minHeight: 5,
-          ),
-        ),
-      ],
-    );
   }
 }

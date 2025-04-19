@@ -16,12 +16,19 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   final PageController _pageController = PageController();
+  final ValueNotifier<bool> _isNavVisible = ValueNotifier<bool>(true);
   DateTime? lastBackPressTime; // Lưu thời điểm nhấn back gần nhất
-  final List<Widget> _screens = [
-    const HomePage(),
-    const SearchPage(),
-    const UserPage(),
-  ];
+  late List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const HomePage(),
+      const SearchPage(),
+      UserPage(isNavVisible: _isNavVisible),
+    ];
+  }
 
   void _onItemTapped(int index) {
     _selectedIndex.value = index; // Cập nhật giá trị của ValueNotifier
@@ -47,13 +54,47 @@ class _BottomNavState extends State<BottomNav> {
         backgroundColor: Colors.white,
         body: Stack(
           children: [
-            PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: _screens,
+            ValueListenableBuilder(
+              valueListenable: _selectedIndex,
+              builder: (context, i, _) {
+                return PageView(
+                  controller: _pageController,
+                  physics: (i == 0 || i == 1)
+                      ? const NeverScrollableScrollPhysics()
+                      : const ClampingScrollPhysics(),
+                  onPageChanged: (index) {
+                    _selectedIndex.value = index;
+                    if (index == 0 || index == 1) {
+                      _isNavVisible.value = true;
+                    }
+                    if (index == 2) {
+                      // _isNavVisible.value = false;
+                    }
+                  },
+                  children: _screens,
+                );
+              },
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
+            _bottomNav()
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _bottomNav() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: ValueListenableBuilder<bool>(
+        valueListenable: _isNavVisible,
+        builder: (context, isVisible, _) {
+          return AnimatedSlide(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            offset: isVisible ? Offset.zero : const Offset(0, 1),
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              opacity: isVisible ? 1.0 : 0.0,
               child: ValueListenableBuilder<int>(
                 valueListenable: _selectedIndex,
                 builder: (context, index, child) {
@@ -84,8 +125,8 @@ class _BottomNavState extends State<BottomNav> {
                 },
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

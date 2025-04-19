@@ -2,11 +2,9 @@
 import 'dart:math';
 
 import 'package:app/core/app_log.dart';
-import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/cubit/tag_cubit.dart';
 import 'package:app/feature/screens/more/widget/filter_bottomsheet.dart';
-import 'package:app/feature/widgets/bottom_sheet_app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
