@@ -24,7 +24,7 @@ class ReadChapterPage extends StatefulWidget {
   });
   final String idChapter;
   final String idManga;
-  final List<Chapter> listChapters;
+  final List<ChapterWrapper> listChapters;
   final String? chapter;
 
   @override
@@ -55,7 +55,7 @@ class _BodyPage extends StatefulWidget {
   });
   final String idChapter;
   final String idManga;
-  final List<Chapter> listChapters;
+  final List<ChapterWrapper> listChapters;
   final String? chapter;
 
   @override

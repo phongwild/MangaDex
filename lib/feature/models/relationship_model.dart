@@ -1,66 +1,43 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'relationship_model.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class Relationship {
-  String? id;
-  String? type;
-  Attribute? attributes;
+  final String? id;
+  final String? type;
+  final Attribute? attributes;
 
   Relationship({this.id, this.type, this.attributes});
 
-  Relationship.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    type = json['type'];
-    attributes = json['attributes'] != null
-        ? Attribute.fromJson(json['attributes'])
-        : null;
-  }
+  factory Relationship.fromJson(Map<String, dynamic> json) =>
+      _$RelationshipFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
-    data['type'] = type;
-    if (attributes != null) {
-      data['attributes'] = attributes!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => _$RelationshipToJson(this);
 }
 
+@JsonSerializable()
 class Attribute {
-  String? description;
-  String? volume;
-  String? fileName;
-  String? locale;
-  String? createdAt;
-  String? updatedAt;
-  int? version;
+  final String? description;
+  final String? volume;
+  final String? fileName;
+  final String? locale;
+  final String? createdAt;
+  final String? updatedAt;
+  final int? version;
 
-  Attribute(
-      {this.description,
-      this.volume,
-      this.fileName,
-      this.locale,
-      this.createdAt,
-      this.updatedAt,
-      this.version});
+  Attribute({
+    this.description,
+    this.volume,
+    this.fileName,
+    this.locale,
+    this.createdAt,
+    this.updatedAt,
+    this.version,
+  });
 
-  Attribute.fromJson(Map<String, dynamic> json) {
-    description = json['description'];
-    volume = json['volume'];
-    fileName = json['fileName'];
-    locale = json['locale'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    version = json['version'];
-  }
+  factory Attribute.fromJson(Map<String, dynamic> json) =>
+      _$AttributeFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['description'] = description;
-    data['volume'] = volume;
-    data['fileName'] = fileName;
-    data['locale'] = locale;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    data['version'] = version;
-    return data;
-  }
+  Map<String, dynamic> toJson() => _$AttributeToJson(this);
 }

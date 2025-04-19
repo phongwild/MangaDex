@@ -167,9 +167,9 @@ class __BodyPageState extends State<_BodyPage> {
               }
               if (state is DetailMangaStateLoaded) {
                 final data = state.manga;
-                final List<Chapter> chapters = state.chapters;
+                final List<ChapterWrapper> chapters = state.chapters;
                 final List<Tag> tag = data.attributes.tags;
-                final description = data.attributes.description;
+                final description = data.attributes.getPreferredDescription();
                 final String firstChapter = state.firstChapter;
                 final int total = state.total;
                 return SingleChildScrollView(
@@ -208,11 +208,7 @@ class __BodyPageState extends State<_BodyPage> {
                                     ),
                                     const SizedBox(height: 10),
                                     Text(
-                                      (data.attributes.altTitles != null &&
-                                              data.attributes.altTitles
-                                                  .isNotEmpty)
-                                          ? data.attributes.altTitles[0]
-                                          : 'N/a',
+                                      data.attributes.getPreferredTitle(),
                                       style: AppsTextStyle.text14Weight400,
                                       textAlign: TextAlign.center,
                                     ),

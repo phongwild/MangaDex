@@ -27,7 +27,7 @@ class ItemMangaWidget extends StatelessWidget {
         );
         final coverArt = coverArtId.attributes?.fileName ?? '';
 
-        return InkWell(
+        return GestureDetector(
           onTap: () {
             Navigator.pushNamed(
               context,
@@ -39,9 +39,7 @@ class ItemMangaWidget extends StatelessWidget {
                 lastUpdate: manga.attributes.updatedAt != null
                     ? timeAgo(manga.attributes.updatedAt!)
                     : 'N/a',
-                title: manga.attributes.title.isNotEmpty
-                    ? manga.attributes.title
-                    : 'N/a',
+                title: manga.attributes.getPreferredTitle(),
               ),
             );
           },
@@ -78,9 +76,7 @@ class ItemMangaWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          manga.attributes.title.isNotEmpty
-                              ? manga.attributes.title
-                              : 'N/a',
+                          manga.attributes.getPreferredTitle(),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: AppsTextStyle.text16Weight600.copyWith(
@@ -89,9 +85,7 @@ class ItemMangaWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          manga.attributes.description.isNotEmpty
-                              ? manga.attributes.description
-                              : 'N/a',
+                          manga.attributes.getPreferredDescription(),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: AppsTextStyle.text14Weight400.copyWith(

@@ -1,8 +1,7 @@
-// ignore_for_file: camel_case_types
-
-import 'package:app/common/define/key_assets.dart';
 import 'package:app/core/app_log.dart';
-import 'package:app/core_ui/widget/loading/shimmer.dart';
+import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
+import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
+import 'package:app/core_ui/design_system/app_button.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/toast_app.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +36,7 @@ class _body extends StatefulWidget {
 class _bodyState extends State<_body> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -64,242 +64,136 @@ class _bodyState extends State<_body> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgMain,
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15, top: 15),
-              child: Image.asset(
-                KeyAssets.img1,
-                width: 413,
-                height: 417,
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text('Đăng nhập', style: AppsTextStyle.text24Weight700),
+              const SizedBox(height: 40),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                style: AppsTextStyle.text14Weight400,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: AppsTextStyle.text14Weight500
+                      .copyWith(color: AppColors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(width: 1, color: AppColors.gray700),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(width: 1, color: AppColors.gray900),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 18,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: Column(
-                textDirection: TextDirection.ltr,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Log In',
-                    style: TextStyle(
-                      color: Color(0xFF755DC1),
-                      fontSize: 27,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                    ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: passController,
+                obscureText: true,
+                keyboardType: TextInputType.visiblePassword,
+                textAlign: TextAlign.start,
+                style: AppsTextStyle.text14Weight400,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  labelStyle: AppsTextStyle.text14Weight500
+                      .copyWith(color: AppColors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(width: 1, color: AppColors.gray700),
                   ),
-                  const SizedBox(
-                    height: 50,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(width: 1, color: AppColors.gray900),
                   ),
-                  SizedBox(
-                    child: BlocConsumer<AuthCubit, AuthState>(
-                      listener: (context, state) async {
-                        if (state is AuthLoginSuccess) {
-                          //Lưu thông đăng nhập để tự động đăng nhập sau khi thoát app
-                          saveLoginInfo(
-                              emailController.text.trim(), passController.text);
-                          showToast('Đăng nhập thành công');
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            NettromdexRouter.bottomNav,
-                            (router) => false,
-                          );
-                        } else if (state is AuthError) {
-                          dlog('Error message: ${state.error}');
-                          showToast('Sai tài khoản hoặc mật khẩu',
-                              isError: true);
-                        }
-                      },
-                      builder: (context, state) {
-                        return Stack(
-                          children: [
-                            // Các trường nhập liệu và button
-                            Column(
-                              children: [
-                                TextField(
-                                  controller: emailController,
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.emailAddress,
-                                  style: const TextStyle(
-                                    color: Color(0xFF393939),
-                                    fontSize: 13,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  decoration: const InputDecoration(
-                                    labelText: 'Email',
-                                    labelStyle: TextStyle(
-                                      color: Color(0xFF755DC1),
-                                      fontSize: 15,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      borderSide: BorderSide(
-                                        width: 1,
-                                        color: Color(0xFF837E93),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      borderSide: BorderSide(
-                                        width: 1,
-                                        color: Color(0xFF9F7BFF),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 30,
-                                ),
-                                TextField(
-                                  controller: passController,
-                                  obscureText: true,
-                                  keyboardType: TextInputType.visiblePassword,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Color(0xFF393939),
-                                    fontSize: 13,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  decoration: const InputDecoration(
-                                    labelText: 'Password',
-                                    labelStyle: TextStyle(
-                                      color: Color(0xFF755DC1),
-                                      fontSize: 15,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      borderSide: BorderSide(
-                                        width: 1,
-                                        color: Color(0xFF837E93),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      borderSide: BorderSide(
-                                        width: 1,
-                                        color: Color(0xFF9F7BFF),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 25,
-                                ),
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10)),
-                                  child: SizedBox(
-                                    width: 329,
-                                    height: 56,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        final email = emailController.text
-                                            .trim()
-                                            .toLowerCase();
-                                        final pass = passController.text.trim();
-                                        if (email.isEmpty || pass.isEmpty) {
-                                          showToast('Hãy điền đầy đủ thông tin',
-                                              isError: true);
-                                          return;
-                                        }
-                                        context
-                                            .read<AuthCubit>()
-                                            .login(email, pass);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            const Color(0xFF9F7BFF),
-                                      ),
-                                      child: const Text(
-                                        'Sign In',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontFamily: 'Poppins',
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            // Hiển thị loading nếu AuthLoading
-                            if (state is AuthLoading)
-                              Center(child: LoadingShimmer().loadingCircle())
-                          ],
+                ),
+              ),
+              const SizedBox(height: 25),
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: BlocConsumer<AuthCubit, AuthState>(
+                    listener: (context, state) {
+                      if (state is AuthError) {
+                        showToast(
+                          'Sai tài khoản hoặc mật khẩu :((',
+                          isError: true,
                         );
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        'Don’t have an account?',
-                        style: TextStyle(
-                          color: Color(0xFF837E93),
-                          fontSize: 13,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 2.5,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          widget.controller.animateToPage(1,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.ease);
+                        return;
+                      }
+                      if (state is AuthLoginSuccess) {
+                        saveLoginInfo(
+                            emailController.text.trim(), passController.text);
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          NettromdexRouter.bottomNav,
+                          (router) => false,
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      return AppButton(
+                        onPressed: () {
+                          final email =
+                              emailController.text.trim().toLowerCase();
+                          final pass = passController.text.trim();
+                          if (email.isEmpty || pass.isEmpty) {
+                            showToast('Hãy điền đầy đủ thông tin',
+                                isError: true);
+                            return;
+                          }
+                          context.read<AuthCubit>().login(email, pass);
                         },
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: Color(0xFF755DC1),
-                            fontSize: 13,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+                        borderRadius: 15,
+                        action: 'Đăng nhập',
+                        colorDisable: AppColors.blue,
+                        colorEnable: AppColors.blue,
+                        overlayColor: false,
+                        loading: state is AuthLoading,
+                      );
+                    },
                   ),
-                  const SizedBox(
-                    height: 15,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Chưa có tài khoản?',
+                    style: AppsTextStyle.text14Weight500
+                        .copyWith(color: AppColors.gray700),
                   ),
-                  const Text(
-                    'Forget Password?',
-                    style: TextStyle(
-                      color: Color(0xFF755DC1),
-                      fontSize: 13,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      widget.controller.animateToPage(1,
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.ease);
+                    },
+                    child: Text(
+                      'Đăng kí',
+                      style: AppsTextStyle.text14Weight600,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 15),
+              Text(
+                'Quên mật khẩu?',
+                style: AppsTextStyle.text14Weight500,
+              ),
+            ],
+          ),
         ),
       ),
     );

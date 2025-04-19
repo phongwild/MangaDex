@@ -1,6 +1,10 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'attributes_model.dart';
 import 'relationship_model.dart';
 
+part 'manga_model.g.dart'; // Thêm dòng này để build phần toJson
+
+@JsonSerializable(explicitToJson: true)
 class Manga {
   final String id;
   final String type;
@@ -16,15 +20,7 @@ class Manga {
     this.chapterCount,
   });
 
-  factory Manga.fromJson(Map<String, dynamic> json) {
-    return Manga(
-      id: json['id'] as String,
-      type: json['type'] as String,
-      attributes: Attributes.fromJson(json['attributes']),
-      relationships: (json['relationships'] as List<dynamic>?)
-              ?.map((relJson) => Relationship.fromJson(relJson))
-              .toList() ??
-          [],
-    );
-  }
+  factory Manga.fromJson(Map<String, dynamic> json) => _$MangaFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MangaToJson(this);
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core_ui/app_theme.dart/app_color/app_colors.dart';
+import '../../../../core_ui/app_theme.dart/app_text_style.dart';
 import '../../../cubit/otp_cubit.dart';
 
 class OtpForm extends StatefulWidget {
@@ -41,7 +43,7 @@ class _OtpFormState extends State<OtpForm> {
         keyboardType: TextInputType.number,
         maxLength: 1,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 16), // Giữ font nhỏ gọn
+        style: AppsTextStyle.text13Weight500.copyWith(color: AppColors.gray700),
         decoration: const InputDecoration(
           counterText: "",
           contentPadding:

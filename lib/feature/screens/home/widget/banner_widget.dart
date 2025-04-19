@@ -97,10 +97,8 @@ class _BannersState extends State<Banners> {
             (coverArt ?? '').isNotEmpty
                 ? 'https://uploads.mangadex.org/covers/${manga.id}/$coverArt'
                 : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
-            manga.attributes.title.isNotEmpty ? manga.attributes.title : 'N/a',
-            manga.attributes.description.isNotEmpty
-                ? manga.attributes.description
-                : 'N/a',
+            manga.attributes.getPreferredTitle(),
+            manga.attributes.getPreferredDescription(),
             manga.id,
           ),
         );

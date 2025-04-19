@@ -90,9 +90,7 @@ class ListMangaByGenreWidget extends StatelessWidget {
                 timeUpdate: (manga.attributes.updatedAt ?? '').isNotEmpty
                     ? timeAgo(manga.attributes.updatedAt!)
                     : 'N/a',
-                title: manga.attributes.title.isNotEmpty
-                    ? manga.attributes.title
-                    : 'N/a',
+                title: manga.attributes.getPreferredTitle(),
                 onTap: () {
                   Navigator.pushNamed(
                     context,
@@ -104,9 +102,7 @@ class ListMangaByGenreWidget extends StatelessWidget {
                       lastUpdate: (manga.attributes.updatedAt ?? '').isNotEmpty
                           ? timeAgo(manga.attributes.updatedAt!)
                           : 'N/a',
-                      title: manga.attributes.title.isNotEmpty
-                          ? manga.attributes.title
-                          : 'N/a',
+                      title: manga.attributes.getPreferredTitle(),
                     ),
                   );
                 },

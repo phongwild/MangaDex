@@ -68,7 +68,8 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       }
 
       // Chuyển đổi dữ liệu
-      final chapters = chaptersData.map((e) => Chapter.fromJson(e)).toList();
+      final chapters =
+          chaptersData.map((e) => ChapterWrapper.fromJson(e)).toList();
       final String firstChapter =
           firstChapterData.isNotEmpty ? firstChapterData.first['id'] : '';
 
@@ -94,7 +95,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       final int batchCount = (totalChapter / batchSize).ceil();
 
       // Tạo danh sách các Isolate chạy song song
-      List<Future<List<Chapter>>> futures = [];
+      List<Future<List<ChapterWrapper>>> futures = [];
       for (int i = 0; i < batchCount; i++) {
         int offset = i * batchSize;
         futures.add(_fetchChaptersInIsolate(idManga, offset, batchSize));
@@ -104,7 +105,8 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       final results = await Future.wait(futures);
 
       // Gộp tất cả chương lại
-      final List<Chapter> allChapters = results.expand((e) => e).toList();
+      final List<ChapterWrapper> allChapters =
+          results.expand((e) => e).toList();
 
       // Emit state với danh sách chương
       final currentState = state;
@@ -150,13 +152,14 @@ Future<int> _getTotalChapters(String idManga) async {
   return 0;
 }
 
-Future<List<Chapter>> _fetchChaptersInIsolate(
+Future<List<ChapterWrapper>> _fetchChaptersInIsolate(
     String idManga, int offset, int limit) async {
   final ReceivePort receivePort = ReceivePort();
-  final Completer<List<Chapter>> completer = Completer<List<Chapter>>();
+  final Completer<List<ChapterWrapper>> completer =
+      Completer<List<ChapterWrapper>>();
 
   receivePort.listen((message) {
-    if (message is List<Chapter>) {
+    if (message is List<ChapterWrapper>) {
       completer.complete(message);
     } else {
       dlog('Lỗi khi nhận dữ liệu từ Isolate');
@@ -192,7 +195,8 @@ Future<void> _fetchChaptersBatch(List<dynamic> args) async {
     if (response.statusCode == 200) {
       final List<dynamic>? chaptersData = response.data['data'];
       if (chaptersData != null) {
-        final chapters = chaptersData.map((e) => Chapter.fromJson(e)).toList();
+        final chapters =
+            chaptersData.map((e) => ChapterWrapper.fromJson(e)).toList();
         sendPort.send(chapters);
         return;
       }

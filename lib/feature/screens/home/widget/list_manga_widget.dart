@@ -58,9 +58,7 @@ class MangaList extends StatelessWidget with NetWorkMixin {
                 timeUpdate: (manga.attributes.updatedAt ?? '').isNotEmpty
                     ? timeAgo(manga.attributes.updatedAt!)
                     : 'N/a',
-                title: manga.attributes.title.isNotEmpty
-                    ? manga.attributes.title
-                    : 'N/a',
+                title: manga.attributes.getPreferredTitle(),
                 onTap: () {
                   Navigator.pushNamed(
                     context,
@@ -72,9 +70,7 @@ class MangaList extends StatelessWidget with NetWorkMixin {
                       lastUpdate: (manga.attributes.updatedAt ?? '').isNotEmpty
                           ? timeAgo(manga.attributes.updatedAt!)
                           : 'N/a',
-                      title: manga.attributes.title.isNotEmpty
-                          ? manga.attributes.title
-                          : 'N/a',
+                      title: manga.attributes.getPreferredTitle(),
                     ),
                   );
                 },

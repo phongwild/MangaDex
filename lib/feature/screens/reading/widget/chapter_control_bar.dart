@@ -14,7 +14,7 @@ class BottomCtrlReadChapterWidget extends StatefulWidget {
     required this.onLoadMore,
   });
   final String currentChapter;
-  final List<Chapter> listChapters;
+  final List<ChapterWrapper> listChapters;
   final Function(String) onChapterChange;
   final Function() onLoadMore;
   final String chapter;
@@ -92,6 +92,7 @@ class _BottomCtrlReadChapterWidgetState
               builder: (context, currentId, _) {
                 final chapter = widget.listChapters
                     .firstWhere((element) => element.id == currentId)
+                    .attributes
                     .chapter;
                 return GestureDetector(
                   onTap: () {
