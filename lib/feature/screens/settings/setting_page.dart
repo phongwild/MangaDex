@@ -61,7 +61,12 @@ class __BodyPageState extends State<_BodyPage> {
                 text: _isLogin.isLoggedIn ? 'Đăng xuất' : 'Đăng nhập',
                 color: const Color(0xff2563eb),
                 textColor: Colors.white,
-                onTap: () {},
+                onTap: () {
+                  _isLogin.isLoggedIn
+                      ? context.read<AuthCubit>().logout()
+                      : Navigator.pushNamed(
+                          context, NettromdexRouter.mainLogin);
+                },
                 isBoxShadow: false,
                 leadingIcon: BlocListener<AuthCubit, AuthState>(
                   listener: (context, state) {
@@ -70,12 +75,7 @@ class __BodyPageState extends State<_BodyPage> {
                     }
                   },
                   child: IconButton(
-                    onPressed: () {
-                      _isLogin.isLoggedIn
-                          ? context.read<AuthCubit>().logout()
-                          : Navigator.pushNamed(
-                              context, NettromdexRouter.mainLogin);
-                    },
+                    onPressed: () {},
                     icon: _isLogin.isLoggedIn
                         ? const Icon(
                             IconlyLight.logout,

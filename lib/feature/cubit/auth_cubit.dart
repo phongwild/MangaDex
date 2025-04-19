@@ -1,7 +1,6 @@
 import 'package:app/core/app_log.dart';
 import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/feature/utils/is_login.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

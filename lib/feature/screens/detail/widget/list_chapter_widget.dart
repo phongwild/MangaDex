@@ -16,7 +16,7 @@ class ListChapterWidget extends StatefulWidget {
     required this.total,
     required this.currentPage,
   });
-  final List<Chapter> listChapters;
+  final List<ChapterWrapper> listChapters;
   final String idManga;
   final int total;
   final ValueNotifier<int> currentPage;
@@ -26,8 +26,8 @@ class ListChapterWidget extends StatefulWidget {
 
 class _ListChapterWidgetState extends State<ListChapterWidget> {
   final int chaptersPerPage = 15; // Số chap mỗi trang
-  final ValueNotifier<List<Chapter>> chaptersNotifier =
-      ValueNotifier<List<Chapter>>([]);
+  final ValueNotifier<List<ChapterWrapper>> chaptersNotifier =
+      ValueNotifier<List<ChapterWrapper>>([]);
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
             style: AppsTextStyle.text14Weight600,
           ),
           const SizedBox(height: 10),
-          ValueListenableBuilder<List<Chapter>>(
+          ValueListenableBuilder<List<ChapterWrapper>>(
             valueListenable: chaptersNotifier,
             builder: (context, list, child) {
               return listChap(list);
@@ -113,13 +113,14 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
   }
 
   // Danh sách chương
-  Widget listChap(List<Chapter> list) {
+  Widget listChap(List<ChapterWrapper> list) {
     return ListView.builder(
       itemCount: list.length,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
-        String countryCode = list[index].translatedLanguage.toUpperCase();
+        String countryCode =
+            list[index].attributes.translatedLanguage.toUpperCase();
         if (countryCode == 'VI') {
           countryCode = 'VN';
         } else if (countryCode == 'EN') {
@@ -132,7 +133,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                   idChapter: list[index].id,
                   idManga: widget.idManga,
                   listChapters: widget.listChapters,
-                  chapter: list[index].chapter,
+                  chapter: list[index].attributes.chapter,
                 ));
           },
           child: Container(
@@ -165,7 +166,7 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'C. ${list[index].chapter}',
+                  'C. ${list[index].attributes.chapter}',
                   style: AppsTextStyle.text14Weight600,
                 ),
                 const SizedBox(width: 20),
@@ -175,13 +176,13 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        list[index].title ?? 'N/a',
+                        list[index].attributes.title ?? 'N/a',
                         style: AppsTextStyle.text14Weight400,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 5),
-                      Text(timeAgo(list[index].updatedAt.toString()),
+                      Text(timeAgo(list[index].attributes.updatedAt.toString()),
                           style: AppsTextStyle.text12Weight400
                               .copyWith(color: AppColors.gray700)),
                     ],

@@ -1,5 +1,26 @@
-class Chapter {
+import 'package:json_annotation/json_annotation.dart';
+part 'chapter_model.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class ChapterWrapper {
   final String id;
+  final String type;
+  final Chapter attributes;
+
+  ChapterWrapper({
+    required this.id,
+    required this.type,
+    required this.attributes,
+  });
+
+  factory ChapterWrapper.fromJson(Map<String, dynamic> json) =>
+      _$ChapterWrapperFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ChapterWrapperToJson(this);
+}
+
+@JsonSerializable()
+class Chapter {
   final String? volume;
   final String? chapter;
   final String? title;
@@ -13,7 +34,6 @@ class Chapter {
   final int version;
 
   Chapter({
-    required this.id,
     this.volume,
     this.chapter,
     this.title,
@@ -27,24 +47,8 @@ class Chapter {
     required this.version,
   });
 
-  factory Chapter.fromJson(Map<String, dynamic> json) {
-    return Chapter(
-      id: json['id'],
-      volume: json['attributes']['volume'],
-      chapter: json['attributes']['chapter'] ?? 'N/A',
-      title: json['attributes']['title'],
-      translatedLanguage: json['attributes']['translatedLanguage'],
-      externalUrl: json['attributes']['externalUrl'],
-      publishAt: DateTime.parse(json['attributes']['publishAt']),
-      readableAt: DateTime.parse(json['attributes']['readableAt']),
-      createdAt: DateTime.parse(json['attributes']['createdAt']),
-      updatedAt: DateTime.parse(json['attributes']['updatedAt']),
-      pages: json['attributes']['pages'],
-      version: json['attributes']['version'],
-    );
-  }
+  factory Chapter.fromJson(Map<String, dynamic> json) =>
+      _$ChapterFromJson(json);
 
-  static List<Chapter> fromJsonList(List<dynamic> jsonList) {
-    return jsonList.map((json) => Chapter.fromJson(json)).toList();
-  }
+  Map<String, dynamic> toJson() => _$ChapterToJson(this);
 }

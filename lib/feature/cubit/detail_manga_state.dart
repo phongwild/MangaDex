@@ -22,7 +22,7 @@ class DetailMangaStateError extends DetailMangaState {
 
 class DetailMangaStateLoaded extends DetailMangaState {
   final Manga manga;
-  final List<Chapter> chapters; // Danh sách chương
+  final List<ChapterWrapper> chapters; // Danh sách chương
   final int total;
   final String firstChapter;
 
@@ -32,7 +32,7 @@ class DetailMangaStateLoaded extends DetailMangaState {
     this.total,
     this.firstChapter,
   );
-  DetailMangaStateLoaded copyWith({List<Chapter>? chapters}) {
+  DetailMangaStateLoaded copyWith({List<ChapterWrapper>? chapters}) {
     return DetailMangaStateLoaded(
       manga,
       chapters ?? this.chapters,

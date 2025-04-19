@@ -11,7 +11,7 @@ class BottomsheetListChapter extends StatelessWidget {
     required this.onSelected,
   });
 
-  final List<Chapter> chapters;
+  final List<ChapterWrapper> chapters;
   final String currentChapterId;
   final Function(String) onSelected;
 
@@ -49,7 +49,7 @@ class BottomsheetListChapter extends StatelessWidget {
                     final isSelected = chapter.id == currentChapterId;
                     return ListTile(
                       title: Text(
-                        'Chap ${chapter.chapter}',
+                        'Chap ${chapter.attributes.chapter}',
                         style: AppsTextStyle.text14Weight400.copyWith(
                           color: isSelected
                               ? const Color(0xff1d64f1)
@@ -57,7 +57,7 @@ class BottomsheetListChapter extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        chapter.title ?? 'N/a',
+                        chapter.attributes.translatedLanguage ?? 'N/a',
                         style: AppsTextStyle.text14Weight400.copyWith(
                           color: isSelected
                               ? const Color(0xff1d64f1)
