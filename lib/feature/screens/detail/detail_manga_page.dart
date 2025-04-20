@@ -3,6 +3,7 @@
 import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
+import 'package:app/core_ui/design_system/app_button.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
@@ -269,17 +270,26 @@ class __BodyPageState extends State<_BodyPage> {
                                         child: ValueListenableBuilder<bool>(
                                           valueListenable: isFollowingLoading,
                                           builder: (context, isLoading, child) {
-                                            return ButtonAppWidget(
-                                                text: isLoading
+                                            return AppButton(
+                                                action: isLoading
                                                     ? 'Đang xử lý...'
                                                     : (isFollowing.value
                                                         ? 'Đang theo dõi'
                                                         : 'Theo dõi truyện'),
-                                                color: AppColors.blue,
-                                                textColor: AppColors.white,
-                                                isBoxShadow: false,
-                                                isDisable: isLoading,
-                                                onTap: () async {
+                                                borderRadius: 12,
+                                                colorEnable: AppColors.blue,
+                                                colorDisable: AppColors.blue,
+                                                textStyle: AppsTextStyle
+                                                    .text14Weight500
+                                                    .copyWith(
+                                                  color: AppColors.white,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 12,
+                                                ),
+                                                loading: isLoading,
+                                                onPressed: () async {
                                                   if (!_isLogin.isLoggedIn) {
                                                     showToast(
                                                         'Bạn cần đăng nhập để theo dõi truyện !!',

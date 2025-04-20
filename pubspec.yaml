@@ -78,7 +78,6 @@ dependencies:
   firebase_core: ^3.12.1
   flutter_secure_storage: ^9.2.4
   flutter_timer_countdown: ^1.0.7
-  # firebase_app_distribution: ^1.1.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.3

@@ -22,14 +22,18 @@ class vertical_widget extends StatelessWidget {
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
       ),
-      cacheExtent: 2000,
+      cacheExtent: MediaQuery.of(context).size.height * 2,
+      addAutomaticKeepAlives: false,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
         final baseUrl = chapterData.baseUrl;
         final String listPage = chapterData.data[index];
         final urlImage = '$baseUrl/data/${chapterData.hash}/$listPage';
         // Cache image for better performance
-        return PageChapterWidget(urlImage: urlImage);
+        return PageChapterWidget(
+          urlImage: urlImage,
+          isZoom: false,
+        );
       },
     );
   }

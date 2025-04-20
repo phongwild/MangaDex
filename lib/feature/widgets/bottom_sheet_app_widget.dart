@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core_ui/widget/loading/shimmer.dart';
 import '../cubit/tag_cubit.dart';
-import '../models/tag_model.dart';
 import '../screens/detail/widget/tag_widget.dart';
 
 class BottomSheetAppWidget extends StatefulWidget {
