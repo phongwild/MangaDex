@@ -58,7 +58,10 @@ class _HorizontalStyleWidgetState extends State<HorizontalStyleWidget> {
             itemBuilder: (context, index) {
               final urlImage =
                   '$baseUrl/data/$hash/${widget.chapterData.data[index]}';
-              return PageChapterWidget(urlImage: urlImage);
+              return PageChapterWidget(
+                urlImage: urlImage,
+                isZoom: true,
+              );
             },
           ),
         ),

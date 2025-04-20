@@ -73,8 +73,12 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
             items.add(_buildDots());
           }
 
-          int start = (page - 1).clamp(2, totalPages - 3);
-          int end = (page + 1).clamp(4, totalPages - 1);
+          // int start = (page - 1).clamp(2, totalPages - 3);
+          // int end = (page + 1).clamp(4, totalPages - 1);
+          int start = totalPages <= 5 ? 2 : (page - 1).clamp(2, totalPages - 3);
+          int end = totalPages <= 5
+              ? totalPages - 1
+              : (page + 1).clamp(4, totalPages - 1);
 
           for (int i = start; i <= end; i++) {
             items.add(ItemOffsetWidget(

@@ -3,7 +3,7 @@ import 'package:app/feature/models/chapter_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
-class BottomsheetListChapter extends StatelessWidget {
+class BottomsheetListChapter extends StatefulWidget {
   const BottomsheetListChapter({
     super.key,
     required this.chapters,
@@ -14,6 +14,29 @@ class BottomsheetListChapter extends StatelessWidget {
   final List<ChapterWrapper> chapters;
   final String currentChapterId;
   final Function(String) onSelected;
+
+  @override
+  State<BottomsheetListChapter> createState() => _BottomsheetListChapterState();
+}
+
+class _BottomsheetListChapterState extends State<BottomsheetListChapter> {
+  late final ScrollController _scrollController;
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final index =
+          widget.chapters.indexWhere((e) => e.id == widget.currentChapterId);
+      if (index != -1) {
+        _scrollController.jumpTo(
+          index * 72.0, // điều chỉnh lại nếu chiều cao item khác nha
+          // duration: const Duration(milliseconds: 300),
+          // curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +65,11 @@ class BottomsheetListChapter extends StatelessWidget {
               ),
               Expanded(
                 child: ListView.builder(
-                  controller: scrollController, // Kết nối scroll controller
-                  itemCount: chapters.length,
+                  controller: _scrollController, // Kết nối scroll controller
+                  itemCount: widget.chapters.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final chapter = chapters[index];
-                    final isSelected = chapter.id == currentChapterId;
+                    final chapter = widget.chapters[index];
+                    final isSelected = chapter.id == widget.currentChapterId;
                     return ListTile(
                       title: Text(
                         'Chap ${chapter.attributes.chapter}',
@@ -57,7 +80,7 @@ class BottomsheetListChapter extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        chapter.attributes.translatedLanguage,
+                        chapter.attributes.title ?? '',
                         style: AppsTextStyle.text14Weight400.copyWith(
                           color: isSelected
                               ? const Color(0xff1d64f1)
@@ -72,7 +95,7 @@ class BottomsheetListChapter extends StatelessWidget {
                             )
                           : null,
                       onTap: () {
-                        onSelected(chapter.id);
+                        widget.onSelected(chapter.id);
                         Navigator.pop(context); // Đóng BottomSheet khi chọn
                       },
                     );
