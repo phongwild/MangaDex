@@ -1,4 +1,8 @@
+import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
+import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
+import 'package:app/core_ui/design_system/app_button.dart';
 import 'package:app/feature/utils/is_login.dart';
+import 'package:app/feature/utils/toast_app.dart';
 import 'package:app/feature/widgets/button_app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -113,51 +117,89 @@ class _HistoryMangaViewState extends State<HistoryMangaView> {
   }
 
   Widget _buildContent() {
-    return BlocBuilder<UserCubit, UserState>(
-      buildWhen: (previous, current) =>
-          current is ListHistoryMangaLoaded || current is UserLoading,
-      builder: (context, state) {
-        if (state is UserLoading) {
-          return Center(child: LoadingShimmer().loadingCircle());
-        }
+    return Column(
+      children: [
+        BlocConsumer<UserCubit, UserState>(
+          listener: (context, state) {
+            if (state is ClearHistoryMangaSuccess) {
+              showToast('Xoá lịch sử đọc truyện thành công');
+            }
+          },
+          builder: (context, state) {
+            return AppButton(
+              onPressed: () async {
+                final userCubit = context.read<UserCubit>();
+                await userCubit.clearHistory();
+                await userCubit.listHistory(offset: 1, limit: limit);
+              },
+              action: 'Xoá lịch sử đọc truyện 7 ngày',
+              textStyle: AppsTextStyle.text14Weight500.copyWith(
+                color: Colors.white,
+              ),
+              colorEnable: AppColors.blue,
+              colorDisable: AppColors.blue,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              loading: state is ClearHistoryLoading,
+              borderRadius: 12,
+            );
+          },
+        ),
+        const SizedBox(height: 10),
+        BlocBuilder<UserCubit, UserState>(
+          buildWhen: (previous, current) =>
+              current is ListHistoryMangaLoaded || current is UserLoading,
+          builder: (context, state) {
+            if (state is UserLoading) {
+              return Expanded(
+                child: Center(
+                  child: LoadingShimmer().loadingCircle(),
+                ),
+              );
+            }
 
-        if (state is UserError) {
-          dlog('Lỗi rồi: ${state.message}');
-          return const Center(
-            child: Text('Có lỗi khi tải lịch sử đọc truyện (⁠╥⁠﹏⁠╥⁠)'),
-          );
-        }
+            if (state is UserError) {
+              dlog('Lỗi rồi: ${state.message}');
+              return const Expanded(
+                child: Center(
+                  child: Text('Có lỗi khi tải lịch sử đọc truyện (⁠╥⁠﹏⁠╥⁠)'),
+                ),
+              );
+            }
 
-        if (state is ListHistoryMangaLoaded) {
-          totals.value = state.total;
-          currentPage.value = state.currentPage;
+            if (state is ListHistoryMangaLoaded) {
+              totals.value = state.total;
+              currentPage.value = state.currentPage;
 
-          return Stack(
-            children: [
-              Column(
-                children: [
-                  Expanded(
-                    child: ItemMangaWidget(
-                      mangaList: state.mangas,
-                      onRefresh: () async {
-                        fetchHistory();
-                      },
+              return Expanded(
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        Expanded(
+                          child: ItemMangaWidget(
+                            mangaList: state.mangas,
+                            onRefresh: () async {
+                              fetchHistory();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              Positioned(
-                bottom: 10,
-                left: 0,
-                right: 0,
-                child: _buildPagination(state.totalPages),
-              ),
-            ],
-          );
-        }
+                    Positioned(
+                      bottom: 10,
+                      left: 0,
+                      right: 0,
+                      child: _buildPagination(state.totalPages),
+                    ),
+                  ],
+                ),
+              );
+            }
 
-        return const SizedBox();
-      },
+            return const SizedBox();
+          },
+        ),
+      ],
     );
   }
 

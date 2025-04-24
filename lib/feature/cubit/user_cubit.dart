@@ -202,6 +202,27 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       emit(UserError('Lỗi: $e'));
     }
   }
+
+  //ClearHistory
+  Future<void> clearHistory() async {
+    try {
+      emit(ClearHistoryLoading());
+      String uid = await SharedPref.getString('uid');
+      final response = await callApiDelete('$baseUrl/history/clear/$uid');
+      if (response.statusCode == 200) {
+        final removed = response.data['removed'];
+        final remaining = response.data['remaining'];
+        final message = response.data['message'];
+        dlog('Removed: $removed \n Remaining: $remaining \n Message: $message');
+        emit(ClearHistoryMangaSuccess(removed, remaining, message));
+      } else {
+        emit(UserError('Lỗi API: ${response.statusCode}'));
+      }
+    } catch (e) {
+      dlog('Error: $e');
+      emit(UserError('Lỗi: $e'));
+    }
+  }
 }
 
 // ⚡️ Hàm chạy trên Isolate để tải danh sách Manga từ API
