@@ -67,3 +67,16 @@ class ListHistoryMangaLoaded extends UserState {
   @override
   List<Object> get props => [mangas, total, totalPages, currentPage];
 }
+
+class ClearHistoryMangaSuccess extends UserState {
+  final int removed;
+  final int remaining;
+  final String message;
+
+  const ClearHistoryMangaSuccess(this.removed, this.remaining, this.message);
+
+  @override
+  List<Object> get props => [message, removed, remaining];
+}
+
+class ClearHistoryLoading extends UserState {}

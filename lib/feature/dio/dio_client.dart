@@ -55,4 +55,11 @@ mixin NetWorkMixin {
       queryParameters: json,
     );
   }
+
+  Future<Response> callApiDelete(
+    String endPoint, {
+    Map<String, dynamic>? json,
+  }) async {
+    return await DioClient.create().delete(endPoint, queryParameters: json);
+  }
 }
