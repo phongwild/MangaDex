@@ -5,12 +5,14 @@ import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/design_system/app_button.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
+import 'package:app/feature/cubit/comments_cubit.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/models/manga_model.dart';
 import 'package:app/feature/models/tag_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
+import 'package:app/feature/screens/detail/widget/comment_widget.dart';
 import 'package:app/feature/screens/detail/widget/list_chapter_widget.dart';
 import 'package:app/feature/screens/detail/widget/tag_widget.dart';
 import 'package:app/feature/screens/more/more_manga_page.dart';
@@ -50,7 +52,10 @@ class DetailMangaPage extends StatelessWidget {
             return cubit;
           },
         ),
-        BlocProvider.value(value: context.read<UserCubit>())
+        BlocProvider.value(value: context.read<UserCubit>()),
+        BlocProvider(
+          create: (context) => CommentsCubit(),
+        )
       ],
       child: _BodyPage(
         idManga: idManga,
@@ -90,6 +95,7 @@ class __BodyPageState extends State<_BodyPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_isLogin.isLoggedIn) {
         context.read<UserCubit>().addToHistory(widget.idManga);
+        context.read<CommentsCubit>().getComments(widget.idManga);
         final listId =
             await context.read<UserCubit>().checkListFollowManga(limit: 500);
         isFollowing.value = listId.contains(widget.idManga);
@@ -374,6 +380,10 @@ class __BodyPageState extends State<_BodyPage> {
                         )
                       else
                         listNull(),
+                      CommentWidget(
+                        mangaID: widget.idManga,
+                        uid: _isLogin.uid ?? '',
+                      )
                     ],
                   ),
                 );
@@ -400,7 +410,7 @@ class __BodyPageState extends State<_BodyPage> {
         width: double.infinity,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.bgMain,
+          color: AppColors.buttonDisablePopup,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(

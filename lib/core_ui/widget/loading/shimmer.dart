@@ -39,15 +39,15 @@ class LoadingShimmer {
     );
   }
 
-  Widget loadingAvatar() {
-    return const Center(
+  Widget loadingAvatar({double width = 95, double height = 95}) {
+    return Center(
       child: AnimatedOpacity(
         opacity: 1.0,
-        duration: Duration(milliseconds: 3000),
+        duration: const Duration(milliseconds: 3000),
         child: SkeletonAvatar(
           style: SkeletonAvatarStyle(
-            width: 95,
-            height: 95,
+            width: width,
+            height: height,
             shape: BoxShape.circle,
           ),
         ),

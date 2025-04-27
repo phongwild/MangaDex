@@ -7,7 +7,9 @@ final cacheManager = CacheManager(
   Config(
     'customCacheKey',
     stalePeriod: const Duration(hours: 6),
-    maxNrOfCacheObjects: 3000,
+    maxNrOfCacheObjects: 200, // giảm xuống cho nhẹ
+    repo: JsonCacheInfoRepository(databaseName: 'image_manga'),
+    fileService: HttpFileService(),
   ),
 );
 
