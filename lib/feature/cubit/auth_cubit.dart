@@ -84,6 +84,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
             user.username!,
             user.email!,
             user.avatar!,
+            user.sId!,
           );
           dlog('JWT đã được lưu: ${await _isLogin.getJwt()}');
         }

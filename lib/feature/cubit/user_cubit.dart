@@ -36,7 +36,6 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
             (response.data['data'] as List).map((e) => e.toString()).toList();
 
         emit(CheckFollowManga(listIdManga));
-        dlog('✅ Emit CheckFollowManga: $listIdManga');
 
         return listIdManga;
       } else {

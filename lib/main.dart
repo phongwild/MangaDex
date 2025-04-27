@@ -36,9 +36,12 @@ Future<void> main() async {
 
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    // debugProfileBuildsEnabled = true;
+    // debugPaintSizeEnabled = true;
+
     await di.init(); // Chờ inject dependencies
     await Future.delayed(const Duration(seconds: 1));
-    await clearImageCacheIfNeeded();
+    // await clearImageCacheIfNeeded();
     await ConnectionUtils().init();
     AppTheme().changeTheme(TypeTheme.light);
     // await SharedPref.init();
