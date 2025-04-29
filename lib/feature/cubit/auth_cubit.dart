@@ -75,8 +75,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
       if (response.statusCode == 200) {
         final user = User.fromJson(response.data);
         await SharedPref.putString('uid', user.sId!);
-        var cookies =
-            response.headers['set-cookie']; // Lấy cookie từ header nếu có
+        var cookies = response.headers['set-cookie'];
         if (cookies != null && cookies.isNotEmpty) {
           // Lưu cookie vào SharedPreferences
           await _isLogin.login(
@@ -98,6 +97,42 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
         emit(AuthError(error: 'Failed to login: ${response.data['message']}'));
       }
     } catch (e) {
+      emit(AuthError(error: e.toString()));
+    }
+  }
+
+  Future<void> loginGoogle(String idToken) async {
+    try {
+      emit(AuthLoading());
+      final response = await callApiPost('$baseURL/auth/login', {
+        'idToken': idToken,
+      });
+      if (response.statusCode == 200) {
+        final user = User.fromJson(response.data);
+        await SharedPref.putString('uid', user.sId!);
+        var cookies = response.headers['set-cookie'];
+        if (cookies != null && cookies.isNotEmpty) {
+          // Lưu cookie vào SharedPreferences
+          await _isLogin.login(
+            cookies.first,
+            user.username!,
+            user.email!,
+            user.avatar!,
+            user.sId!,
+          );
+          dlog('JWT đã được lưu: ${await _isLogin.getJwt()}');
+        }
+        await getProfile();
+        // Emit trạng thái thành công
+        emit(AuthLoginSuccess(user: user));
+      } else if (response.statusCode == 400) {
+        emit(AuthWrongEmailOrPassword());
+      } else {
+        // Emit lỗi nếu đăng nhập thất bại
+        emit(AuthError(error: 'Failed to login: ${response.data['message']}'));
+      }
+    } catch (e) {
+      dlog('Error: $e');
       emit(AuthError(error: e.toString()));
     }
   }
