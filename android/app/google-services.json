@@ -13,7 +13,20 @@
           "package_name": "com.phongzero.nettromdex"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "515834641326-il3ms4fq165pif8em1hsnp4bstoq6l0d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.phongzero.nettromdex",
+            "certificate_hash": "c50becbd4a5940f83c25572c4873df466d77c4ba"
+          }
+        },
+        {
+          "client_id": "515834641326-bmocl172imsicl3o04k80dlgo2svsotn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAJcXUUTDyq9V3kdZuR0vE-NgYXKEfPtRk"
@@ -21,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "515834641326-bmocl172imsicl3o04k80dlgo2svsotn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "515834641326-kb725hrlcspbm56tc4f4dph9p1li7rj1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.phongzero.nettromdex"
+              }
+            }
+          ]
         }
       }
     }

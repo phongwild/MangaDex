@@ -3,6 +3,7 @@ class KeyAssets {
   static const icSelectAccount = '${_base}ic_select_account.svg';
   static const jsonLoading = '${_base}loading.json';
   static const icArrowDown = '${_base}ic_arrow_down.svg';
+  static const logoGoogle = '${_base}logo_google.svg';
 
   /// PNG
   static const imgSuccess = '${_baseImage}img_success.png';

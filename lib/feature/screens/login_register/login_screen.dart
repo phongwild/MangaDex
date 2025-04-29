@@ -1,3 +1,4 @@
+import 'package:app/common/define/key_assets.dart';
 import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
@@ -6,6 +7,8 @@ import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/toast_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/cache/secures_storage.dart';
 import '../../cubit/auth_cubit.dart';
@@ -36,11 +39,11 @@ class _body extends StatefulWidget {
 class _bodyState extends State<_body> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
-
+  static final GoogleSignIn googleSignIn = GoogleSignIn();
   @override
   void initState() {
     super.initState();
-    saveLogin();
+    // saveLogin();
   }
 
   void saveLogin() async {
@@ -132,6 +135,7 @@ class _bodyState extends State<_body> {
                         return;
                       }
                       if (state is AuthLoginSuccess) {
+                        showToast('Đăng nhập thành công!');
                         saveLoginInfo(
                             emailController.text.trim(), passController.text);
                         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -187,11 +191,62 @@ class _bodyState extends State<_body> {
                   ),
                 ],
               ),
+              // const SizedBox(height: 15),
+              // Text(
+              //   'Quên mật khẩu?',
+              //   style: AppsTextStyle.text14Weight500,
+              // ),
               const SizedBox(height: 15),
-              Text(
-                'Quên mật khẩu?',
-                style: AppsTextStyle.text14Weight500,
-              ),
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                            endIndent: 10, // Khoảng cách đến Text
+                          ),
+                        ),
+                        Text(
+                          'Hoặc đăng nhập bằng',
+                          style: AppsTextStyle.text12Weight400
+                              .copyWith(color: AppColors.gray700),
+                        ),
+                        const Expanded(
+                          child: Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                            indent: 10, // Khoảng cách từ Text
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () async {
+                        await googleSignIn.signOut();
+                        final account = await googleSignIn.signIn();
+                        final auth = await account?.authentication;
+                        final idToken = auth?.idToken;
+                        if (idToken != null) {
+                          dlog('Token: $idToken');
+                          context.read<AuthCubit>().loginGoogle(idToken);
+                        } else {
+                          showToast('Đăng nhập thất bại', isError: true);
+                        }
+                      },
+                      child: SvgPicture.asset(
+                        KeyAssets.logoGoogle,
+                        width: 35,
+                        height: 35,
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
