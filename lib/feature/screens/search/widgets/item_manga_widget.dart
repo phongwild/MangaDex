@@ -18,10 +18,10 @@ class ItemMangaWidget extends StatelessWidget {
       color: AppColors.blue,
       backgroundColor: AppColors.bgMain,
       onRefresh: onRefresh ?? () => Future.value(),
-      child: ListView.builder(
+      child: ListView.separated(
         itemCount: mangaList.length > 15 ? 15 : mangaList.length,
         scrollDirection: Axis.vertical,
-        // shrinkWrap: true,
+        separatorBuilder: (context, index) => const SizedBox(height: 5),
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           final manga = mangaList[index];
@@ -47,10 +47,9 @@ class ItemMangaWidget extends StatelessWidget {
                 ),
               );
             },
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               height: 165,
-              margin: const EdgeInsets.only(bottom: 5),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

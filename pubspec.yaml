@@ -80,6 +80,8 @@ dependencies:
   flutter_timer_countdown: ^1.0.7
   app_links: ^6.4.0
   google_sign_in: ^6.3.0
+  image_picker: ^1.1.2
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.3
@@ -90,7 +92,7 @@ dev_dependencies:
   freezed: ^2.4.6
   flutter_lints: ^3.0.1
   injectable_generator: ^2.4.1
-  # firebase_app_distribution: ^1.1.1
+  firebase_app_distribution: ^1.1.1 
 
 flutter_icons:
   android: true

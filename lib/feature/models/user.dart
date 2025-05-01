@@ -1,79 +1,58 @@
-// ignore_for_file: unnecessary_this
+import 'package:json_annotation/json_annotation.dart';
 
+part 'user.g.dart';
+
+@JsonSerializable(includeIfNull: false)
 class User {
-  String? sId;
-  String? username;
-  String? email;
-  String? avatar;
-  String? password;
-  String? createdAt;
-  String? updatedAt;
-  List<String>? followList;
-  List<History>? history;
+  @JsonKey(name: '_id')
+  final String? sId;
 
-  User(
-      {this.sId,
-      this.username,
-      this.email,
-      this.avatar,
-      this.password,
-      this.createdAt,
-      this.updatedAt,
-      this.followList,
-      this.history});
+  final String? username;
+  final String? email;
+  final String? avatar;
+  final String? password;
+  final String? createdAt;
+  final String? updatedAt;
 
-  User.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    username = json['username'];
-    email = json['email'];
-    avatar = json['avatar'];
-    password = json['password'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    followList = json['follow_list'].cast<String>();
-    if (json['history'] != null) {
-      history = <History>[];
-      json['history'].forEach((v) {
-        history!.add(new History.fromJson(v));
-      });
-    }
-  }
+  @JsonKey(name: 'follow_list')
+  final List<String>? followList;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = this.sId;
-    data['username'] = this.username;
-    data['email'] = this.email;
-    data['avatar'] = this.avatar;
-    data['password'] = this.password;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['follow_list'] = this.followList;
-    if (this.history != null) {
-      data['history'] = this.history!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
+  final List<History>? history;
+
+  const User({
+    this.sId,
+    this.username,
+    this.email,
+    this.avatar,
+    this.password,
+    this.createdAt,
+    this.updatedAt,
+    this.followList,
+    this.history,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
+@JsonSerializable(includeIfNull: false)
 class History {
-  String? mangaId;
-  String? sId;
-  String? createdAt;
+  final String? mangaId;
 
-  History({this.mangaId, this.sId, this.createdAt});
+  @JsonKey(name: '_id')
+  final String? sId;
 
-  History.fromJson(Map<String, dynamic> json) {
-    mangaId = json['mangaId'];
-    sId = json['_id'];
-    createdAt = json['createdAt'];
-  }
+  final String? createdAt;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['mangaId'] = this.mangaId;
-    data['_id'] = this.sId;
-    data['createdAt'] = this.createdAt;
-    return data;
-  }
+  const History({
+    this.mangaId,
+    this.sId,
+    this.createdAt,
+  });
+
+  factory History.fromJson(Map<String, dynamic> json) =>
+      _$HistoryFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HistoryToJson(this);
 }

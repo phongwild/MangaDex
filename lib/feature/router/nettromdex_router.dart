@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:app/global/router/router.dart';
 
 import '../screens/detail/detail_manga_page.dart';
+import '../screens/info_setting/info_setting.dart';
 import '../screens/more/more_manga_page.dart';
 import '../screens/reading/read_chapter_page.dart';
 import '../screens/settings/setting_page.dart';
@@ -17,6 +18,8 @@ class NettromdexRouter extends RouterModule {
   static const moreManga = '/more-manga';
   static const setting = '/setting';
   static const webView = '/web-view';
+  static const infoSetting = '/info-setting';
+
   @override
   Map<String, PageRoute> getRoutes(RouteSettings settings) {
     return {
@@ -71,7 +74,11 @@ class NettromdexRouter extends RouterModule {
           final args = settings.arguments as String;
           return WebViewScreen(initialUrl: args);
         },
-      )
+      ),
+      NettromdexRouter.infoSetting: CupertinoPageRoute(
+        builder: (context) => const InfoSetting(),
+        settings: settings,
+      ),
     };
   }
 }

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:app/core/app_log.dart';
 import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/feature/utils/is_login.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,7 +18,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
   AuthCubit() : super(AuthInitial());
 
   final String baseURL = 'https://api-manga-user.vercel.app';
-
+  final String devURL = 'http://192.168.10.106:3000';
   //Register
   Future<void> register(String username, String email, String password) async {
     try {
@@ -170,49 +173,110 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
     }
   }
 
-  //Put fcm token
-  Future<void> putFcmToken(String idUser, String fcmToken) async {
+  Future<void> changePass(String oldPass, String newPass) async {
     try {
+      emit(AuthChangePassLoading());
+      final uid = await SharedPref.getString('uid');
       final response = await callApiPut(
-          '$baseURL/user/putfcmtoken/$idUser', {"fcmToken": fcmToken});
+        '$baseURL/user/change-password/$uid',
+        {
+          'oldPassword': oldPass,
+          'newPassword': newPass,
+        },
+      );
       if (response.statusCode == 200) {
-        dlog('Put FCM success');
+        emit(AuthChangePassSuccess());
+      } else {
+        emit(AuthChangePassError(response.data['message']));
       }
     } catch (e) {
       dlog(e.toString());
+      emit(AuthChangePassError(e.toString()));
     }
   }
 
-  //get user by id
-  Future<void> getUserById(String id) async {
+  Future<void> uploadAvatar(File file) async {
     try {
-      emit(AuthLoading());
-      final response =
-          await callApiGet(endPoint: '$baseURL/user/getuserbyid?id=$id');
-      if (response.statusCode == 200) {
-        final user = User.fromJson(response.data);
-        emit(AuthGetUserByIdSuccess(user: user));
+      emit(AuthUploadAvatarLoading());
+
+      final uid = await SharedPref.getString('uid');
+      if (uid.isEmpty) {
+        emit(const AuthUploadAvatarError(
+            "Không tìm thấy UID người dùng (⁠〒⁠﹏⁠〒⁠)"));
+        return;
+      }
+
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          file.path,
+          filename: file.path.split('/').last,
+        ),
+      });
+
+      final uploadResponse = await callApiPost(
+        '$baseURL/upload',
+        formData,
+      );
+
+      if (uploadResponse.statusCode != 200) {
+        final message = uploadResponse.data['message'] ??
+            'Lỗi không xác định khi upload ảnh';
+        emit(AuthUploadAvatarError(message));
+        return;
+      }
+
+      final uploadedImageUrl = uploadResponse.data['data'];
+      if (uploadedImageUrl == null || uploadedImageUrl.isEmpty) {
+        emit(const AuthUploadAvatarError(
+            "URL ảnh tải lên không hợp lệ (⁠╥⁠﹏⁠╥⁠)"));
+        return;
+      }
+
+      final updateResponse = await callApiPut(
+        '$baseURL/user/update-profile/$uid',
+        {'avatar': uploadedImageUrl},
+      );
+
+      if (updateResponse.statusCode == 200) {
+        final user = User.fromJson(updateResponse.data['data']);
+        emit(AuthUploadAvatarSuccess(avatar: user.avatar));
+      } else {
+        final message = updateResponse.data['message'] ??
+            'Lỗi khi cập nhật ảnh đại diện (⁠≧⁠Д⁠≦⁠)';
+        emit(AuthUploadAvatarError(message));
       }
     } catch (e) {
       dlog(e.toString());
-      emit(AuthError(error: e.toString()));
+      emit(AuthUploadAvatarError("Đã xảy ra lỗi: ${e.toString()}"));
     }
   }
 
-  //Get user
-  Future<void> getUser(String? search) async {
+  Future<void> updateProfile(User user) async {
     try {
-      emit(AuthLoading());
-      String uid = await SharedPref.getString('uid');
-      final query = search == null ? '' : 'search=$search';
-      final res = await callApiGet(endPoint: '$baseURL/user?$query&uid=$uid');
-      if (res.statusCode == 200 && res.data is List) {
-        final users = res.data.map<User>((e) => User.fromJson(e)).toList();
-        emit(AuthSearchLoaded(users: users));
+      emit(AuthUpdateProfileLoading());
+
+      final uid = await SharedPref.getString('uid');
+      if (uid.isEmpty) {
+        emit(const AuthUpdateProfileError(
+            "Không tìm thấy UID người dùng (⁠〒⁠﹏⁠〒⁠)"));
+        return;
+      }
+
+      final response = await callApiPut(
+        '$baseURL/user/update-profile/$uid',
+        user.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        emit(AuthUpdateProfileSuccess());
+      } else {
+        final message =
+            response.data['message'] ?? 'Cập nhật thất bại (⁠≧⁠Д⁠≦⁠)';
+        emit(AuthUpdateProfileError(message));
       }
     } catch (e) {
-      emit(AuthError(error: e.toString()));
-      dlog('Error: $e');
+      dlog(e.toString());
+      emit(AuthUpdateProfileError("Đã xảy ra lỗi: ${e.toString()}"));
     }
   }
 }

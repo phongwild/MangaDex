@@ -70,4 +70,18 @@ class IsLogin {
   Future<String?> getJwt() async {
     return _jwt;
   }
+
+  // Cập nhật avatar mới
+  Future<void> updateAvatar(String newAvatar) async {
+    _avatar = newAvatar;
+    await SharedPref.putString('avatar', newAvatar);
+    dlog("Avatar updated: $newAvatar");
+  }
+
+  // Cập nhật username mới
+  Future<void> updateUsername(String newUsername) async {
+    _username = newUsername;
+    await SharedPref.putString('username', newUsername);
+    dlog("Username updated: $newUsername");
+  }
 }

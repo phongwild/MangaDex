@@ -10,7 +10,11 @@ class DioClient {
     }
 
     if (kDebugMode) {
-      dio.interceptors.add(CurlLoggerDioInterceptor(printOnSuccess: true));
+      dio.interceptors.add(
+        CurlLoggerDioInterceptor(
+          printOnSuccess: true,
+        ),
+      );
     }
 
     return dio;

@@ -17,12 +17,13 @@ class vertical_widget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       itemCount: totalPages,
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
       ),
       cacheExtent: MediaQuery.of(context).size.height * 2,
+      separatorBuilder: (context, index) => const SizedBox(height: 5),
       addAutomaticKeepAlives: false,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
