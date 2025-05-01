@@ -31,14 +31,6 @@ class AuthRegistrationSuccess extends AuthState {}
 
 class AuthLogoutSuccess extends AuthState {}
 
-class AuthGetUserByIdSuccess extends AuthState {
-  final User user;
-  const AuthGetUserByIdSuccess({required this.user});
-
-  @override
-  List<Object> get props => [user];
-}
-
 class AuthError extends AuthState {
   final String error;
 
@@ -57,11 +49,48 @@ class AuthProfileLoaded extends AuthState {
   List<Object> get props => [user];
 }
 
-class AuthSearchLoaded extends AuthState {
-  final List<User> users;
+//Change pass
+class AuthChangePassLoading extends AuthState {}
 
-  const AuthSearchLoaded({required this.users});
+class AuthChangePassSuccess extends AuthState {}
+
+class AuthChangePassError extends AuthState {
+  final String error;
+  const AuthChangePassError(this.error);
 
   @override
-  List<Object> get props => [users];
+  List<Object> get props => [error];
 }
+
+//Avatar
+class AuthUploadAvatarLoading extends AuthState {}
+
+class AuthUploadAvatarSuccess extends AuthState {
+  final String? avatar;
+  const AuthUploadAvatarSuccess({this.avatar});
+  @override
+  List<Object> get props => [avatar!];
+}
+
+class AuthUploadAvatarError extends AuthState {
+  final String error;
+  const AuthUploadAvatarError(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+//Update profile
+class AuthUpdateProfileLoading extends AuthState {}
+
+class AuthUpdateProfileSuccess extends AuthState {}
+
+class AuthUpdateProfileError extends AuthState {
+  final String error;
+  const AuthUpdateProfileError(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+//

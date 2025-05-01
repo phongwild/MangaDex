@@ -1,8 +1,10 @@
 import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
+import 'package:app/feature/cubit/auth_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/user/widgets/build_user_info_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
 import 'widgets/tabbar_user_widget.dart';
@@ -36,7 +38,7 @@ class __BodyPageState extends State<_BodyPage>
       animationDuration: const Duration(milliseconds: 500),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // widget.isNavVisible.value = false;
+      context.read<AuthCubit>().getProfile();
     });
   }
 

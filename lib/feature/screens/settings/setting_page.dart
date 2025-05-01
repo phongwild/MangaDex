@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
+import '../../../core_ui/app_theme.dart/app_color/app_colors.dart';
 import '../../../core_ui/app_theme.dart/app_text_style.dart';
 
 class SettingPage extends StatelessWidget {
@@ -37,25 +38,44 @@ class __BodyPageState extends State<_BodyPage> {
         elevation: 0,
         title: Text(
           'Cài đặt',
-          style: AppsTextStyle.text18Weight700
-              .copyWith(color: const Color(0xffffffff)),
+          style:
+              AppsTextStyle.text18Weight700.copyWith(color: AppColors.gray700),
         ),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_rounded,
-            color: Colors.white,
+            color: AppColors.gray700,
           ),
         ),
       ),
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
+              const SizedBox(height: 10),
+              ButtonAppWidget(
+                text: 'Thông tin cá nhân',
+                color: const Color(0xff2563eb),
+                textColor: Colors.white,
+                onTap: () {
+                  if (!_isLogin.isLoggedIn) {
+                    showToast(
+                      'Bạn cần phải đăng nhập để sử dụng chức năng này',
+                      isError: true,
+                    );
+                    return;
+                  }
+                  Navigator.pushNamed(context, NettromdexRouter.infoSetting);
+                },
+                isBoxShadow: false,
+                leadingIcon:
+                    const Icon(IconlyLight.profile, color: Colors.white),
+              ),
               const SizedBox(height: 10),
               ButtonAppWidget(
                 text: _isLogin.isLoggedIn ? 'Đăng xuất' : 'Đăng nhập',

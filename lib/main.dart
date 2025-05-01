@@ -8,6 +8,7 @@ import 'package:app/feature/utils/cached_manage_app.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:app/core/app_log.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,7 +42,7 @@ Future<void> main() async {
 
     await di.init(); // Chờ inject dependencies
     await Future.delayed(const Duration(seconds: 1));
-    // await clearImageCacheIfNeeded();
+    await clearImageCacheIfNeeded();
     await ConnectionUtils().init();
     AppTheme().changeTheme(TypeTheme.light);
     // await SharedPref.init();
