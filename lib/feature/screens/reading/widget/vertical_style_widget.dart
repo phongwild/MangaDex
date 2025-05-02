@@ -19,12 +19,10 @@ class vertical_widget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       itemCount: totalPages,
-      physics: const BouncingScrollPhysics(
-        parent: AlwaysScrollableScrollPhysics(),
-      ),
+      physics: const ClampingScrollPhysics(),
       cacheExtent: MediaQuery.of(context).size.height * 2,
       separatorBuilder: (context, index) => const SizedBox(height: 5),
-      addAutomaticKeepAlives: false,
+      addAutomaticKeepAlives: true,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
         final baseUrl = chapterData.baseUrl;

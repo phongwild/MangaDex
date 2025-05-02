@@ -33,18 +33,20 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: ImageApp(
-                imageUrl: widget.coverArt,
-                height: 150,
-                width: 100,
-                fit: BoxFit.cover,
-                errorWidget: const Center(
-                  child: Icon(
-                    Icons.image_not_supported,
-                    color: Colors.white54,
-                    size: 50,
+            RepaintBoundary(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: ImageApp(
+                  imageUrl: widget.coverArt,
+                  height: 150,
+                  width: 100,
+                  fit: BoxFit.cover,
+                  errorWidget: const Center(
+                    child: Icon(
+                      Icons.image_not_supported,
+                      color: Colors.white54,
+                      size: 50,
+                    ),
                   ),
                 ),
               ),

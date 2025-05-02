@@ -139,7 +139,7 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
               Column(
                 children: [
                   Expanded(
-                    child: ItemMangaWidget(
+                    child: ListMangaWidget(
                       mangaList: state.mangas,
                       onRefresh: () async {
                         fetchFollowedManga();

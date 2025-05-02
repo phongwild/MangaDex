@@ -179,12 +179,6 @@ class __BodyPageState extends State<_BodyPage> {
                 final description = data.attributes.getPreferredDescription();
                 final String firstChapter = state.firstChapter;
                 final int total = state.total;
-                final coverArtId = data.relationships.firstWhere(
-                  (rel) => rel.type == 'cover_art',
-                );
-                final coverArt = coverArtId.attributes?.fileName ?? '';
-                dlog(
-                    'https://uploads.mangadex.org/covers/${data.id}/$coverArt');
                 return SingleChildScrollView(
                   child: Column(
                     children: [
@@ -215,10 +209,15 @@ class __BodyPageState extends State<_BodyPage> {
                                       coverArt: widget.coverArt,
                                     ),
                                     const SizedBox(height: 15),
-                                    Text(
-                                      data.attributes.getPreferredTitle(),
-                                      style: AppsTextStyle.text18Weight700,
-                                      textAlign: TextAlign.center,
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                      child: Text(
+                                        data.attributes.getPreferredTitle(),
+                                        style: AppsTextStyle.text18Weight700,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                                     const SizedBox(height: 10),
                                     Padding(
@@ -226,7 +225,7 @@ class __BodyPageState extends State<_BodyPage> {
                                         horizontal: 8,
                                       ),
                                       child: Text(
-                                        data.attributes.getPreferredTitle(),
+                                        data.attributes.getAltTitle(),
                                         style: AppsTextStyle.text14Weight400,
                                         textAlign: TextAlign.center,
                                       ),

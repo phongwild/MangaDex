@@ -12,13 +12,17 @@ import '../../../utils/time_utils.dart';
 import '../../detail/detail_manga_page.dart';
 
 class ListMangaByGenreWidget extends StatelessWidget {
+  final String title;
+  final String tag;
+  final MangaCubit cubit;
+
   const ListMangaByGenreWidget({
     super.key,
     required this.title,
     required this.tag,
+    required this.cubit,
   });
-  final String title;
-  final String tag;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,23 +34,26 @@ class ListMangaByGenreWidget extends StatelessWidget {
               .copyWith(color: const Color(0xff374151)),
         ),
         const SizedBox(height: 10),
-        BlocProvider(
-          create: (context) => MangaCubit()..searchManga('', tags: [tag]),
+        BlocProvider.value(
+          value: cubit,
           child: SizedBox(
             height: 160,
-            child: list(),
+            child: _ListMangaList(),
           ),
         ),
-        more(context)
+        _moreButton(context)
       ],
     );
   }
 
-  Widget more(BuildContext context) {
+  Widget _moreButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, NettromdexRouter.moreManga,
-            arguments: MoreMangaPage(tag: tag));
+        Navigator.pushNamed(
+          context,
+          NettromdexRouter.moreManga,
+          arguments: MoreMangaPage(tag: tag),
+        );
       },
       child: Container(
         alignment: Alignment.centerRight,
@@ -58,8 +65,11 @@ class ListMangaByGenreWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget list() {
+class _ListMangaList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<MangaCubit, MangaState>(
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
@@ -74,9 +84,9 @@ class ListMangaByGenreWidget extends StatelessWidget {
           final mangas = state.mangas;
           return ListView.builder(
             shrinkWrap: true,
-            itemCount: mangas.length,
             scrollDirection: Axis.horizontal,
-            itemBuilder: (BuildContext context, int index) {
+            itemCount: mangas.length,
+            itemBuilder: (context, index) {
               final manga = mangas[index];
               final coverArtId = manga.relationships.firstWhere(
                 (rel) => rel.type == 'cover_art',

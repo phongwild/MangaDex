@@ -84,7 +84,7 @@ class __BodyPageState extends State<_BodyPage> {
                   if (state is MangaLoaded) {
                     final mangaList = state.mangas;
                     return Expanded(
-                      child: ItemMangaWidget(
+                      child: ListMangaWidget(
                         mangaList: mangaList,
                       ),
                     );

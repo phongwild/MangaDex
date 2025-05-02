@@ -38,6 +38,12 @@ class _HorizontalStyleWidgetState extends State<HorizontalStyleWidget> {
   }
 
   @override
+  void dispose() {
+    _hideTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final baseUrl = widget.chapterData.baseUrl;
     final hash = widget.chapterData.hash;
@@ -67,11 +73,18 @@ class _HorizontalStyleWidgetState extends State<HorizontalStyleWidget> {
         ),
         ValueListenableBuilder<int>(
           valueListenable: widget.currentPage,
-          builder: (context, page, _) => LinearProgressIndicator(
-            value: widget.totalPages > 0 ? (page + 1) / widget.totalPages : 0.0,
-            backgroundColor: Colors.grey[800],
-            color: Colors.blueAccent,
-            minHeight: 5,
+          builder: (context, page, _) => TweenAnimationBuilder<double>(
+            tween: Tween<double>(
+              begin: (page) / widget.totalPages,
+              end: (page + 1) / widget.totalPages,
+            ),
+            duration: const Duration(milliseconds: 200),
+            builder: (context, value, child) => LinearProgressIndicator(
+              value: value,
+              backgroundColor: Colors.grey[800],
+              color: Colors.blueAccent,
+              minHeight: 5,
+            ),
           ),
         ),
       ],

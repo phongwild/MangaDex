@@ -67,11 +67,16 @@ class _BottomSheetAppWidgetState extends State<BottomSheetAppWidget> {
                       if (state is TagLoaded) {
                         return Positioned.fill(
                           child: SingleChildScrollView(
-                            child: TagWidget(
-                              listTag: state.tags,
-                              onTap: (tag) {
-                                toggleTagSelection(tag.id);
-                              },
+                            child: Column(
+                              children: [
+                                TagWidget(
+                                  listTag: state.tags,
+                                  onTap: (tag) {
+                                    toggleTagSelection(tag.id);
+                                  },
+                                ),
+                                const SizedBox(height: 80),
+                              ],
                             ),
                           ),
                         );

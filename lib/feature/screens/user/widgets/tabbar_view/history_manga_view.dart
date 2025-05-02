@@ -176,7 +176,7 @@ class _HistoryMangaViewState extends State<HistoryMangaView> {
                     Column(
                       children: [
                         Expanded(
-                          child: ItemMangaWidget(
+                          child: ListMangaWidget(
                             mangaList: state.mangas,
                             onRefresh: () async {
                               fetchHistory();

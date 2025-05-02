@@ -10,17 +10,26 @@ import 'package:app/feature/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../dio/dio_client.dart';
-
-class MangaList extends StatelessWidget with NetWorkMixin {
+class MangaList extends StatefulWidget {
   const MangaList({super.key});
+
   @override
-  Widget build(BuildContext context) {
+  State<MangaList> createState() => _MangaListState();
+}
+
+class _MangaListState extends State<MangaList> {
+  @override
+  void initState() {
+    super.initState();
     context.read<MangaCubit>().getManga(
           isLatestUploadedChapter: true,
-          limit: 15,
+          limit: 25,
           offset: 0,
         );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<MangaCubit, MangaState>(
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
@@ -33,7 +42,7 @@ class MangaList extends StatelessWidget with NetWorkMixin {
         }
         if (state is MangaLoaded) {
           final mangas = state.mangas;
-          int limit = 15;
+          int limit = 25;
           return GridView.builder(
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,

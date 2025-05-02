@@ -59,13 +59,24 @@ class Attributes {
     return description!.values.first ?? 'No description';
   }
 
-  List<String> getAltTitles() {
-    if (altTitles == null) return [];
+  String getAltTitle() {
+    if (altTitles == null || altTitles!.isEmpty) return 'No alt title';
 
-    return altTitles!
-        .map((alt) => alt.values.first.toString())
-        .where((t) => t.isNotEmpty)
-        .toList();
+    for (final lang in preferredLanguages) {
+      for (final alt in altTitles!) {
+        if (alt.containsKey(lang) && (alt[lang]?.isNotEmpty ?? false)) {
+          return alt[lang]!;
+        }
+      }
+    }
+
+    // Fallback: trả về cái đầu tiên có nội dung
+    for (final alt in altTitles!) {
+      final value = alt.values.first;
+      if (value.toString().isNotEmpty) return value.toString();
+    }
+
+    return 'No alt title';
   }
 
   factory Attributes.fromJson(Map<String, dynamic> json) =>

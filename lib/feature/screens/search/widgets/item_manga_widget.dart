@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import '../../../models/relationship_model.dart';
 import '../../detail/detail_manga_page.dart';
 
-class ItemMangaWidget extends StatelessWidget {
-  const ItemMangaWidget({super.key, required this.mangaList, this.onRefresh});
+class ListMangaWidget extends StatelessWidget {
+  const ListMangaWidget({super.key, required this.mangaList, this.onRefresh});
   final List<Manga> mangaList;
   final Future<void> Function()? onRefresh;
   @override
@@ -21,6 +21,7 @@ class ItemMangaWidget extends StatelessWidget {
       child: ListView.separated(
         itemCount: mangaList.length > 15 ? 15 : mangaList.length,
         scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.only(bottom: 50),
         separatorBuilder: (context, index) => const SizedBox(height: 5),
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
@@ -53,20 +54,22 @@ class ItemMangaWidget extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: ImageApp(
-                      imageUrl: coverArt.isNotEmpty
-                          ? 'https://uploads.mangadex.org/covers/${manga.id}/$coverArt'
-                          : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
-                      height: 160,
-                      width: 110,
-                      fit: BoxFit.cover,
-                      errorWidget: const Center(
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: Colors.white54,
-                          size: 50,
+                  RepaintBoundary(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: ImageApp(
+                        imageUrl: coverArt.isNotEmpty
+                            ? 'https://uploads.mangadex.org/covers/${manga.id}/$coverArt'
+                            : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
+                        height: 160,
+                        width: 110,
+                        fit: BoxFit.cover,
+                        errorWidget: const Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: Colors.white54,
+                            size: 50,
+                          ),
                         ),
                       ),
                     ),
