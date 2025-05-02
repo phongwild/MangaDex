@@ -34,7 +34,7 @@ class ListMoreMangaWidget extends StatelessWidget {
         if (state is MangaLoaded) {
           final mangas = state.mangas;
           totals.value = state.total ?? 0;
-          return Expanded(child: ItemMangaWidget(mangaList: mangas));
+          return Expanded(child: ListMangaWidget(mangaList: mangas));
         }
         return const SizedBox(height: 10);
       },

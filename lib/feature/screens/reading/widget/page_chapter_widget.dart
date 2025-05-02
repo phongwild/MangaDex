@@ -13,11 +13,13 @@ class PageChapterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = ImageApp(
-      imageUrl: urlImage,
-      width: double.infinity,
-      errorWidget: const Center(
-        child: Icon(Icons.broken_image, size: 50, color: Colors.white),
+    final image = RepaintBoundary(
+      child: ImageApp(
+        imageUrl: urlImage,
+        width: double.infinity,
+        errorWidget: const Center(
+          child: Icon(Icons.broken_image, size: 50, color: Colors.white),
+        ),
       ),
     );
 

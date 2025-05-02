@@ -9,16 +9,18 @@ class LargeCoverWidget extends StatelessWidget {
   final String coverArt;
   @override
   Widget build(BuildContext context) {
-    return ImageApp(
-      imageUrl: coverArt,
-      fit: BoxFit.cover,
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.3,
-      errorWidget: const Center(
-        child: Icon(
-          Icons.image_not_supported,
-          color: Colors.white54,
-          size: 50,
+    return RepaintBoundary(
+      child: ImageApp(
+        imageUrl: coverArt,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height * 0.3,
+        errorWidget: const Center(
+          child: Icon(
+            Icons.image_not_supported,
+            color: Colors.white54,
+            size: 50,
+          ),
         ),
       ),
     );

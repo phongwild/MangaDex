@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
@@ -149,25 +147,64 @@ class _BodyPageState extends State<_BodyPage> {
                 const SizedBox(height: 10),
                 more(),
                 const SizedBox(height: 10),
-                const SizedBox(
+                SizedBox(
+                  height: 220,
+                  child: ListMangaByGenreWidget(
+                    title: 'Self-Published',
+                    tag: '891cf039-b895-47f0-9229-bef4c96eccd4',
+                    cubit: MangaCubit()
+                      ..searchManga('',
+                          tags: ['891cf039-b895-47f0-9229-bef4c96eccd4']),
+                  ),
+                ),
+                SizedBox(
                   height: 220,
                   child: ListMangaByGenreWidget(
                     title: 'One shot',
                     tag: '0234a31e-a729-4e28-9d6a-3f87c4966b9e',
+                    cubit: MangaCubit()
+                      ..searchManga('',
+                          tags: ['0234a31e-a729-4e28-9d6a-3f87c4966b9e']),
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   height: 220,
                   child: ListMangaByGenreWidget(
                     title: 'Romcom',
                     tag: '423e2eae-a7a2-4a8b-ac03-a8351462d71d',
+                    cubit: MangaCubit()
+                      ..searchManga('',
+                          tags: ['423e2eae-a7a2-4a8b-ac03-a8351462d71d']),
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   height: 220,
                   child: ListMangaByGenreWidget(
                     title: 'Action',
                     tag: '391b0423-d847-456f-aff0-8b0cfc03066b',
+                    cubit: MangaCubit()
+                      ..searchManga('',
+                          tags: ['391b0423-d847-456f-aff0-8b0cfc03066b']),
+                  ),
+                ),
+                SizedBox(
+                  height: 220,
+                  child: ListMangaByGenreWidget(
+                    title: 'Sci-Fi',
+                    tag: '256c8bd9-4904-4360-bf4f-508a76d67183',
+                    cubit: MangaCubit()
+                      ..searchManga('',
+                          tags: ['256c8bd9-4904-4360-bf4f-508a76d67183']),
+                  ),
+                ),
+                SizedBox(
+                  height: 220,
+                  child: ListMangaByGenreWidget(
+                    title: 'Harem',
+                    tag: 'aafb99c1-7f60-43fa-b75f-fc9502ce29c7',
+                    cubit: MangaCubit()
+                      ..searchManga('',
+                          tags: ['aafb99c1-7f60-43fa-b75f-fc9502ce29c7']),
                   ),
                 ),
                 const SizedBox(height: 100),

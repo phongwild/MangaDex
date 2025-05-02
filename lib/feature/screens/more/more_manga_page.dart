@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:app/core/app_log.dart';
+import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/cubit/tag_cubit.dart';
 import 'package:app/feature/screens/more/widget/filter_bottomsheet.dart';
@@ -62,9 +63,8 @@ class __BodyPageState extends State<_BodyPage> {
     return Scaffold(
       backgroundColor: const Color(0xffd1d5db),
       appBar: AppBar(
-        backgroundColor: const Color(0xffd1d5db),
+        backgroundColor: AppColors.transparent,
         elevation: 0,
-        toolbarHeight: 30,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -88,12 +88,7 @@ class __BodyPageState extends State<_BodyPage> {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Stack(
             children: [
-              Column(
-                children: [
-                  const SizedBox(height: 10),
-                  ListMoreMangaWidget(totals: totals),
-                ],
-              ),
+              ListMoreMangaWidget(totals: totals),
               Positioned(
                 bottom: 10,
                 left: 0,
