@@ -5,8 +5,10 @@
 NettromDex là dự án ứng dụng đọc Manga online được xây dựng bằng Flutter, dữ liệu được lấy hoàn toàn từ MangaDex.
 Giao diện mượt mà và thân thiện, có thể:
 
+- Đăng nhập, đăng kí.
 - Tìm kiếm và đọc toàn bộ truyện có trên MangaDex trong ứng dụng.
 - Cập nhật chap mới nhất theo thời gian thực.
+- Theo dõi truyện và bình luận.
 
 ## Cài đặt
 
@@ -14,10 +16,10 @@ Hướng dẫn cài đặt và chạy project:
 
 ```bash
 # Clone repository
-git clone https://github.com/phongwild/NettromDex
+git clone https://github.com/phongwild/MangaDex
 
 # Chuyển vào thư mục project
-cd NettromDex
+cd MangaDex
 
 # Cài đặt dependencies
 flutter pub get
@@ -30,6 +32,7 @@ flutter run
 
 - Đọc truyện: Xem các chương truyện trực tiếp từ MangaDex.
 - Tìm kiếm: Tìm kiếm theo tên truyện, tác giả, thể loại, ...
+- Người dùng: Đăng nhập, đăng kí, theo dõi, bình luận, lịch sử đọc truyện.
 
 ## Ảnh xem trước
 

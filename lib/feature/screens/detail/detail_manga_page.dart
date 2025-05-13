@@ -145,6 +145,19 @@ class __BodyPageState extends State<_BodyPage> {
           },
           icon: Icon(Icons.arrow_back_ios_rounded, color: AppColors.white),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // showModalBottomSheet(
+              //   context: context,
+              //   builder: (context) {
+              //     return const BottomSheetDetail();
+              //   },
+              // );
+            },
+            icon: Icon(Icons.ios_share_outlined, color: AppColors.white),
+          )
+        ],
       ),
       body: SafeArea(
         child: Container(
