@@ -18,23 +18,19 @@ class ListMoreMangaWidget extends StatelessWidget {
     return BlocBuilder<MangaCubit, MangaState>(
       builder: (context, state) {
         if (state is MangaLoading) {
-          return Flexible(
-            child: Center(
-              child: LoadingShimmer().loadingCircle(),
-            ),
+          return Center(
+            child: LoadingShimmer().loadingCircle(),
           );
         }
         if (state is MangaError) {
-          return Flexible(
-            child: Center(
-              child: Text(state.message),
-            ),
+          return Center(
+            child: Text(state.message),
           );
         }
         if (state is MangaLoaded) {
           final mangas = state.mangas;
           totals.value = state.total ?? 0;
-          return Expanded(child: ListMangaWidget(mangaList: mangas));
+          return ListMangaWidget(mangaList: mangas);
         }
         return const SizedBox(height: 10);
       },

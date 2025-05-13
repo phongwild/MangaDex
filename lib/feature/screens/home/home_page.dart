@@ -9,6 +9,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+
 import '../detail/detail_manga_page.dart';
 import 'widget/list_manga_widget.dart';
 
@@ -55,9 +56,7 @@ class _BodyPageState extends State<_BodyPage> {
 
   void _listenToIncomingLinks() {
     _appLinks.uriLinkStream.listen((uri) {
-      if (uri != null) {
-        _navigateFromLink(uri);
-      }
+      _navigateFromLink(uri);
     });
   }
 
