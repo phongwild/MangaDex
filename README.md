@@ -1,8 +1,8 @@
-# NettromDex
+# MangaDex
 
 ## Giới thiệu
 
-NettromDex là dự án ứng dụng đọc Manga online được xây dựng bằng Flutter, dữ liệu được lấy hoàn toàn từ MangaDex.
+MangaDex là dự án ứng dụng đọc Manga online được xây dựng bằng Flutter, dữ liệu được lấy hoàn toàn từ MangaDex.
 Giao diện mượt mà và thân thiện, có thể:
 
 - Đăng nhập, đăng kí.
