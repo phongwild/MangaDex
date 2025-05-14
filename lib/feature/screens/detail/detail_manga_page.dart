@@ -20,7 +20,9 @@ import 'package:app/feature/screens/reading/read_chapter_page.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:app/feature/utils/toast_app.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
@@ -148,12 +150,37 @@ class __BodyPageState extends State<_BodyPage> {
         actions: [
           IconButton(
             onPressed: () {
-              // showModalBottomSheet(
-              //   context: context,
-              //   builder: (context) {
-              //     return const BottomSheetDetail();
-              //   },
-              // );
+              showCupertinoModalPopup(
+                context: context,
+                builder: (BuildContext context) => CupertinoActionSheet(
+                  actions: <CupertinoActionSheetAction>[
+                    CupertinoActionSheetAction(
+                      onPressed: () {
+                        final urlManga =
+                            'https://mangadex.org/title/${widget.idManga}';
+                        Clipboard.setData(ClipboardData(text: urlManga));
+                        Navigator.pop(context);
+                        showToast('Sao chép thành công');
+                      },
+                      isDefaultAction: true,
+                      child: Text(
+                        'Sao chép địa chỉ manga',
+                        style: AppsTextStyle.text14Weight600,
+                      ),
+                    ),
+                  ],
+                  cancelButton: CupertinoActionSheetAction(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    isDestructiveAction: true,
+                    child: Text(
+                      'Huỷ',
+                      style: AppsTextStyle.text14Weight600,
+                    ),
+                  ),
+                ),
+              );
             },
             icon: Icon(Icons.ios_share_outlined, color: AppColors.white),
           )

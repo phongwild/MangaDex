@@ -6,7 +6,7 @@ part of 'manga_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Manga _$MangaFromJson(Map<String, dynamic> json) => Manga(
+_$MangaImpl _$$MangaImplFromJson(Map<String, dynamic> json) => _$MangaImpl(
       id: json['id'] as String,
       type: json['type'] as String,
       attributes:
@@ -17,10 +17,11 @@ Manga _$MangaFromJson(Map<String, dynamic> json) => Manga(
       chapterCount: (json['chapterCount'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$MangaToJson(Manga instance) => <String, dynamic>{
+Map<String, dynamic> _$$MangaImplToJson(_$MangaImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'type': instance.type,
-      'attributes': instance.attributes.toJson(),
-      'relationships': instance.relationships.map((e) => e.toJson()).toList(),
+      'attributes': instance.attributes,
+      'relationships': instance.relationships,
       'chapterCount': instance.chapterCount,
     };

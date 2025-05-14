@@ -6,7 +6,8 @@ part of 'relationship_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Relationship _$RelationshipFromJson(Map<String, dynamic> json) => Relationship(
+_$RelationshipImpl _$$RelationshipImplFromJson(Map<String, dynamic> json) =>
+    _$RelationshipImpl(
       id: json['id'] as String?,
       type: json['type'] as String?,
       attributes: json['attributes'] == null
@@ -14,14 +15,15 @@ Relationship _$RelationshipFromJson(Map<String, dynamic> json) => Relationship(
           : Attribute.fromJson(json['attributes'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$RelationshipToJson(Relationship instance) =>
+Map<String, dynamic> _$$RelationshipImplToJson(_$RelationshipImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'type': instance.type,
-      'attributes': instance.attributes?.toJson(),
+      'attributes': instance.attributes,
     };
 
-Attribute _$AttributeFromJson(Map<String, dynamic> json) => Attribute(
+_$AttributeImpl _$$AttributeImplFromJson(Map<String, dynamic> json) =>
+    _$AttributeImpl(
       description: json['description'] as String?,
       volume: json['volume'] as String?,
       fileName: json['fileName'] as String?,
@@ -31,7 +33,8 @@ Attribute _$AttributeFromJson(Map<String, dynamic> json) => Attribute(
       version: (json['version'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$AttributeToJson(Attribute instance) => <String, dynamic>{
+Map<String, dynamic> _$$AttributeImplToJson(_$AttributeImpl instance) =>
+    <String, dynamic>{
       'description': instance.description,
       'volume': instance.volume,
       'fileName': instance.fileName,

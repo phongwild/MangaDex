@@ -1,7 +1,8 @@
-import 'package:app/feature/utils/translate_lang.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
 import 'package:app/core/app_log.dart';
 import 'package:app/feature/dio/dio_client.dart';
+import 'package:app/feature/utils/translate_lang.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,18 +15,21 @@ String baseUrl = 'https://api.mangadex.org/';
 final translateLang = TranslateLang();
 final ConnectionUtils connectionUtils = ConnectionUtils();
 
-class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
-  MangaCubit() : super(MangaStateInitial()) {
+class MangaCubit extends Cubit<MangaState> {
+  MangaCubit() : super(const MangaInitial()) {
     connectionUtils.addListener(_onNetworkChanged);
   }
+
   bool _isWaitingForNetwork = false;
   Map<String, dynamic>? _lastFetchParams;
-  bool isDisposed = false; // 🛡 Tránh gọi API khi Cubit bị dispose
+  bool isDisposed = false;
+  Timer? _debounceTimer;
 
   @override
-  Future<void> close() {
-    isDisposed = true; // Đánh dấu đã dispose
+  Future<void> close() async {
+    isDisposed = true;
     connectionUtils.removeListener(_onNetworkChanged);
+    _debounceTimer?.cancel();
     return super.close();
   }
 
@@ -55,10 +59,10 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
         followedCount: _lastFetchParams!['followedCount'],
       );
     }
+    _lastFetchParams = null; // Reset sau khi retry
   }
 
-  // Lấy danh sách manga (dùng Isolate để xử lý API call)
-  void getManga({
+  Future<void> getManga({
     required bool isLatestUploadedChapter,
     required int limit,
     required int offset,
@@ -77,28 +81,33 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
       return;
     }
 
-    emit(MangaLoading());
+    if (_lastFetchParams != null &&
+        _lastFetchParams!['isLatestUploadedChapter'] ==
+            isLatestUploadedChapter &&
+        _lastFetchParams!['limit'] == limit &&
+        _lastFetchParams!['offset'] == offset) {
+      return;
+    }
 
-    final result = compute(_fetchManga, [
-      isLatestUploadedChapter,
-      translateLang.language,
-      limit,
-      offset,
-    ]);
-    if (isDisposed) return; //Kiểm tra trc khi emit
-    result.then((result) {
+    emit(const MangaLoading());
+
+    try {
+      final result = await _fetchManga([
+        isLatestUploadedChapter,
+        translateLang.language,
+        limit,
+        offset,
+      ]);
+
       emit(MangaLoaded(
         result['mangas'],
         total: result['total'] as int? ?? 0,
       ));
-    }).catchError((error) {
-      if (isDisposed) return; //Kiểm tra trc khi emit
-      dlog('Lỗi khi lấy Manga: $error');
-      emit(MangaError(error.toString()));
-    });
+    } catch (error) {
+      emit(MangaError(_formatError(error)));
+    }
   }
 
-  // Tìm kiếm manga (tối ưu hóa với Isolate)
   Future<void> searchManga(
     String query, {
     List<String>? tags,
@@ -108,65 +117,60 @@ class MangaCubit extends Cubit<MangaState> with NetWorkMixin {
   }) async {
     if (state is MangaLoading || isDisposed) return;
 
-    if (!connectionUtils.isActive) {
-      _isWaitingForNetwork = true;
-      _lastFetchParams = {
-        'method': 'searchManga',
-        'query': query,
-        'tags': tags ?? [],
-        'offset': offset ?? 0,
-        'limit': limit,
-        'followedCount': followedCount,
-      };
-      emit(const MangaError(
-          "Không có kết nối mạng! Đợi kết nối lại để tải dữ liệu."));
-      return;
-    }
-
-    emit(MangaLoading());
-
-    try {
-      Map<String, dynamic> result;
-
-      if (limit > 5) {
-        // 🔥 Chạy trên Isolate nếu limit lớn
-        result = await compute(_fetchSearchManga, {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+      if (!connectionUtils.isActive) {
+        _isWaitingForNetwork = true;
+        _lastFetchParams = {
+          'method': 'searchManga',
           'query': query,
           'tags': tags ?? [],
           'offset': offset ?? 0,
           'limit': limit,
-          'translateLang': translateLang.language,
           'followedCount': followedCount,
-        });
-      } else {
-        // 🚀 Gọi trực tiếp nếu limit nhỏ để giảm overhead
-        result = await _fetchSearchManga({
-          'query': query,
-          'tags': tags ?? [],
-          'offset': offset ?? 0,
-          'limit': limit,
-          'translateLang': translateLang.language,
-          'followedCount': followedCount,
-        });
+        };
+        emit(const MangaError('Không có kết nối mạng! Đợi kết nối lại.'));
+        return;
       }
 
-      emit(MangaLoaded(
-        result['mangas'] as List<Manga>,
-        total: result['total'] as int? ?? 0,
-      ));
-    } catch (error) {
-      if (isDisposed) return;
-      dlog('Lỗi khi tìm kiếm Manga: $error');
-      emit(MangaError('Lỗi: $error'));
-    }
+      if (_lastFetchParams != null &&
+          _lastFetchParams!['query'] == query &&
+          _lastFetchParams!['tags'] == tags &&
+          _lastFetchParams!['offset'] == offset &&
+          _lastFetchParams!['limit'] == limit &&
+          _lastFetchParams!['followedCount'] == followedCount) {
+        return;
+      }
+
+      emit(const MangaLoading());
+
+      try {
+        final result = await _fetchSearchManga({
+          'query': query,
+          'tags': tags ?? [],
+          'offset': offset ?? 0,
+          'limit': limit,
+          'translateLang': translateLang.language,
+          'followedCount': followedCount,
+        });
+
+        emit(MangaLoaded(
+          result['mangas'] as List<Manga>,
+          total: result['total'] as int? ?? 0,
+        ));
+      } catch (error) {
+        emit(MangaError(_formatError(error)));
+      }
+    });
   }
+
+  String _formatError(Object error) => 'Lỗi: ${error.toString()}';
 }
 
-// Hàm xử lý API call cho Isolate (fetch manga)
 Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
   try {
     final isLatestUploadedChapter = param[0] as bool;
-    final translateLang = param[1] as String?;
+    final translateLang = param[1] as String;
     final limit = param[2] as int;
     final offset = param[3] as int;
 
@@ -178,29 +182,22 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
       'order[$orderBy]': 'desc',
       'limit': limit,
       'offset': offset,
-      // 'contentRating[]': 'pornographic'
+      'availableTranslatedLanguage[]': translateLang,
     };
-
-    if (translateLang != null) {
-      queryParams['availableTranslatedLanguage[]'] = translateLang;
-    }
 
     final response = await DioClient.create().get(
       '${baseUrl}manga',
       queryParameters: queryParams,
     );
 
-    if (response.statusCode == 200) {
-      final rawData = response.data?['data'];
+    if (response.statusCode == 200 && response.data != null) {
+      final rawData = response.data?['data'] ?? [];
       final mangaList =
           rawData.map<Manga>((json) => Manga.fromJson(json)).toList();
       final total = response.data?['total'] ?? 0;
-      return {
-        'mangas': mangaList,
-        'total': total,
-      };
+      return {'mangas': mangaList, 'total': total};
     } else {
-      dlog('API Error: ${response.statusCode}');
+      dlog('API Error: ${response.statusCode}, Data: ${response.data}');
       return {'mangas': [], 'total': 0};
     }
   } catch (e, stackTrace) {
@@ -209,7 +206,6 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
   }
 }
 
-// Hàm xử lý tìm kiếm Manga cho Isolate
 Future<Map<String, dynamic>> _fetchSearchManga(
     Map<String, dynamic> params) async {
   try {
@@ -217,7 +213,7 @@ Future<Map<String, dynamic>> _fetchSearchManga(
     final tags = params['tags'] as List<String>;
     final offset = params['offset'] as int;
     final limit = params['limit'] as int;
-    final translateLang = params['translateLang'] as String?;
+    final translateLang = params['translateLang'] as String;
     final followedCount = params['followedCount'] as bool;
 
     final orderBy = followedCount ? 'followedCount' : 'latestUploadedChapter';
@@ -235,18 +231,14 @@ Future<Map<String, dynamic>> _fetchSearchManga(
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.data != null) {
       final rawData = response.data?['data'] as List<dynamic>;
       final mangaList =
           rawData.map<Manga>((json) => Manga.fromJson(json)).toList();
       final total = response.data?['total'] ?? 0;
-
-      return {
-        'mangas': mangaList,
-        'total': total,
-      };
+      return {'mangas': mangaList, 'total': total};
     } else {
-      dlog('API Error: ${response.statusCode}');
+      dlog('API Error: ${response.statusCode}, Data: ${response.data}');
       return {'mangas': [], 'total': 0};
     }
   } catch (e, stackTrace) {

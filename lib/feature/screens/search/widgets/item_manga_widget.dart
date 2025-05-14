@@ -5,6 +5,7 @@ import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/image_app.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:flutter/material.dart';
+
 import '../../../models/relationship_model.dart';
 import '../../detail/detail_manga_page.dart';
 
@@ -22,13 +23,14 @@ class ListMangaWidget extends StatelessWidget {
         itemCount: mangaList.length > 15 ? 15 : mangaList.length,
         scrollDirection: Axis.vertical,
         padding: const EdgeInsets.only(bottom: 50),
+        shrinkWrap: true,
         separatorBuilder: (context, index) => const SizedBox(height: 5),
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           final manga = mangaList[index];
           final coverArtId = manga.relationships.firstWhere(
             (rel) => rel.type == 'cover_art',
-            orElse: () => Relationship(type: '', attributes: null),
+            orElse: () => const Relationship(type: '', attributes: null),
           );
           final coverArt = coverArtId.attributes?.fileName ?? '';
 

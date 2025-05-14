@@ -6,21 +6,23 @@ part of 'chapter_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ChapterWrapper _$ChapterWrapperFromJson(Map<String, dynamic> json) =>
-    ChapterWrapper(
+_$ChapterWrapperImpl _$$ChapterWrapperImplFromJson(Map<String, dynamic> json) =>
+    _$ChapterWrapperImpl(
       id: json['id'] as String,
       type: json['type'] as String,
       attributes: Chapter.fromJson(json['attributes'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$ChapterWrapperToJson(ChapterWrapper instance) =>
+Map<String, dynamic> _$$ChapterWrapperImplToJson(
+        _$ChapterWrapperImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'type': instance.type,
-      'attributes': instance.attributes.toJson(),
+      'attributes': instance.attributes,
     };
 
-Chapter _$ChapterFromJson(Map<String, dynamic> json) => Chapter(
+_$ChapterImpl _$$ChapterImplFromJson(Map<String, dynamic> json) =>
+    _$ChapterImpl(
       volume: json['volume'] as String?,
       chapter: json['chapter'] as String?,
       title: json['title'] as String?,
@@ -34,7 +36,8 @@ Chapter _$ChapterFromJson(Map<String, dynamic> json) => Chapter(
       version: (json['version'] as num).toInt(),
     );
 
-Map<String, dynamic> _$ChapterToJson(Chapter instance) => <String, dynamic>{
+Map<String, dynamic> _$$ChapterImplToJson(_$ChapterImpl instance) =>
+    <String, dynamic>{
       'volume': instance.volume,
       'chapter': instance.chapter,
       'title': instance.title,
