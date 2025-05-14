@@ -80,10 +80,21 @@ class __BodyPageState extends State<_BodyPage>
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const UserInfoWidget(),
-                  Tabbar_user_widget(tabController: _tabController),
-                  const SizedBox(height: 10),
-                  TabbarView_widget(tabController: _tabController),
+                  Expanded(
+                    child: ListView(
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        const UserInfoWidget(),
+                        Tabbar_user_widget(tabController: _tabController),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child:
+                              TabbarView_widget(tabController: _tabController),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               Positioned(

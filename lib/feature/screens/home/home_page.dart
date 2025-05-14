@@ -38,8 +38,8 @@ class _BodyPageState extends State<_BodyPage> {
   @override
   void initState() {
     super.initState();
-    _handleInitialLink();
-    _listenToIncomingLinks();
+    // _handleInitialLink();
+    // _listenToIncomingLinks();
   }
 
   @override

@@ -6,7 +6,8 @@ part of 'attributes_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Attributes _$AttributesFromJson(Map<String, dynamic> json) => Attributes(
+_$AttributesImpl _$$AttributesImplFromJson(Map<String, dynamic> json) =>
+    _$AttributesImpl(
       title: json['title'] as Map<String, dynamic>?,
       altTitles: (json['altTitles'] as List<dynamic>?)
           ?.map((e) => e as Map<String, dynamic>)
@@ -30,7 +31,7 @@ Attributes _$AttributesFromJson(Map<String, dynamic> json) => Attributes(
       lastChapter: json['lastChapter'] as String?,
     );
 
-Map<String, dynamic> _$AttributesToJson(Attributes instance) =>
+Map<String, dynamic> _$$AttributesImplToJson(_$AttributesImpl instance) =>
     <String, dynamic>{
       'title': instance.title,
       'altTitles': instance.altTitles,
@@ -41,7 +42,7 @@ Map<String, dynamic> _$AttributesToJson(Attributes instance) =>
       'contentRating': instance.contentRating,
       'availableTranslatedLanguages': instance.availableTranslatedLanguages,
       'latestUploadedChapter': instance.latestUploadedChapter,
-      'tags': instance.tags.map((e) => e.toJson()).toList(),
+      'tags': instance.tags,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
       'lastVolume': instance.lastVolume,

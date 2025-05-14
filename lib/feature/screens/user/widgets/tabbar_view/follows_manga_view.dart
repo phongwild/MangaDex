@@ -138,14 +138,17 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
             children: [
               Column(
                 children: [
-                  Expanded(
-                    child: ListMangaWidget(
-                      mangaList: state.mangas,
-                      onRefresh: () async {
-                        fetchFollowedManga();
-                      },
+                  if (state.mangas.isEmpty)
+                    noFollowManga()
+                  else
+                    Expanded(
+                      child: ListMangaWidget(
+                        mangaList: state.mangas,
+                        onRefresh: () async {
+                          fetchFollowedManga();
+                        },
+                      ),
                     ),
-                  ),
                 ],
               ),
               Positioned(
@@ -161,6 +164,18 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
         return const SizedBox();
       },
     );
+  }
+
+  Widget noFollowManga() {
+    return Center(
+        child: ButtonAppWidget(
+      text: 'Bạn chưa theo dõi truyện nào :<<<',
+      color: const Color(0xff2563eb),
+      textColor: Colors.white,
+      onTap: () {},
+      isBoxShadow: false,
+      width: 320,
+    ));
   }
 
   @override

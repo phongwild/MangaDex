@@ -4,28 +4,25 @@ abstract class MangaState extends Equatable {
   const MangaState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class MangaStateInitial extends MangaState {}
+class MangaInitial extends MangaState {
+  const MangaInitial();
+}
 
-class MangaLoading extends MangaState {}
+class MangaLoading extends MangaState {
+  const MangaLoading();
+}
 
 class MangaLoaded extends MangaState {
   final List<Manga> mangas;
-  final int? latestUploadedChapter;
-  final String? updateAt;
-  final int? total;
+  final int total;
 
-  const MangaLoaded(
-    this.mangas, {
-    this.total,
-    this.latestUploadedChapter,
-    this.updateAt,
-  });
+  const MangaLoaded(this.mangas, {required this.total});
 
   @override
-  List<Object> get props => [mangas, total!];
+  List<Object?> get props => [mangas, total];
 }
 
 class MangaError extends MangaState {
@@ -34,5 +31,9 @@ class MangaError extends MangaState {
   const MangaError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
+}
+
+class MangaNoData extends MangaState {
+  const MangaNoData();
 }
