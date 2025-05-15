@@ -3,7 +3,6 @@ import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:app/feature/utils/toast_app.dart';
 import 'package:app/feature/widgets/button_app_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -77,36 +76,29 @@ class __BodyPageState extends State<_BodyPage> {
                     const Icon(IconlyLight.profile, color: Colors.white),
               ),
               const SizedBox(height: 10),
-              ButtonAppWidget(
-                text: _isLogin.isLoggedIn ? 'Đăng xuất' : 'Đăng nhập',
-                color: const Color(0xff2563eb),
-                textColor: Colors.white,
-                onTap: () {
-                  _isLogin.isLoggedIn
-                      ? context.read<AuthCubit>().logout()
-                      : Navigator.pushNamed(
-                          context, NettromdexRouter.mainLogin);
+              BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, state) {
+                  final loggedIn = state is AuthProfileLoaded;
+
+                  return ButtonAppWidget(
+                    text: loggedIn ? 'Đăng xuất' : 'Đăng nhập',
+                    color: const Color(0xff2563eb),
+                    textColor: Colors.white,
+                    onTap: () {
+                      if (loggedIn) {
+                        context.read<AuthCubit>().logout();
+                      } else {
+                        Navigator.pushNamed(
+                            context, NettromdexRouter.mainLogin);
+                      }
+                    },
+                    isBoxShadow: false,
+                    leadingIcon: Icon(
+                      loggedIn ? IconlyLight.logout : IconlyLight.login,
+                      color: Colors.white,
+                    ),
+                  );
                 },
-                isBoxShadow: false,
-                leadingIcon: BlocListener<AuthCubit, AuthState>(
-                  listener: (context, state) {
-                    if (state is AuthLogoutSuccess) {
-                      showToast('Đăng xuất thành công!!');
-                    }
-                  },
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: _isLogin.isLoggedIn
-                        ? const Icon(
-                            IconlyLight.logout,
-                            color: Colors.white,
-                          )
-                        : const Icon(
-                            IconlyLight.login,
-                            color: Colors.white,
-                          ),
-                  ),
-                ),
               )
             ],
           ),

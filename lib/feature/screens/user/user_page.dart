@@ -57,7 +57,7 @@ class __BodyPageState extends State<_BodyPage>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'NettromDex',
+          'MangaDex',
           style: AppsTextStyle.text18Weight700
               .copyWith(color: const Color(0xff374151)),
         ),

@@ -1,7 +1,6 @@
 import 'package:app/core/app_log.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
-import 'package:app/feature/screens/search/widgets/item_manga_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,6 +8,7 @@ import '../../../../../core_ui/widget/loading/shimmer.dart';
 import '../../../../utils/is_login.dart';
 import '../../../../widgets/button_app_widget.dart';
 import '../../../more/widget/item_offset_widget.dart';
+import '../list_follow_history.dart';
 
 class FollowsMangaView extends StatefulWidget {
   const FollowsMangaView({super.key});
@@ -136,20 +136,15 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
 
           return Stack(
             children: [
-              Column(
-                children: [
-                  if (state.mangas.isEmpty)
-                    noFollowManga()
-                  else
-                    Expanded(
-                      child: ListMangaWidget(
+              Positioned.fill(
+                child: state.mangas.isEmpty
+                    ? noFollowManga()
+                    : ListFollowHistory(
                         mangaList: state.mangas,
                         onRefresh: () async {
                           fetchFollowedManga();
                         },
                       ),
-                    ),
-                ],
               ),
               Positioned(
                 bottom: 10,

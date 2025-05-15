@@ -91,7 +91,7 @@ class _BodyPageState extends State<_BodyPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'NettromDex',
+          'MangaDex',
           style: AppsTextStyle.text18Weight700
               .copyWith(color: const Color(0xff374151)),
         ),
@@ -109,16 +109,16 @@ class _BodyPageState extends State<_BodyPage> {
             ),
           ),
           const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () {
-              _showLanguageDialog(context, context.read<MangaCubit>());
-            },
-            child: const Icon(
-              IconlyLight.setting,
-              color: Color(0xff374151),
-            ),
-          ),
-          const SizedBox(width: 10),
+          // GestureDetector(
+          //   onTap: () {
+          //     _showLanguageDialog(context, context.read<MangaCubit>());
+          //   },
+          //   child: const Icon(
+          //     IconlyLight.setting,
+          //     color: Color(0xff374151),
+          //   ),
+          // ),
+          // const SizedBox(width: 10),
         ],
       ),
       body: SafeArea(

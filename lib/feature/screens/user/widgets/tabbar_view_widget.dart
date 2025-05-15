@@ -12,15 +12,13 @@ class TabbarView_widget extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: TabBarView(
-        controller: tabController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: const [
-          FollowsMangaView(),
-          HistoryMangaView(),
-        ],
-      ),
+    return TabBarView(
+      controller: tabController,
+      physics: const NeverScrollableScrollPhysics(),
+      children: const [
+        FollowsMangaView(),
+        HistoryMangaView(),
+      ],
     );
   }
 }
