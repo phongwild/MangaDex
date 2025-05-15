@@ -173,17 +173,11 @@ class _HistoryMangaViewState extends State<HistoryMangaView> {
               return Expanded(
                 child: Stack(
                   children: [
-                    Column(
-                      children: [
-                        Expanded(
-                          child: ListMangaWidget(
-                            mangaList: state.mangas,
-                            onRefresh: () async {
-                              fetchHistory();
-                            },
-                          ),
-                        ),
-                      ],
+                    ListMangaWidget(
+                      mangaList: state.mangas,
+                      onRefresh: () async {
+                        fetchHistory();
+                      },
                     ),
                     Positioned(
                       bottom: 10,
