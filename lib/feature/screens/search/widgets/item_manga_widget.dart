@@ -7,6 +7,7 @@ import 'package:app/feature/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/relationship_model.dart';
+import '../../../utils/parse_cover_art.dart';
 import '../../detail/detail_manga_page.dart';
 
 class ListMangaWidget extends StatelessWidget {
@@ -41,8 +42,7 @@ class ListMangaWidget extends StatelessWidget {
                 NettromdexRouter.detailManga,
                 arguments: DetailMangaPage(
                   idManga: manga.id,
-                  coverArt:
-                      'https://uploads.mangadex.org/covers/${manga.id}/$coverArt',
+                  coverArt: parseCoverArt(manga.id, coverArt),
                   lastUpdate: manga.attributes.updatedAt != null
                       ? timeAgo(manga.attributes.updatedAt!)
                       : 'N/a',
@@ -61,7 +61,7 @@ class ListMangaWidget extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: ImageApp(
                         imageUrl: coverArt.isNotEmpty
-                            ? 'https://uploads.mangadex.org/covers/${manga.id}/$coverArt'
+                            ? parseCoverArt(manga.id, coverArt)
                             : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
                         height: 160,
                         width: 110,

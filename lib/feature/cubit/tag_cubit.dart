@@ -1,13 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../core/app_log.dart';
 import '../dio/dio_client.dart';
 import '../models/tag_model.dart';
 
 part 'tag_state.dart';
 
-String baseUrl = 'https://api.mangadex.org/';
+String baseUrl = 'https://api-manga-user.vercel.app/mangadex/';
 
 class TagCubit extends Cubit<TagState> with NetWorkMixin {
   TagCubit() : super(TagStateInitial());

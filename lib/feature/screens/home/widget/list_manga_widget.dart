@@ -10,6 +10,8 @@ import 'package:app/feature/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../utils/parse_cover_art.dart';
+
 class MangaList extends StatefulWidget {
   const MangaList({super.key});
 
@@ -61,7 +63,7 @@ class _MangaListState extends State<MangaList> {
               final coverArt = coverArtId.attributes?.fileName ?? '';
               return ItemListMangaWidget(
                 coverArt: coverArt.isNotEmpty
-                    ? 'https://uploads.mangadex.org/covers/${manga.id}/$coverArt'
+                    ? parseCoverArt(manga.id, coverArt)
                     : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
                 chapters: manga.attributes.lastChapter ?? 'N/a',
                 timeUpdate: (manga.attributes.updatedAt ?? '').isNotEmpty
@@ -74,8 +76,7 @@ class _MangaListState extends State<MangaList> {
                     NettromdexRouter.detailManga,
                     arguments: DetailMangaPage(
                       idManga: manga.id,
-                      coverArt:
-                          'https://uploads.mangadex.org/covers/${manga.id}/$coverArt',
+                      coverArt: parseCoverArt(manga.id, coverArt),
                       lastUpdate: (manga.attributes.updatedAt ?? '').isNotEmpty
                           ? timeAgo(manga.attributes.updatedAt!)
                           : 'N/a',

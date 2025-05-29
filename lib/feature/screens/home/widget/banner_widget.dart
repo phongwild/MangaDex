@@ -3,6 +3,7 @@ import 'package:app/feature/cubit/manga_cubit.dart';
 import 'package:app/feature/models/manga_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/image_app.dart';
+import 'package:app/feature/utils/parse_cover_art.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -95,7 +96,7 @@ class _BannersState extends State<Banners> {
           },
           child: bannerItem(
             (coverArt ?? '').isNotEmpty
-                ? 'https://uploads.mangadex.org/covers/${manga.id}/$coverArt'
+                ? parseCoverArt(manga.id, coverArt ?? '')
                 : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
             manga.attributes.getPreferredTitle(),
             manga.attributes.getPreferredDescription(),
