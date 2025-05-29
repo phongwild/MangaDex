@@ -12,8 +12,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'detail_manga_state.dart';
 
-const String urlManga = 'https://api.mangadex.org/manga';
-const String urlReadChapter = 'https://api.mangadex.org/at-home/server';
+const String urlManga = 'https://api-manga-user.vercel.app/mangadex/manga';
+const String urlReadChapter =
+    'https://api-manga-user.vercel.app/mangadex/at-home/server';
 final translateLang = TranslateLang();
 
 class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {

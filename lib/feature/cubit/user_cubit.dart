@@ -12,7 +12,7 @@ import '../utils/translate_lang.dart';
 part 'user_state.dart';
 
 const String baseUrl = 'https://api-manga-user.vercel.app';
-const String mangaDexApi = 'https://api.mangadex.org';
+const String mangaDexApi = 'https://api-manga-user.vercel.app/mangadex';
 final translateLang = TranslateLang();
 final ConnectionUtils connectionUtils = ConnectionUtils();
 
