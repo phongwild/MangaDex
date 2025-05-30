@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/toast_app.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:app/global/l10n/gen/app_localizations.dart';
 import 'package:app/global/router/app_route_observer/app_page_route_observer.dart';
 import 'package:app/global/router/router.dart';
+import 'package:flutter/cupertino.dart';
+
 import 'common/utils/app_connection_utils.dart';
 import 'global/router/app_route_observer/route_observer.dart';
 import 'global/router/app_router.dart';

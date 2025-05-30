@@ -86,140 +86,93 @@ class _BodyPageState extends State<_BodyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffd1d5db),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'MangaDex',
-          style: AppsTextStyle.text18Weight700
-              .copyWith(color: const Color(0xff374151)),
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                NettromdexRouter.moreManga,
-              );
-            },
-            child: const Icon(
-              IconlyLight.moreSquare,
-              color: Color(0xff374151),
-            ),
-          ),
-          const SizedBox(width: 10),
-          // GestureDetector(
-          //   onTap: () {
-          //     _showLanguageDialog(context, context.read<MangaCubit>());
-          //   },
-          //   child: const Icon(
-          //     IconlyLight.setting,
-          //     color: Color(0xff374151),
-          //   ),
-          // ),
-          // const SizedBox(width: 10),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       body: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.only(top: 0),
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: SingleChildScrollView(
+          child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                const Banners(),
-                const SizedBox(height: 30),
-                Text(
+            slivers: [
+              const SliverToBoxAdapter(child: SizedBox(height: 10)),
+              const SliverToBoxAdapter(child: Banners()),
+              const SliverToBoxAdapter(child: SizedBox(height: 30)),
+              SliverToBoxAdapter(
+                child: Text(
                   'Mới cập nhật',
                   style: AppsTextStyle.text18Weight700
                       .copyWith(color: const Color(0xff374151)),
                 ),
-                const SizedBox(height: 20),
-                const SizedBox(
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              const SliverToBoxAdapter(
+                child: SizedBox(
                   height: 800,
-                  child: MangaList(),
+                  child: RepaintBoundary(child: MangaList()),
                 ),
-                const SizedBox(height: 10),
-                more(),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 220,
-                  child: ListMangaByGenreWidget(
-                    title: 'Self-Published',
-                    tag: '891cf039-b895-47f0-9229-bef4c96eccd4',
-                    cubit: MangaCubit()
-                      ..searchManga('',
-                          tags: ['891cf039-b895-47f0-9229-bef4c96eccd4']),
-                  ),
-                ),
-                SizedBox(
-                  height: 220,
-                  child: ListMangaByGenreWidget(
-                    title: 'One shot',
-                    tag: '0234a31e-a729-4e28-9d6a-3f87c4966b9e',
-                    cubit: MangaCubit()
-                      ..searchManga('',
-                          tags: ['0234a31e-a729-4e28-9d6a-3f87c4966b9e']),
-                  ),
-                ),
-                SizedBox(
-                  height: 220,
-                  child: ListMangaByGenreWidget(
-                    title: 'Romcom',
-                    tag: '423e2eae-a7a2-4a8b-ac03-a8351462d71d',
-                    cubit: MangaCubit()
-                      ..searchManga('',
-                          tags: ['423e2eae-a7a2-4a8b-ac03-a8351462d71d']),
-                  ),
-                ),
-                SizedBox(
-                  height: 220,
-                  child: ListMangaByGenreWidget(
-                    title: 'Action',
-                    tag: '391b0423-d847-456f-aff0-8b0cfc03066b',
-                    cubit: MangaCubit()
-                      ..searchManga('',
-                          tags: ['391b0423-d847-456f-aff0-8b0cfc03066b']),
-                  ),
-                ),
-                SizedBox(
-                  height: 220,
-                  child: ListMangaByGenreWidget(
-                    title: 'Sci-Fi',
-                    tag: '256c8bd9-4904-4360-bf4f-508a76d67183',
-                    cubit: MangaCubit()
-                      ..searchManga('',
-                          tags: ['256c8bd9-4904-4360-bf4f-508a76d67183']),
-                  ),
-                ),
-                SizedBox(
-                  height: 220,
-                  child: ListMangaByGenreWidget(
-                    title: 'Harem',
-                    tag: 'aafb99c1-7f60-43fa-b75f-fc9502ce29c7',
-                    cubit: MangaCubit()
-                      ..searchManga('',
-                          tags: ['aafb99c1-7f60-43fa-b75f-fc9502ce29c7']),
-                  ),
-                ),
-                const SizedBox(height: 100),
-              ],
-            ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 10)),
+              SliverToBoxAdapter(child: more(context)),
+              const SliverToBoxAdapter(child: SizedBox(height: 10)),
+              ..._buildGenreSections(),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget more() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, NettromdexRouter.moreManga);
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Text(
+        'MangaDex',
+        style: AppsTextStyle.text18Weight700
+            .copyWith(color: const Color(0xff374151)),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(IconlyLight.moreSquare, color: Color(0xff374151)),
+          onPressed: () =>
+              Navigator.pushNamed(context, NettromdexRouter.moreManga),
+        ),
+        const SizedBox(width: 10),
+      ],
+    );
+  }
+
+  List<Widget> _buildGenreSections() {
+    final genres = <Map<String, String>>[
+      {
+        'title': 'Self-Published',
+        'tag': '891cf039-b895-47f0-9229-bef4c96eccd4'
       },
+      {'title': 'One shot', 'tag': '0234a31e-a729-4e28-9d6a-3f87c4966b9e'},
+      {'title': 'Romcom', 'tag': '423e2eae-a7a2-4a8b-ac03-a8351462d71d'},
+      {'title': 'Action', 'tag': '391b0423-d847-456f-aff0-8b0cfc03066b'},
+      {'title': 'Sci-Fi', 'tag': '256c8bd9-4904-4360-bf4f-508a76d67183'},
+      {'title': 'Harem', 'tag': 'aafb99c1-7f60-43fa-b75f-fc9502ce29c7'},
+    ];
+
+    return genres.map((genre) {
+      return SliverToBoxAdapter(
+        child: SizedBox(
+          height: 220,
+          child: ListMangaByGenreWidget(
+            title: genre['title']!,
+            tag: genre['tag']!,
+            cubit: MangaCubit()..searchManga('', tags: [genre['tag']!]),
+          ),
+        ),
+      );
+    }).toList();
+  }
+
+  Widget more(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, NettromdexRouter.moreManga),
       child: Container(
         alignment: Alignment.centerRight,
         child: Text(
@@ -228,120 +181,6 @@ class _BodyPageState extends State<_BodyPage> {
               .copyWith(color: const Color(0xff4b5563)),
         ),
       ),
-    );
-  }
-
-  // Dialog chuyển đổi ngôn ngữ
-  void _showLanguageDialog(BuildContext context, MangaCubit mangaCubit) {
-    String selectedLang = translateLang.language;
-
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: 'dialog',
-      transitionDuration: const Duration(milliseconds: 300),
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
-      },
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: StatefulBuilder(
-            builder: (context, setDialogState) {
-              return Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Chọn bản dịch',
-                      style: AppsTextStyle.text18Weight700.copyWith(
-                        color: const Color(0xff374151),
-                      ),
-                    ),
-                    const Divider(height: 30, thickness: 1),
-                    RadioListTile(
-                      title: Text(
-                        'Vietnamese',
-                        style: AppsTextStyle.text14Weight400,
-                      ),
-                      value: 'vi',
-                      groupValue: selectedLang,
-                      activeColor: const Color(0xff2563eb),
-                      onChanged: (value) {
-                        setDialogState(() {
-                          selectedLang = value.toString();
-                        });
-                      },
-                    ),
-                    RadioListTile(
-                      title: Text(
-                        'English',
-                        style: AppsTextStyle.text14Weight400,
-                      ),
-                      value: 'en',
-                      groupValue: selectedLang,
-                      activeColor: const Color(0xff2563eb),
-                      onChanged: (value) {
-                        setDialogState(() {
-                          selectedLang = value.toString();
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: TextButton.styleFrom(
-                            foregroundColor: const Color(0xff4b5563),
-                          ),
-                          child: Text(
-                            'Hủy',
-                            style: AppsTextStyle.text14Weight600,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            translateLang.language = selectedLang;
-                            mangaCubit.getManga(
-                              isLatestUploadedChapter: true,
-                              limit: 25,
-                              offset: 0,
-                            );
-                            Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xff2563eb),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'Xác nhận',
-                            style: AppsTextStyle.text14Weight600
-                                .copyWith(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
     );
   }
 }
