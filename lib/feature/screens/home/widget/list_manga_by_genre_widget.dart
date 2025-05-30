@@ -39,7 +39,7 @@ class ListMangaByGenreWidget extends StatelessWidget {
           value: cubit,
           child: SizedBox(
             height: 160,
-            child: _ListMangaList(),
+            child: RepaintBoundary(child: _ListMangaList()),
           ),
         ),
         _moreButton(context)

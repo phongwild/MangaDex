@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:app/common/utils/app_connection_utils.dart';
+import 'package:app/core/app_log.dart';
 // import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/core_ui/app_theme.dart/app_theme.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
@@ -9,9 +11,9 @@ import 'package:app/feature/utils/is_login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:app/core/app_log.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
+
 import 'app.dart';
 import 'core/http_override/custom_http_override.dart';
 import 'feature/cubit/auth_cubit.dart';
@@ -36,7 +38,7 @@ Future<void> main() async {
 
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    // debugProfileBuildsEnabled = true;
+    debugProfileBuildsEnabled = true;
     // debugPaintSizeEnabled = true;
 
     await di.init(); // Chờ inject dependencies
