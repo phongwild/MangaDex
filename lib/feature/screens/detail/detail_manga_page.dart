@@ -95,13 +95,7 @@ class __BodyPageState extends State<_BodyPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (_isLogin.isLoggedIn) {
-        context.read<UserCubit>().addToHistory(widget.idManga);
-        context.read<CommentsCubit>().getComments(widget.idManga);
-        final listId =
-            await context.read<UserCubit>().checkListFollowManga(limit: 500);
-        isFollowing.value = listId.contains(widget.idManga);
-      }
+      _initFollowStatus();
     });
   }
 
@@ -109,12 +103,16 @@ class __BodyPageState extends State<_BodyPage> {
   void didUpdateWidget(covariant _BodyPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (_isLogin.isLoggedIn) {
-        final listId =
-            await context.read<UserCubit>().checkListFollowManga(limit: 500);
-        isFollowing.value = listId.contains(widget.idManga);
-      }
+      _initFollowStatus();
     });
+  }
+
+  Future<void> _initFollowStatus() async {
+    if (_isLogin.isLoggedIn) {
+      final listId =
+          await context.read<UserCubit>().checkListFollowManga(limit: 500);
+      isFollowing.value = listId.contains(widget.idManga);
+    }
   }
 
   // Hàm xử lý trạng thái theo dõi
@@ -135,57 +133,28 @@ class __BodyPageState extends State<_BodyPage> {
 
   @override
   Widget build(BuildContext context) {
+    var appBar = AppBar(
+      backgroundColor: AppColors.transparent,
+      elevation: 0,
+      toolbarHeight: 40,
+      leading: IconButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: Icon(Icons.arrow_back_ios_rounded, color: AppColors.white),
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            _showSharePopUp(context);
+          },
+          icon: Icon(Icons.ios_share_outlined, color: AppColors.white),
+        )
+      ],
+    );
     return Scaffold(
       backgroundColor: AppColors.bgMain,
-      appBar: AppBar(
-        backgroundColor: AppColors.transparent,
-        elevation: 0,
-        toolbarHeight: 40,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back_ios_rounded, color: AppColors.white),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              showCupertinoModalPopup(
-                context: context,
-                builder: (BuildContext context) => CupertinoActionSheet(
-                  actions: <CupertinoActionSheetAction>[
-                    CupertinoActionSheetAction(
-                      onPressed: () {
-                        final urlManga =
-                            'https://mangadex.org/title/${widget.idManga}';
-                        Clipboard.setData(ClipboardData(text: urlManga));
-                        Navigator.pop(context);
-                        showToast('Sao chép thành công');
-                      },
-                      isDefaultAction: true,
-                      child: Text(
-                        'Sao chép địa chỉ manga',
-                        style: AppsTextStyle.text14Weight600,
-                      ),
-                    ),
-                  ],
-                  cancelButton: CupertinoActionSheetAction(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    isDestructiveAction: true,
-                    child: Text(
-                      'Huỷ',
-                      style: AppsTextStyle.text14Weight600,
-                    ),
-                  ),
-                ),
-              );
-            },
-            icon: Icon(Icons.ios_share_outlined, color: AppColors.white),
-          )
-        ],
-      ),
+      appBar: appBar,
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.only(
@@ -245,8 +214,10 @@ class __BodyPageState extends State<_BodyPage> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    CoverDetailWidget(
-                                      coverArt: widget.coverArt,
+                                    RepaintBoundary(
+                                      child: CoverDetailWidget(
+                                        coverArt: widget.coverArt,
+                                      ),
                                     ),
                                     const SizedBox(height: 15),
                                     Padding(
@@ -296,17 +267,19 @@ class __BodyPageState extends State<_BodyPage> {
                                           horizontal: 10),
                                       width: double.infinity,
                                       alignment: Alignment.center,
-                                      child: TagWidget(
-                                        listTag: tag,
-                                        isEnable: false,
-                                        onTap: (id) {
-                                          Navigator.pushNamed(
-                                            context,
-                                            NettromdexRouter.moreManga,
-                                            arguments:
-                                                MoreMangaPage(tag: id.id),
-                                          );
-                                        },
+                                      child: RepaintBoundary(
+                                        child: TagWidget(
+                                          listTag: tag,
+                                          isEnable: false,
+                                          onTap: (id) {
+                                            Navigator.pushNamed(
+                                              context,
+                                              NettromdexRouter.moreManga,
+                                              arguments:
+                                                  MoreMangaPage(tag: id.id),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(height: 10),
@@ -417,23 +390,29 @@ class __BodyPageState extends State<_BodyPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      DescriptionWidget(
-                        desc: description,
+                      RepaintBoundary(
+                        child: DescriptionWidget(
+                          desc: description,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       if (chapters.isNotEmpty && total > 0)
-                        ListChapterWidget(
-                          key: ValueKey(chapters.length),
-                          listChapters: chapters,
-                          idManga: widget.idManga,
-                          total: total,
-                          currentPage: currentPage,
+                        RepaintBoundary(
+                          child: ListChapterWidget(
+                            key: ValueKey(chapters.length),
+                            listChapters: chapters,
+                            idManga: widget.idManga,
+                            total: total,
+                            currentPage: currentPage,
+                          ),
                         )
                       else
                         listNull(),
-                      CommentWidget(
-                        mangaID: widget.idManga,
-                        uid: _isLogin.uid ?? '',
+                      RepaintBoundary(
+                        child: CommentWidget(
+                          mangaID: widget.idManga,
+                          uid: _isLogin.uid ?? '',
+                        ),
                       )
                     ],
                   ),
@@ -441,6 +420,39 @@ class __BodyPageState extends State<_BodyPage> {
               }
               return const SizedBox();
             },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> _showSharePopUp(BuildContext context) {
+    return showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              final urlManga = 'https://mangadex.org/title/${widget.idManga}';
+              Clipboard.setData(ClipboardData(text: urlManga));
+              Navigator.pop(context);
+              showToast('Sao chép thành công');
+            },
+            isDefaultAction: true,
+            child: Text(
+              'Sao chép địa chỉ manga',
+              style: AppsTextStyle.text14Weight600,
+            ),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          isDestructiveAction: true,
+          child: Text(
+            'Huỷ',
+            style: AppsTextStyle.text14Weight600,
           ),
         ),
       ),
