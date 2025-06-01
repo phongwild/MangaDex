@@ -1,5 +1,6 @@
 import 'package:app/feature/cubit/auth_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
+import 'package:app/feature/utils/cached_manage_app.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:app/feature/utils/toast_app.dart';
 import 'package:app/feature/widgets/button_app_widget.dart';
@@ -55,8 +56,8 @@ class __BodyPageState extends State<_BodyPage> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
+            spacing: 10,
             children: [
-              const SizedBox(height: 10),
               ButtonAppWidget(
                 text: 'Thông tin cá nhân',
                 color: const Color(0xff2563eb),
@@ -75,7 +76,17 @@ class __BodyPageState extends State<_BodyPage> {
                 leadingIcon:
                     const Icon(IconlyLight.profile, color: Colors.white),
               ),
-              const SizedBox(height: 10),
+              ButtonAppWidget(
+                text: 'Xoá bộ nhớ đệm',
+                color: const Color(0xff2563eb),
+                textColor: Colors.white,
+                onTap: () async {
+                  await clearAllCacheFolder();
+                },
+                isBoxShadow: false,
+                leadingIcon:
+                    const Icon(IconlyLight.delete, color: Colors.white),
+              ),
               BlocBuilder<AuthCubit, AuthState>(
                 builder: (context, state) {
                   final loggedIn = state is AuthProfileLoaded;
