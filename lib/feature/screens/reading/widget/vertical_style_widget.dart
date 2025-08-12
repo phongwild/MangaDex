@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import '../../../models/chapter_data_model.dart';
 import 'page_chapter_widget.dart';
 
-class vertical_widget extends StatelessWidget {
-  const vertical_widget({
+class VerticalWidget extends StatelessWidget {
+  const VerticalWidget({
     super.key,
     required this.totalPages,
     required this.chapterData,

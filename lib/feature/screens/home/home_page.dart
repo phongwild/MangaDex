@@ -160,10 +160,12 @@ class _BodyPageState extends State<_BodyPage> {
       return SliverToBoxAdapter(
         child: SizedBox(
           height: 220,
-          child: ListMangaByGenreWidget(
-            title: genre['title']!,
-            tag: genre['tag']!,
-            cubit: MangaCubit()..searchManga('', tags: [genre['tag']!]),
+          child: RepaintBoundary(
+            child: ListMangaByGenreWidget(
+              title: genre['title']!,
+              tag: genre['tag']!,
+              cubit: MangaCubit()..searchManga('', tags: [genre['tag']!]),
+            ),
           ),
         ),
       );
