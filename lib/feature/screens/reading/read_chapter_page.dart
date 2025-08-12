@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math';
+
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
@@ -10,6 +12,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preload_page_view/preload_page_view.dart';
+
 import 'widget/style_reading_widget.dart';
 import 'widget/vertical_style_widget.dart';
 
@@ -105,6 +108,10 @@ class __BodyPageState extends State<_BodyPage> {
   void dispose() {
     _hideTimer?.cancel();
     _pageController.dispose();
+    currentPage.dispose();
+    _showControls.dispose();
+    styleReading.dispose();
+    idCurrentChapter.dispose();
     super.dispose();
   }
 
@@ -145,14 +152,17 @@ class __BodyPageState extends State<_BodyPage> {
                         // Kiểm tra xem kiểu đọc có phải là ngang hay dọc
                         if (styleReading.value == false) {
                           return HorizontalStyleWidget(
+                            idChapter: idCurrentChapter.value,
+                            listChapters: widget.listChapters,
                             chapterData: chapterData,
                             pageController: _pageController,
                             currentPage: currentPage,
                             totalPages: totalPages,
                             showControls: _showControls,
+                            onChapterChange: (id) => updateChapter(id),
                           );
                         } else {
-                          return vertical_widget(
+                          return VerticalWidget(
                             totalPages: totalPages,
                             chapterData: chapterData,
                           );
@@ -246,7 +256,9 @@ class __BodyPageState extends State<_BodyPage> {
   }
 
   void preloadImages(List<String> imageUrls, ChapterData chapterData) {
-    for (var url in imageUrls) {
+    final limit = min(10, imageUrls.length);
+    for (var i = 0; i < limit; i++) {
+      final url = imageUrls[i];
       final imageUrl = '${chapterData.baseUrl}/data/${chapterData.hash}/$url';
       precacheImage(CachedNetworkImageProvider(imageUrl), context);
     }

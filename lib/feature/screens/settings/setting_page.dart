@@ -1,5 +1,6 @@
 import 'package:app/feature/cubit/auth_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
+import 'package:app/feature/screens/settings/widgets/dialog_setting.dart';
 import 'package:app/feature/utils/cached_manage_app.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:app/feature/utils/toast_app.dart';
@@ -29,6 +30,24 @@ class _BodyPage extends StatefulWidget {
 
 class __BodyPageState extends State<_BodyPage> {
   final IsLogin _isLogin = IsLogin.getInstance();
+  void showDialogLogout() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return DialogSetting(
+          title: 'Bạn có muốn đăng xuất không?',
+          confirmText: 'Yẹt sơ',
+          cancelText: 'Nooo',
+          onConfirm: () {
+            context.read<AuthCubit>().logout();
+            showToast('Đăng xuất thành công');
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,6 +101,7 @@ class __BodyPageState extends State<_BodyPage> {
                 textColor: Colors.white,
                 onTap: () async {
                   await clearAllCacheFolder();
+                  showToast('Xoá thành công');
                 },
                 isBoxShadow: false,
                 leadingIcon:
@@ -97,7 +117,7 @@ class __BodyPageState extends State<_BodyPage> {
                     textColor: Colors.white,
                     onTap: () {
                       if (loggedIn) {
-                        context.read<AuthCubit>().logout();
+                        showDialogLogout();
                       } else {
                         Navigator.pushNamed(
                             context, NettromdexRouter.mainLogin);
