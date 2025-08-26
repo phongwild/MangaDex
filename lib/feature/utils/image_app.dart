@@ -1,3 +1,4 @@
+import 'package:app/core/performance_config.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/utils/cached_manage_app.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -22,6 +23,7 @@ class ImageApp extends StatelessWidget {
   final Widget? errorWidget;
   final Widget? placeholder;
   static final CacheManager customCacheManager = cacheManager;
+  
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
@@ -29,12 +31,24 @@ class ImageApp extends StatelessWidget {
       errorWidget: (context, url, error) =>
           errorWidget ?? const Icon(Icons.broken_image),
       placeholder: (context, url) =>
-          placeholder ?? LoadingShimmer().loadingCircle(),
+          placeholder ?? const LoadingShimmer().loadingCircle(),
       height: height,
       width: width,
-      fadeInDuration: const Duration(milliseconds: 300),
+      // Sử dụng cấu hình từ PerformanceConfig
+      fadeInDuration: PerformanceConfig.optimalFadeDuration,
+      fadeOutDuration: const Duration(milliseconds: 100),
       fit: fit,
       cacheManager: customCacheManager,
+      // Thêm các tùy chọn tối ưu hóa
+      memCacheWidth: width?.toInt(),
+      memCacheHeight: height?.toInt(),
+      // Sử dụng cấu hình từ PerformanceConfig
+      filterQuality: PerformanceConfig.optimalImageQuality,
+      // Sử dụng placeholder đơn giản hơn
+      placeholderFadeInDuration: const Duration(milliseconds: 100),
+      // Tối ưu hóa memory
+      maxWidthDiskCache: width?.toInt(),
+      maxHeightDiskCache: height?.toInt(),
     );
   }
 }

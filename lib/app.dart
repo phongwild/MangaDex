@@ -23,6 +23,8 @@ class _MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final ConnectionUtils connectionUtils = ConnectionUtils();
   Timer? toastTimer;
+  bool _lastNetworkState = true; // Track last network state
+  
   @override
   void initState() {
     super.initState();
@@ -37,22 +39,27 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onNetworkChanged(bool isActive) {
-    if (!isActive) {
-      // Hiển thị toast khi mất mạng
-      if (toastTimer != null) return;
-      toastTimer?.cancel();
-      toastTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        if (!connectionUtils.isActive) {
-          showToast('Không có kết nối mạng! :(((', isError: true);
-        } else {
-          toastTimer?.cancel();
-          toastTimer = null;
-        }
-      });
-    } else {
-      toastTimer?.cancel();
-      toastTimer = null;
-      showToast('Kết nối internet thành công >.<');
+    // Chỉ hiển thị toast khi có thay đổi thực sự
+    if (_lastNetworkState != isActive) {
+      _lastNetworkState = isActive;
+      
+      if (!isActive) {
+        // Hiển thị toast khi mất mạng
+        if (toastTimer != null) return;
+        toastTimer?.cancel();
+        toastTimer = Timer.periodic(const Duration(seconds: 10), (timer) { // Tăng từ 5s lên 10s
+          if (!connectionUtils.isActive) {
+            showToast('Không có kết nối mạng! :(((', isError: true);
+          } else {
+            toastTimer?.cancel();
+            toastTimer = null;
+          }
+        });
+      } else {
+        toastTimer?.cancel();
+        toastTimer = null;
+        showToast('Kết nối internet thành công >.<');
+      }
     }
   }
 
@@ -72,6 +79,8 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: const Locale('vi', 'VN'),
       debugShowCheckedModeBanner: false,
+      // Tối ưu hóa performance
+      showPerformanceOverlay: false,
       navigatorObservers: [
         sl.get<AppRouteObserver>(),
         sl.get<AppPageRouteObserver>(),

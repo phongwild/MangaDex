@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:app/common/utils/app_connection_utils.dart';
 import 'package:app/core/app_log.dart';
+import 'package:app/core/performance_optimizer.dart';
 // import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/core_ui/app_theme.dart/app_theme.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
@@ -28,6 +29,7 @@ bool get isInDebugMode {
 
 /// [main]
 Future<void> main() async {
+  // Tối ưu hóa error handling
   FlutterError.onError = (FlutterErrorDetails details) async {
     if (!kReleaseMode) {
       FlutterError.dumpErrorToConsole(details);
@@ -38,16 +40,29 @@ Future<void> main() async {
 
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    debugProfileBuildsEnabled = true;
-    // debugPaintSizeEnabled = true;
-
-    await di.init(); // Chờ inject dependencies
-    await Future.delayed(const Duration(seconds: 1));
+    
+    // Chỉ bật debug profile trong debug mode
+    if (kDebugMode) {
+      debugProfileBuildsEnabled = true;
+    }
+    
+    // Khởi tạo PerformanceOptimizer trước
+    await PerformanceOptimizer().initialize();
+    
+    // Khởi tạo song song các dependencies không phụ thuộc nhau
+    await Future.wait([
+      di.init(), // Chờ inject dependencies
+      ConnectionUtils().init(),
+      IsLogin.getInstance().loadSession(),
+    ]);
+    
+    // Giảm delay từ 1s xuống 100ms
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    // Tối ưu hóa cache management
     await clearImageCacheIfNeeded();
-    await ConnectionUtils().init();
+    
     AppTheme().changeTheme(TypeTheme.light);
-    // await SharedPref.init();
-    await IsLogin.getInstance().loadSession();
     disableErrorWidget();
     HttpOverrides.global = CustomHttpOverrides();
 
@@ -61,8 +76,10 @@ Future<void> main() async {
             BlocProvider(
               create: (context) {
                 final authCubit = AuthCubit();
+                // Chỉ load profile nếu cần thiết
                 if (IsLogin.getInstance().isLoggedIn) {
-                  authCubit.getProfile();
+                  // Sử dụng microtask để không block UI
+                  Future.microtask(() => authCubit.getProfile());
                 }
                 return authCubit;
               },

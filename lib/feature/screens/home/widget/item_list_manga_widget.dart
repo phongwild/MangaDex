@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core_ui/app_theme.dart/app_text_style.dart';
 
-class ItemListMangaWidget extends StatefulWidget {
+class ItemListMangaWidget extends StatelessWidget {
   const ItemListMangaWidget({
     super.key,
     required this.coverArt,
@@ -12,6 +12,7 @@ class ItemListMangaWidget extends StatefulWidget {
     required this.timeUpdate,
     required this.onTap,
   });
+  
   final String coverArt;
   final String title;
   final String chapters;
@@ -19,14 +20,9 @@ class ItemListMangaWidget extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<ItemListMangaWidget> createState() => _ItemListMangaWidgetState();
-}
-
-class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: SizedBox(
         width: MediaQuery.of(context).size.width / 1.6,
         height: 150,
@@ -37,7 +33,7 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: ImageApp(
-                  imageUrl: widget.coverArt,
+                  imageUrl: coverArt,
                   height: 150,
                   width: 100,
                   fit: BoxFit.cover,
@@ -52,35 +48,43 @@ class _ItemListMangaWidgetState extends State<ItemListMangaWidget> {
               ),
             ),
             const SizedBox(width: 10),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 3.5,
+            Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.title,
+                      title,
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
-                      style: AppsTextStyle.text14Weight600
-                          .copyWith(color: const Color(0xff374151)),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff374151),
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'C. ${widget.chapters}',
-                      maxLines: 5,
+                      'C. $chapters',
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppsTextStyle.text14Weight600
-                          .copyWith(color: const Color(0xff868d98)),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff868d98),
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      widget.timeUpdate,
-                      maxLines: 5,
+                      timeUpdate,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppsTextStyle.text14Weight400
-                          .copyWith(color: const Color(0xff868d98)),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff868d98),
+                      ),
                     ),
                   ],
                 ),

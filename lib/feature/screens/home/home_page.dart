@@ -35,9 +35,15 @@ class _BodyPage extends StatefulWidget {
 class _BodyPageState extends State<_BodyPage> {
   final translateLang = TranslateLang();
   final _appLinks = AppLinks();
+  
+  // Tối ưu hóa: Cache các widget không thay đổi
+  late final List<Widget> _genreSections;
+  
   @override
   void initState() {
     super.initState();
+    // Khởi tạo genre sections một lần
+    _genreSections = _buildGenreSections();
     // _handleInitialLink();
     // _listenToIncomingLinks();
   }
@@ -92,6 +98,8 @@ class _BodyPageState extends State<_BodyPage> {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
+            // Tối ưu hóa: Giảm cacheExtent để tiết kiệm memory
+            cacheExtent: 500,
             slivers: [
               const SliverToBoxAdapter(child: SizedBox(height: 10)),
               const SliverToBoxAdapter(child: Banners()),
@@ -111,9 +119,10 @@ class _BodyPageState extends State<_BodyPage> {
                 ),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 10)),
-              SliverToBoxAdapter(child: more(context)),
+              SliverToBoxAdapter(child: _buildMoreButton(context)),
               const SliverToBoxAdapter(child: SizedBox(height: 10)),
-              ..._buildGenreSections(),
+              // Sử dụng cached genre sections
+              ..._genreSections,
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           ),
@@ -127,10 +136,13 @@ class _BodyPageState extends State<_BodyPage> {
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      title: Text(
+      title: const Text(
         'MangaDex',
-        style: AppsTextStyle.text18Weight700
-            .copyWith(color: const Color(0xff374151)),
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: Color(0xff374151),
+        ),
       ),
       actions: [
         IconButton(
@@ -172,15 +184,18 @@ class _BodyPageState extends State<_BodyPage> {
     }).toList();
   }
 
-  Widget more(BuildContext context) {
+  Widget _buildMoreButton(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, NettromdexRouter.moreManga),
       child: Container(
         alignment: Alignment.centerRight,
-        child: Text(
+        child: const Text(
           'Xem danh sách truyện',
-          style: AppsTextStyle.text14Weight600
-              .copyWith(color: const Color(0xff4b5563)),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xff4b5563),
+          ),
         ),
       ),
     );
