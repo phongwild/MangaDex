@@ -23,6 +23,8 @@ class _MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final ConnectionUtils connectionUtils = ConnectionUtils();
   Timer? toastTimer;
+  bool _lastConnectionStatus = true;
+  
   @override
   void initState() {
     super.initState();
@@ -37,19 +39,25 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onNetworkChanged(bool isActive) {
+    // Only show toast if status actually changed
+    if (_lastConnectionStatus == isActive) return;
+    _lastConnectionStatus = isActive;
+    
     if (!isActive) {
-      // Hiển thị toast khi mất mạng
-      if (toastTimer != null) return;
+      // Show toast when network is lost
       toastTimer?.cancel();
-      toastTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      showToast('Không có kết nối mạng! :(((', isError: true);
+      
+      // Set a timer to periodically remind about network loss
+      toastTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
         if (!connectionUtils.isActive) {
-          showToast('Không có kết nối mạng! :(((', isError: true);
+          showToast('Vẫn chưa có kết nối mạng', isError: true);
         } else {
-          toastTimer?.cancel();
-          toastTimer = null;
+          timer.cancel();
         }
       });
     } else {
+      // Cancel timer and show success message
       toastTimer?.cancel();
       toastTimer = null;
       showToast('Kết nối internet thành công >.<');

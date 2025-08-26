@@ -28,31 +28,34 @@ bool get isInDebugMode {
 
 /// [main]
 Future<void> main() async {
-  FlutterError.onError = (FlutterErrorDetails details) async {
-    if (!kReleaseMode) {
+  // Optimize error handling
+  if (!kReleaseMode) {
+    FlutterError.onError = (FlutterErrorDetails details) {
       FlutterError.dumpErrorToConsole(details);
-    } else {
-      Zone.current.handleUncaughtError(details.exception, details.stack!);
-    }
-  };
+    };
+  }
 
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    debugProfileBuildsEnabled = true;
-    // debugPaintSizeEnabled = true;
+    
+    // Disable debug flags for better performance
+    if (kReleaseMode) {
+      debugProfileBuildsEnabled = false;
+      debugPaintSizeEnabled = false;
+    }
 
-    await di.init(); // Chờ inject dependencies
-    await Future.delayed(const Duration(seconds: 1));
-    await clearImageCacheIfNeeded();
-    await ConnectionUtils().init();
+    // Run initialization tasks in parallel for faster startup
+    await Future.wait([
+      di.init(),
+      clearImageCacheIfNeeded(),
+      ConnectionUtils().init(),
+      IsLogin.getInstance().loadSession(),
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
+    ]);
+    
     AppTheme().changeTheme(TypeTheme.light);
-    // await SharedPref.init();
-    await IsLogin.getInstance().loadSession();
     disableErrorWidget();
     HttpOverrides.global = CustomHttpOverrides();
-
-    // Đảm bảo app chỉ chạy theo hướng dọc trước khi build UI
-    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     runApp(
       OverlaySupport.global(
@@ -74,8 +77,10 @@ Future<void> main() async {
       ),
     );
   }, (error, stackTrace) {
-    dlog('❎ ERROR OTHER   :$error');
-    dlog('❎ STACKTRACE    :$stackTrace');
+    if (!kReleaseMode) {
+      dlog('❎ ERROR OTHER   :$error');
+      dlog('❎ STACKTRACE    :$stackTrace');
+    }
   });
 }
 
@@ -83,7 +88,7 @@ Future<void> main() async {
 void disableErrorWidget() {
   if (kReleaseMode) {
     ErrorWidget.builder = (details) {
-      return const Center();
+      return const SizedBox.shrink();
     };
   }
 }

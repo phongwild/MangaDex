@@ -54,7 +54,6 @@ dependencies:
   dartz: ^0.10.1
   socket_io_client: ^2.0.3+1
   uuid: ^4.1.0
-  tuple: ^2.0.2
   rxdart: ^0.27.7
   connectivity_plus: ^6.1.3
   flutter_localizations:
@@ -98,38 +97,46 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icons/mangadex-logo.png"
-  adaptive_icon_foreground: "assets/icons/mangadex-logo.png"
+  image_path_android: "assets/app_icon.png"
+  image_path_ios: "assets/app_icon.png"
   adaptive_icon_background: "#000000"
-  remove_alpha_ios: true
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+  adaptive_icon_foreground: "assets/app_icon.png"
+  min_sdk_android: 21
 
-# The following section is specific to Flutter packages.
+flutter_intl:
+  enabled: true
+
 flutter:
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/icons/
-    - assets/images/
-    - assets/fonts/
+    - assets/
+
+  # Font optimization - only load needed fonts
   fonts:
-    - family: SVNGilroy
+    - family: Roboto
       fonts:
-        - asset: assets/fonts/SVNGilroy-Bold.otf
+        - asset: fonts/Roboto-Regular.ttf
+        - asset: fonts/Roboto-Bold.ttf
           weight: 700
-        - asset: assets/fonts/SVNGilroy-SemiBold.otf
-          weight: 600
-        - asset: assets/fonts/SVNGilroy-Medium.otf
-          weight: 500
-        - asset: assets/fonts/SVNGilroy-Regular.otf
-          weight: 400
-        - asset: assets/fonts/SVNGilroy-Light.otf
-          weight: 300
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+
+  # Optimize asset generation
+  # This reduces APK size by including only necessary densities
+  # Remove this section if you need all densities
+  deferred-components:
+    - name: imageAssets
+      assets:
+        - assets/images/
+      
+  # Optimize for specific screen densities
+  # Comment out densities you don't need
+  # flutter:
+  #   assets:
+  #     - assets/images/
+  #   asset:
+  #     - asset: assets/images/
+  #       density: 
+  #         - 1.5
+  #         - 2.0
+  #         - 3.0
+  #         - 4.0

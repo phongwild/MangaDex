@@ -60,16 +60,48 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            // Enables code shrinking, obfuscation, and optimization
             minifyEnabled true
             shrinkResources true
+            
+            // Use ProGuard for code obfuscation
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Optimize APK size
+            ndk {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
+            
+            // Enable R8 full mode for better optimization
+            android.enableR8.fullMode=true
         }
         debug {
             //
         }
+    }
+    
+    // Optimize DEX
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+        javaMaxHeapSize "4g"
+    }
+    
+    // Enable build cache
+    buildCache {
+        local {
+            enabled = true
+        }
+    }
+    
+    // Package options
+    packagingOptions {
+        // Exclude unnecessary files
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
     }
 }
 
