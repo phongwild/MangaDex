@@ -1,6 +1,7 @@
 import 'package:app/core/networking/interceptor/handle_unauthorized_interceptor.dart';
 import 'package:app/core/networking/interceptor/logger_interceptor.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'interceptor/retry_connection_interceptor.dart';
 import 'interceptor/session_interceptor.dart';
 
@@ -52,7 +53,9 @@ class RestClient {
 
     _dio.interceptors.addAll(interceptors);
     _dio.interceptors.add(RetryOnConnectionChangeInterceptor(dio: dio));
-    _dio.interceptors.add(LogInterceptor());
+    if (kDebugMode) {
+      _dio.interceptors.add(LogInterceptor());
+    }
   }
 }
 
@@ -76,7 +79,6 @@ Future<Response<dynamic>> computeRestfulGet(Map<String, dynamic> values) {
 Future<Response<dynamic>> computeRestfulPost(
     String baseUrl, Map<String, dynamic> values) {
   String path = values[DioParamKey.path];
-  String baseUrl = values[DioParamKey.baseUrl];
   dynamic body = values[DioParamKey.body];
   Map<String, dynamic>? queryParameters = values[DioParamKey.queryParameters];
   Options? options = values[DioParamKey.options];
@@ -96,7 +98,6 @@ Future<Response<dynamic>> computeRestfulPost(
 Future<Response<dynamic>> computeRestfulPut(
     String baseUrl, Map<String, dynamic> values) {
   String path = values[DioParamKey.path];
-  String baseUrl = values[DioParamKey.baseUrl];
   dynamic body = values[DioParamKey.body];
   Map<String, dynamic>? queryParameters = values[DioParamKey.queryParameters];
   Options? options = values[DioParamKey.options];

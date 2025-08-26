@@ -11,15 +11,21 @@ class RetryOnConnectionChangeInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (_shouldRetryOnHttpException(err)) {
       try {
-        debugPrint("✨✨✨✨✨Retry call api ${err.requestOptions.uri}");
+        if (kDebugMode) {
+          debugPrint("✨✨✨✨✨Retry call api ${err.requestOptions.uri}");
+        }
 
-        final response = await Dio().fetch(err.requestOptions);
+        final response = await dio.fetch(err.requestOptions);
 
-        debugPrint("❤️❤️❤️❤️❤️ Retry api ${err.requestOptions.uri} success");
+        if (kDebugMode) {
+          debugPrint("❤️❤️❤️❤️❤️ Retry api ${err.requestOptions.uri} success");
+        }
 
         handler.resolve(response);
       } catch (e) {
-        debugPrint("⚠️⚠️⚠️⚠️⚠️ Retry call api ${err.requestOptions.uri} fail");
+        if (kDebugMode) {
+          debugPrint("⚠️⚠️⚠️⚠️⚠️ Retry call api ${err.requestOptions.uri} fail");
+        }
         handler.next(err);
       }
     } else {
