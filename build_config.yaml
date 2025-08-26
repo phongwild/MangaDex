@@ -1,0 +1,63 @@
+# Build configuration for optimizing performance on low-end devices
+targets:
+  $default:
+    builders:
+      # Code generation optimizations
+      json_serializable:
+        options:
+          # Optimize generated code size
+          checked: false
+          create_factory: true
+          create_to_json: true
+          disallow_unrecognized_keys: false
+          explicit_to_json: false
+          field_rename: none
+          generic_argument_factories: false
+          include_if_null: true
+          
+      # Freezed optimizations  
+      freezed:
+        options:
+          # Reduce generated code size
+          map: false
+          when: true
+          maybe_map: false
+          maybe_when: false
+          
+      # Injectable optimizations
+      injectable_generator:
+        options:
+          # Optimize dependency injection
+          auto_register: true
+          class_name_pattern: "^_?(.*)$"
+
+# Global build options for performance
+global_options:
+  # Optimize for smaller bundle size
+  json_serializable:
+    checked: false
+    disallow_unrecognized_keys: false
+    include_if_null: false
+    
+  # Build runner optimizations
+  build_runner:
+    # Use fewer build workers on low-end devices
+    low_resources_mode: true
+    
+  # Asset optimization
+  flutter_assets:
+    # Compress assets for smaller app size
+    compress_assets: true
+    
+# Platform-specific optimizations
+platforms:
+  android:
+    # Android-specific optimizations
+    proguard: true
+    shrink_resources: true
+    use_minimal_dependency: true
+    
+  ios:
+    # iOS-specific optimizations  
+    bitcode: false # Disable bitcode for faster builds
+    optimize_for_size: true

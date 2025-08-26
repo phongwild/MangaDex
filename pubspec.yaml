@@ -20,6 +20,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=3.1.5 <4.0.0"
+  flutter: ">=3.16.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -98,10 +99,11 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icons/mangadex-logo.png"
-  adaptive_icon_foreground: "assets/icons/mangadex-logo.png"
+  image_path: "assets/icons/mangadx-logo.png"
+  adaptive_icon_foreground: "assets/icons/mangadx-logo.png"
   adaptive_icon_background: "#000000"
   remove_alpha_ios: true
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -112,11 +114,16 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
+  # Performance optimizations for low-end devices
+  generate: true
+  
+  # Optimize assets for performance
   assets:
     - assets/icons/
     - assets/images/
     - assets/fonts/
+    
+  # Font optimization for better performance
   fonts:
     - family: SVNGilroy
       fonts:
@@ -130,6 +137,11 @@ flutter:
           weight: 400
         - asset: assets/fonts/SVNGilroy-Light.otf
           weight: 300
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+
+# Performance and build optimizations
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/icons/mangadx-logo.png
+  android_12:
+    color: "#ffffff"
+    image: assets/icons/mangadx-logo.png

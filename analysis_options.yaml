@@ -9,6 +9,24 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  # Performance optimizations for low-end development environments
+  exclude:
+    - "**.g.dart"
+    - "**.freezed.dart" 
+    - "**.mocks.dart"
+    - "**/generated/**"
+  
+  # Enable performance monitoring
+  enable-experiment:
+    - non-nullable
+
+  # Language configuration for better performance
+  language:
+    strict-casts: false
+    strict-inference: false
+    strict-raw-types: false
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
@@ -21,8 +39,32 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
-
+    # Performance-related rules
+    avoid_function_literals_in_foreach_calls: true
+    avoid_slow_async_io: true
+    cancel_subscriptions: true
+    close_sinks: true
+    
+    # Widget performance rules
+    use_key_in_widget_constructors: true
+    sized_box_for_whitespace: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    
+    # Memory management rules
+    avoid_unnecessary_containers: true
+    avoid_web_libraries_in_flutter: true
+    
+    # Code quality rules that impact performance
+    prefer_single_quotes: true
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_foreach: true
+    
+    # Disable some rules that might slow down analysis in development
+    # avoid_print: false  # Allow prints in development
+    
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

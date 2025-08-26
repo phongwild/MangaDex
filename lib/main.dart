@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:app/common/utils/app_connection_utils.dart';
 import 'package:app/core/app_log.dart';
+import 'package:app/core/performance_optimizer.dart';
 // import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/core_ui/app_theme.dart/app_theme.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
@@ -38,21 +39,43 @@ Future<void> main() async {
 
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    debugProfileBuildsEnabled = true;
-    // debugPaintSizeEnabled = true;
+    
+    // Disable debug features in production for better performance
+    if (kReleaseMode) {
+      debugProfileBuildsEnabled = false;
+      debugPrintGestureArenaDiagnostics = false;
+    }
 
-    await di.init(); // Chờ inject dependencies
-    await Future.delayed(const Duration(seconds: 1));
-    await clearImageCacheIfNeeded();
-    await ConnectionUtils().init();
+    // Set device orientation early
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    
+    // Optimize for low-end devices
+    await PerformanceOptimizer.optimizeForLowEndDevice();
+    
+    // Initialize critical services first
+    await di.init(); // Dependency injection
+    
+    // Optimize app initialization order for low-end devices
+    final futures = <Future>[
+      // Run these in parallel to reduce startup time
+      IsLogin.getInstance().loadSession(),
+      ConnectionUtils().init(),
+    ];
+    
+    // Only clear cache if really needed (reduce startup time)
+    if (!kReleaseMode) {
+      futures.add(clearImageCacheIfNeeded());
+    } else {
+      // For low-end devices, optimize cache in background
+      futures.add(optimizeCacheForLowEndDevice());
+    }
+    
+    await Future.wait(futures);
+    
+    // Set theme and other UI configurations
     AppTheme().changeTheme(TypeTheme.light);
-    // await SharedPref.init();
-    await IsLogin.getInstance().loadSession();
     disableErrorWidget();
     HttpOverrides.global = CustomHttpOverrides();
-
-    // Đảm bảo app chỉ chạy theo hướng dọc trước khi build UI
-    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     runApp(
       OverlaySupport.global(
@@ -62,7 +85,10 @@ Future<void> main() async {
               create: (context) {
                 final authCubit = AuthCubit();
                 if (IsLogin.getInstance().isLoggedIn) {
-                  authCubit.getProfile();
+                  // Defer profile loading to reduce initial load time
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    authCubit.getProfile();
+                  });
                 }
                 return authCubit;
               },
@@ -83,7 +109,7 @@ Future<void> main() async {
 void disableErrorWidget() {
   if (kReleaseMode) {
     ErrorWidget.builder = (details) {
-      return const Center();
+      return const SizedBox.shrink(); // More efficient than Center()
     };
   }
 }
