@@ -112,15 +112,18 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
       });
       if (response.statusCode == 200) {
         final user = User.fromJson(response.data);
+        if (user.sId == null) {
+          throw Exception("User id null");
+        }
         await SharedPref.putString('uid', user.sId!);
         var cookies = response.headers['set-cookie'];
         if (cookies != null && cookies.isNotEmpty) {
           // Lưu cookie vào SharedPreferences
           await _isLogin.login(
             cookies.first,
-            user.username!,
-            user.email!,
-            user.avatar!,
+            user.username ?? '',
+            user.email ?? '',
+            user.avatar ?? '',
             user.sId!,
           );
           dlog('JWT đã được lưu: ${await _isLogin.getJwt()}');
