@@ -32,15 +32,12 @@ class _BodyPage extends StatefulWidget {
   State<_BodyPage> createState() => _BodyPageState();
 }
 
-class _BodyPageState extends State<_BodyPage> {
+class _BodyPageState extends State<_BodyPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final translateLang = TranslateLang();
   final _appLinks = AppLinks();
-  @override
-  void initState() {
-    super.initState();
-    // _handleInitialLink();
-    // _listenToIncomingLinks();
-  }
 
   @override
   void dispose() {
@@ -84,6 +81,7 @@ class _BodyPageState extends State<_BodyPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: const Color(0xffd1d5db),
       appBar: _buildAppBar(context),
@@ -112,8 +110,8 @@ class _BodyPageState extends State<_BodyPage> {
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 10)),
               SliverToBoxAdapter(child: more(context)),
-              const SliverToBoxAdapter(child: SizedBox(height: 10)),
-              ..._buildGenreSections(),
+              // const SliverToBoxAdapter(child: SizedBox(height: 10)),
+              // ..._buildGenreSections(),
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           ),
