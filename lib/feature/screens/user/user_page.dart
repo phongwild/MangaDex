@@ -27,7 +27,9 @@ class _BodyPage extends StatefulWidget {
 }
 
 class __BodyPageState extends State<_BodyPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   late TabController _tabController;
   @override
   void initState() {
@@ -50,6 +52,7 @@ class __BodyPageState extends State<_BodyPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: const Color(0xffd1d5db),
       appBar: AppBar(
