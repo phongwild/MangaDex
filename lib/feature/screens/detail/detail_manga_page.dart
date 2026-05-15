@@ -96,6 +96,7 @@ class __BodyPageState extends State<_BodyPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _initFollowStatus();
+      _addHistory();
     });
   }
 
@@ -105,6 +106,10 @@ class __BodyPageState extends State<_BodyPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _initFollowStatus();
     });
+  }
+
+  Future<void> _addHistory() async {
+    await context.read<UserCubit>().addToHistory(widget.idManga);
   }
 
   Future<void> _initFollowStatus() async {
