@@ -32,8 +32,11 @@ class ImageApp extends StatelessWidget {
           placeholder ?? LoadingShimmer().loadingCircle(),
       height: height,
       width: width,
-      fadeInDuration: const Duration(milliseconds: 300),
+      fadeInDuration: Duration.zero,
+      fadeOutDuration: Duration.zero,
       fit: fit,
+      memCacheWidth: 1080,
+      filterQuality: FilterQuality.low,
       cacheManager: customCacheManager,
     );
   }
