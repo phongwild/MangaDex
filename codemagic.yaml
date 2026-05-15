@@ -5,7 +5,7 @@ workflows:
     max_build_duration: 120
 
     environment:
-      flutter: stable
+      flutter: 3.41.0
       xcode: latest
       cocoapods: default
 
