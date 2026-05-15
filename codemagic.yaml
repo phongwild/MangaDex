@@ -1,37 +1,22 @@
 workflows:
-  ios-release:
-    name: iOS Release Build
-
-    max_build_duration: 120
+  ios-unsigned:
+    name: iOS Unsigned IPA
 
     environment:
       flutter: 3.41.0
       xcode: latest
       cocoapods: default
 
-    cache:
-      cache_paths:
-        - $FLUTTER_ROOT/.pub-cache
-        - ~/Library/Caches/CocoaPods
-
     scripts:
-      - name: Flutter clean
-        script: |
-          flutter clean
-
-      - name: Get Flutter packages
+      - name: Get packages
         script: |
           flutter pub get
 
-      - name: Install CocoaPods
+      - name: Build unsigned IPA
         script: |
-          cd ios
-          pod install --repo-update
-          cd ..
-
-      - name: Build IPA
-        script: |
-          flutter build ipa --release
+          flutter build ipa \
+            --release \
+            --no-codesign
 
     artifacts:
       - build/ios/ipa/*.ipa
