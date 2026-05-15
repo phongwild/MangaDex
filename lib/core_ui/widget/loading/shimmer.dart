@@ -86,7 +86,7 @@ class LoadingShimmer {
   }
 
   /// avatar shimmer
-  Widget loadingAvatar({double width = 95, double height = 95}) {
+  Widget loadingAvatar({double width = 40, double height = 40}) {
     return Center(
       child: _shimmer(
         child: Container(

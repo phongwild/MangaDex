@@ -228,7 +228,7 @@ class __BodyPageState extends State<_BodyPage> {
                       curve: Curves.easeInOut,
                       offset: _showControls.value
                           ? Offset.zero
-                          : const Offset(0, 1),
+                          : const Offset(0, 2),
                       child: BottomCtrlReadChapterWidget(
                         currentChapter: idCurrentChapter.value,
                         listChapters: widget.listChapters,
@@ -256,7 +256,7 @@ class __BodyPageState extends State<_BodyPage> {
   }
 
   void preloadImages(List<String> imageUrls, ChapterData chapterData) {
-    final limit = min(10, imageUrls.length);
+    final limit = min(2, imageUrls.length);
     for (var i = 0; i < limit; i++) {
       final url = imageUrls[i];
       final imageUrl = '${chapterData.baseUrl}/data/${chapterData.hash}/$url';

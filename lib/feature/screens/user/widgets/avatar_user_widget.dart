@@ -27,12 +27,20 @@ class AvatarUserWidget extends StatelessWidget {
             ? CachedNetworkImage(
                 imageUrl: imageUrl!,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => LoadingShimmer().loadingAvatar(),
+                placeholder: (context, url) => LoadingShimmer().loadingAvatar(
+                  width: 95,
+                  height: 95,
+                ),
                 errorWidget: (context, url, error) =>
-                    LoadingShimmer().loadingAvatar(),
+                    LoadingShimmer().loadingAvatar(
+                  width: 95,
+                  height: 95,
+                ),
               )
-            : LoadingShimmer()
-                .loadingAvatar(), // Nếu không có ảnh, hiển thị shimmer
+            : LoadingShimmer().loadingAvatar(
+                width: 95,
+                height: 95,
+              ), // Nếu không có ảnh, hiển thị shimmer
       ),
     );
   }

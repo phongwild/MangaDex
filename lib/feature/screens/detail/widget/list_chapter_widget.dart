@@ -120,13 +120,14 @@ class _ListChapterWidgetState extends State<ListChapterWidget> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
-        String countryCode =
-            list[index].attributes.translatedLanguage.toUpperCase();
-        if (countryCode == 'VI') {
-          countryCode = 'VN';
-        } else if (countryCode == 'EN') {
-          countryCode = 'US';
-        }
+        final countryCode = {
+              'vi': 'VN',
+              'en': 'US',
+              'ja': 'JP',
+              'ko': 'KR',
+              'zh': 'CN',
+            }[list[index].attributes.translatedLanguage.toLowerCase()] ??
+            'UN';
         return GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, NettromdexRouter.readChapter,

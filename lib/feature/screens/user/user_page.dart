@@ -44,6 +44,10 @@ class __BodyPageState extends State<_BodyPage>
     });
   }
 
+  Future<void> _onRefresh() async {
+    await context.read<AuthCubit>().getProfile();
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -84,18 +88,23 @@ class __BodyPageState extends State<_BodyPage>
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: ListView(
-                      physics: const BouncingScrollPhysics(),
-                      children: [
-                        const UserInfoWidget(),
-                        Tabbar_user_widget(tabController: _tabController),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.7,
-                          child:
-                              TabbarView_widget(tabController: _tabController),
+                    child: RefreshIndicator(
+                      onRefresh: _onRefresh,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
                         ),
-                      ],
+                        children: [
+                          const UserInfoWidget(),
+                          Tabbar_user_widget(tabController: _tabController),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.7,
+                            child: TabbarView_widget(
+                                tabController: _tabController),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

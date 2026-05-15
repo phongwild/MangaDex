@@ -1,11 +1,11 @@
-// ignore_for_file: camel_case_types
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../../../models/chapter_data_model.dart';
 import 'page_chapter_widget.dart';
 
-class VerticalWidget extends StatelessWidget {
+class VerticalWidget extends StatefulWidget {
   const VerticalWidget({
     super.key,
     required this.totalPages,
@@ -16,26 +16,47 @@ class VerticalWidget extends StatelessWidget {
   final ChapterData chapterData;
 
   @override
+  State<VerticalWidget> createState() => _VerticalWidgetState();
+}
+
+class _VerticalWidgetState extends State<VerticalWidget> {
+  late final List<String> _imageUrls;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final baseUrl = widget.chapterData.baseUrl;
+    final hash = widget.chapterData.hash;
+
+    // cache URL 1 lần thôi, khỏi build lại mỗi item
+    _imageUrls =
+        widget.chapterData.data.map((e) => '$baseUrl/data/$hash/$e').toList();
+
+    // precache 2-3 ảnh đầu cho mượt
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (int i = 0; i < math.min(3, _imageUrls.length); i++) {
+        precacheImage(NetworkImage(_imageUrls[i]), context);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scrollbar(
       thumbVisibility: true,
       radius: const Radius.circular(10),
       thickness: 6,
-      child: ListView.separated(
-        itemCount: totalPages,
+      child: ListView.builder(
+        itemCount: _imageUrls.length,
         physics: const ClampingScrollPhysics(),
-        cacheExtent: MediaQuery.of(context).size.height * 2,
-        separatorBuilder: (context, index) => const SizedBox(height: 5),
-        addAutomaticKeepAlives: true,
-        scrollDirection: Axis.vertical,
+        cacheExtent: MediaQuery.of(context).size.height,
         itemBuilder: (context, index) {
-          final baseUrl = chapterData.baseUrl;
-          final String listPage = chapterData.data[index];
-          final urlImage = '$baseUrl/data/${chapterData.hash}/$listPage';
-          // Cache image for better performance
-          return PageChapterWidget(
-            urlImage: urlImage,
-            isZoom: false,
+          return RepaintBoundary(
+            child: PageChapterWidget(
+              urlImage: _imageUrls[index],
+              isZoom: false,
+            ),
           );
         },
       ),

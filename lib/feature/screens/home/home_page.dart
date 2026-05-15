@@ -79,6 +79,15 @@ class _BodyPageState extends State<_BodyPage>
     }
   }
 
+  Future<void> _onRefresh() async {
+    MangaCubit().searchManga('', followedCount: true, limit: 5);
+    context.read<MangaCubit>().getManga(
+          isLatestUploadedChapter: true,
+          limit: 25,
+          offset: 0,
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -88,32 +97,35 @@ class _BodyPageState extends State<_BodyPage>
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              const SliverToBoxAdapter(child: SizedBox(height: 10)),
-              const SliverToBoxAdapter(child: Banners()),
-              const SliverToBoxAdapter(child: SizedBox(height: 30)),
-              SliverToBoxAdapter(
-                child: Text(
-                  'Mới cập nhật',
-                  style: AppsTextStyle.text18Weight700
-                      .copyWith(color: const Color(0xff374151)),
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                const SliverToBoxAdapter(child: Banners()),
+                const SliverToBoxAdapter(child: SizedBox(height: 30)),
+                SliverToBoxAdapter(
+                  child: Text(
+                    'Mới cập nhật',
+                    style: AppsTextStyle.text18Weight700
+                        .copyWith(color: const Color(0xff374151)),
+                  ),
                 ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 20)),
-              const SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 800,
-                  child: RepaintBoundary(child: MangaList()),
+                const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 800,
+                    child: RepaintBoundary(child: MangaList()),
+                  ),
                 ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 10)),
-              SliverToBoxAdapter(child: more(context)),
-              // const SliverToBoxAdapter(child: SizedBox(height: 10)),
-              // ..._buildGenreSections(),
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
-            ],
+                const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                SliverToBoxAdapter(child: more(context)),
+                // const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                // ..._buildGenreSections(),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
+            ),
           ),
         ),
       ),

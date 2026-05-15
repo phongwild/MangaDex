@@ -57,6 +57,7 @@ class _HorizontalStyleWidgetState extends State<HorizontalStyleWidget> {
   @override
   void dispose() {
     _hideTimer?.cancel();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
@@ -64,23 +65,20 @@ class _HorizontalStyleWidgetState extends State<HorizontalStyleWidget> {
   Widget build(BuildContext context) {
     final baseUrl = widget.chapterData.baseUrl;
     final hash = widget.chapterData.hash;
-    final String chapter = widget.listChapters
-            .firstWhereOrNull((element) => element.id == widget.idChapter)
-            ?.attributes
-            .chapter ??
-        '';
-    final String title = widget.listChapters
-            .firstWhereOrNull((element) => element.id == widget.idChapter)
-            ?.attributes
-            .title ??
-        '';
+    final List<String> pages = widget.chapterData.data;
+    final chapterData =
+        widget.listChapters.firstWhereOrNull((e) => e.id == widget.idChapter);
+
+    final String chapter = chapterData?.attributes.chapter ?? '';
+    final String title = chapterData?.attributes.title ?? '';
     return Column(
       children: [
         Expanded(
           child: PreloadPageView.builder(
             controller: widget.pageController,
             itemCount: widget.totalPages,
-            preloadPagesCount: min(5, widget.totalPages - 1),
+            preloadPagesCount:
+                widget.totalPages <= 1 ? 0 : min(3, widget.totalPages - 1),
             physics: const BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics(),
             ),
@@ -89,15 +87,13 @@ class _HorizontalStyleWidgetState extends State<HorizontalStyleWidget> {
               _startHideTimer();
             },
             itemBuilder: (context, index) {
-              final urlImage =
-                  '$baseUrl/data/$hash/${widget.chapterData.data[index]}';
-
               if (index == 0) {
                 return SE('Chương $chapter: $title');
               }
               if (index == widget.totalPages - 1) {
                 return SE('Kết thúc chương $chapter');
               }
+              final urlImage = '$baseUrl/data/$hash/${pages[index]}';
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: PageChapterWidget(
@@ -110,19 +106,17 @@ class _HorizontalStyleWidgetState extends State<HorizontalStyleWidget> {
         ),
         ValueListenableBuilder<int>(
           valueListenable: widget.currentPage,
-          builder: (context, page, _) => TweenAnimationBuilder<double>(
-            tween: Tween<double>(
-              begin: (page) / widget.totalPages,
-              end: (page + 1) / widget.totalPages,
-            ),
-            duration: const Duration(milliseconds: 100),
-            builder: (context, value, child) => LinearProgressIndicator(
-              value: value,
+          builder: (context, page, _) {
+            final progress =
+                widget.totalPages <= 0 ? 0.0 : (page + 1) / widget.totalPages;
+
+            return LinearProgressIndicator(
+              value: progress.clamp(0.0, 1.0),
               backgroundColor: Colors.grey[800],
               color: Colors.blueAccent,
               minHeight: 5,
-            ),
-          ),
+            );
+          },
         ),
       ],
     );
