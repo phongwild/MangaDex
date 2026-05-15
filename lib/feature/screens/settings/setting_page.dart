@@ -1,9 +1,11 @@
 import 'package:app/feature/cubit/auth_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
+import 'package:app/feature/screens/settings/widgets/dialog_language.dart';
 import 'package:app/feature/screens/settings/widgets/dialog_setting.dart';
 import 'package:app/feature/utils/cached_manage_app.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:app/feature/utils/toast_app.dart';
+import 'package:app/feature/utils/translate_lang.dart';
 import 'package:app/feature/widgets/button_app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +32,7 @@ class _BodyPage extends StatefulWidget {
 
 class __BodyPageState extends State<_BodyPage> {
   final IsLogin _isLogin = IsLogin.getInstance();
-  void showDialogLogout() {
+  void _showDialogLogout() {
     showDialog(
       context: context,
       builder: (context) {
@@ -46,6 +48,28 @@ class __BodyPageState extends State<_BodyPage> {
         );
       },
     );
+  }
+
+  void _showListLanguage() async {
+    const languages = TranslateLang.languages;
+
+    final selectedLanguage = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black26,
+      isScrollControlled: true,
+      builder: (context) {
+        return const DialogLanguage(languages: languages);
+      },
+    );
+
+    if (selectedLanguage != null) {
+      await TranslateLang().changeLanguage(selectedLanguage);
+
+      if (!context.mounted) return;
+
+      showToast('Đã chọn bản dịch $selectedLanguage');
+    }
   }
 
   @override
@@ -96,6 +120,16 @@ class __BodyPageState extends State<_BodyPage> {
                     const Icon(IconlyLight.profile, color: Colors.white),
               ),
               ButtonAppWidget(
+                text: 'Bản dịch',
+                color: const Color(0xff2563eb),
+                textColor: Colors.white,
+                onTap: () async {
+                  _showListLanguage();
+                },
+                isBoxShadow: false,
+                leadingIcon: const Icon(IconlyLight.chat, color: Colors.white),
+              ),
+              ButtonAppWidget(
                 text: 'Xoá bộ nhớ đệm',
                 color: const Color(0xff2563eb),
                 textColor: Colors.white,
@@ -117,7 +151,7 @@ class __BodyPageState extends State<_BodyPage> {
                     textColor: Colors.white,
                     onTap: () {
                       if (loggedIn) {
-                        showDialogLogout();
+                        _showDialogLogout();
                       } else {
                         Navigator.pushNamed(
                             context, NettromdexRouter.mainLogin);
