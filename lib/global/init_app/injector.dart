@@ -1,4 +1,7 @@
+import 'package:app/feature/utils/manga_filter_config.dart';
+import 'package:app/firebase_options.dart';
 import 'package:app/global/init_app/initialize_dependencies.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -23,6 +26,10 @@ Future init() async {
   await clearImageCacheIfNeeded();
   await ConnectionUtils().init();
   AppTheme().changeTheme(TypeTheme.light);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await TranslateLang().init();
+  await ContentRatingManager().init();
   await IsLogin.getInstance().loadSession();
 }
