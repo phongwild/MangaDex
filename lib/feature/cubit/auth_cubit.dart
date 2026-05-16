@@ -75,6 +75,8 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
         'email': email,
         'password': password,
       });
+      dlog('STATUS: ${response.statusCode}');
+      dlog('DATA: ${response.data}');
       if (response.statusCode == 200) {
         final user = User.fromJson(response.data);
         await SharedPref.putString('uid', user.sId!);
@@ -83,9 +85,9 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
           // Lưu cookie vào SharedPreferences
           await _isLogin.login(
             cookies.first,
-            user.username!,
-            user.email!,
-            user.avatar!,
+            user.username ?? '',
+            user.email ?? '',
+            user.avatar ?? '',
             user.sId!,
           );
           dlog('JWT đã được lưu: ${await _isLogin.getJwt()}');
@@ -100,7 +102,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
         emit(AuthError(error: 'Failed to login: ${response.data['message']}'));
       }
     } catch (e) {
-      emit(AuthError(error: e.toString()));
+      dlog(e.toString());
     }
   }
 
