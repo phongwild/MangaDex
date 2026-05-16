@@ -25,8 +25,8 @@ class IsLogin {
   String? get avatar => _avatar;
 
   // Đăng nhập và lưu thông tin user
-  Future<void> login(String token, String username, String email, String avatar,
-      String id) async {
+  Future<void> login(String token, String? username, String? email,
+      String? avatar, String? id) async {
     _isLoggedIn = true;
     _jwt = token;
     _username = username;
@@ -35,10 +35,9 @@ class IsLogin {
     _uid = id;
 
     await SharedPref.putString('jwt', token);
-    await SharedPref.putString('username', username);
-    await SharedPref.putString('email', email);
-    await SharedPref.putString('avatar', avatar);
-    await SharedPref.putString('uid', id);
+    await SharedPref.putString('username', username!);
+    await SharedPref.putString('email', email!);
+    await SharedPref.putString('avatar', avatar!);
   }
 
   // Đăng xuất và xóa toàn bộ thông tin
