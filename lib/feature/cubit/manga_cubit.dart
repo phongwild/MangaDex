@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/utils/app_connection_utils.dart';
 import '../models/manga_model.dart';
+import '../utils/manga_filter_config.dart';
 
 part 'manga_state.dart';
 
@@ -74,6 +75,9 @@ class MangaCubit extends Cubit<MangaState> {
       _lastFetchParams = {
         'method': 'getManga',
         'isLatestUploadedChapter': isLatestUploadedChapter,
+        'includedTagsMode': 'AND',
+        'excludedTagsMode': 'OR',
+        'contentRating[]': ContentRatingManager().selected,
         'limit': limit,
         'offset': offset,
       };
@@ -127,6 +131,9 @@ class MangaCubit extends Cubit<MangaState> {
           'tags': tags ?? [],
           'offset': offset ?? 0,
           'limit': limit,
+          'includedTagsMode': 'AND',
+          'excludedTagsMode': 'OR',
+          'contentRating[]': ContentRatingManager().selected,
           'followedCount': followedCount,
         };
         emit(const MangaError('Không có kết nối mạng! Đợi kết nối lại.'));
@@ -150,6 +157,9 @@ class MangaCubit extends Cubit<MangaState> {
           'tags': tags ?? [],
           'offset': offset ?? 0,
           'limit': limit,
+          'includedTagsMode': 'AND',
+          'excludedTagsMode': 'OR',
+          'contentRating[]': ContentRatingManager().selected,
           'translateLang': translateLang.language,
           'followedCount': followedCount,
         });
@@ -182,6 +192,9 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
       'order[$orderBy]': 'desc',
       'limit': limit,
       'offset': offset,
+      'includedTagsMode': 'AND',
+      'excludedTagsMode': 'OR',
+      'contentRating[]': ContentRatingManager().selected,
       'availableTranslatedLanguage[]': translateLang,
     };
 
@@ -222,11 +235,14 @@ Future<Map<String, dynamic>> _fetchSearchManga(
       '${baseUrl}manga',
       queryParameters: {
         'includes[]': 'cover_art',
+        'includedTagsMode': 'AND',
+        'excludedTagsMode': 'OR',
         'title': query,
         'order[$orderBy]': 'desc',
         'limit': limit,
         'offset': offset,
         'availableTranslatedLanguage[]': translateLang,
+        'contentRating[]': ContentRatingManager().selected,
         if (tags.isNotEmpty) 'includedTags[]': tags,
       },
     );
