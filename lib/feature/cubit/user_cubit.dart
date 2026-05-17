@@ -19,33 +19,26 @@ final ConnectionUtils connectionUtils = ConnectionUtils();
 class UserCubit extends Cubit<UserState> with NetWorkMixin {
   UserCubit() : super(UserInitial());
 
-  Future<List<String>> checkListFollowManga(
-      {int limit = 500, int offset = 0}) async {
+  Future<bool> checkListFollowManga(String mangaId) async {
     try {
       final uid = await SharedPref.getString('uid');
+
       final response = await callApiGet(
-        endPoint: '$baseUrl/follow/$uid',
-        json: {
-          'offset': offset,
-          'limit': limit,
-        },
-      );
+          endPoint: '$baseUrl/follow/check/$uid?mangaId=$mangaId');
 
       if (response.statusCode == 200) {
-        final listIdManga =
-            (response.data['data'] as List).map((e) => e.toString()).toList();
-
-        emit(CheckFollowManga(listIdManga));
-
-        return listIdManga;
+        final data = response.data;
+        final isFollowing = data['isFollowing'] ?? false;
+        emit(CheckFollowManga(isFollowing));
+        return isFollowing;
       } else {
         dlog('❌ API error: ${response.statusCode}');
-        return [];
+        return false;
       }
     } catch (e) {
-      dlog('💥 Exception: $e');
+      dlog('Exception: $e');
       emit(UserError('Lỗi: $e'));
-      return [];
+      return false;
     }
   }
 

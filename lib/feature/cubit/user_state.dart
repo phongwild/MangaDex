@@ -45,11 +45,12 @@ class ListFollowMangaLoaded extends UserState {
 }
 
 class CheckFollowManga extends UserState {
-  final List<String> listId;
-  const CheckFollowManga(this.listId);
+  final bool isFollowing;
+
+  const CheckFollowManga(this.isFollowing);
 
   @override
-  List<Object> get props => [listId];
+  List<Object> get props => [isFollowing];
 }
 
 class ListHistoryMangaLoaded extends UserState {
