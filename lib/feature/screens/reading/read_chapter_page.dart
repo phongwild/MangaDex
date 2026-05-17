@@ -95,19 +95,31 @@ class __BodyPageState extends State<_BodyPage> {
     _startHideTimer();
   }
 
-  void updateChapter(String newId) {
-    if (idCurrentChapter.value != newId) {
-      idCurrentChapter.value = newId;
-      context.read<DetailMangaCubit>().getReadChapter(newId);
-      _pageController.jumpToPage(0);
-      currentPage.value = 0;
-    }
+  void updateChapter(String newId) async {
+    if (idCurrentChapter.value == newId) return;
+    idCurrentChapter.value = newId;
+    currentPage.value = 0;
+    await context.read<DetailMangaCubit>().getReadChapter(newId);
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(
+        const Duration(milliseconds: 100),
+      );
+      if (!mounted) return;
+      if (_pageController.hasClients) {
+        try {
+          _pageController.jumpToPage(0);
+        } catch (_) {}
+      }
+    });
   }
 
   @override
   void dispose() {
     _hideTimer?.cancel();
-    _pageController.dispose();
+    if (_pageController.hasClients) {
+      _pageController.dispose();
+    }
     currentPage.dispose();
     _showControls.dispose();
     styleReading.dispose();
@@ -163,8 +175,11 @@ class __BodyPageState extends State<_BodyPage> {
                           );
                         } else {
                           return VerticalWidget(
+                            listChapters: widget.listChapters,
                             totalPages: totalPages,
                             chapterData: chapterData,
+                            idChapter: idCurrentChapter.value,
+                            onChapterChange: (id) => updateChapter(id),
                           );
                         }
                       },
@@ -255,12 +270,22 @@ class __BodyPageState extends State<_BodyPage> {
     );
   }
 
-  void preloadImages(List<String> imageUrls, ChapterData chapterData) {
+  void preloadImages(
+    List<String> imageUrls,
+    ChapterData chapterData,
+  ) {
+    if (!mounted) return;
     final limit = min(2, imageUrls.length);
+
     for (var i = 0; i < limit; i++) {
-      final url = imageUrls[i];
-      final imageUrl = '${chapterData.baseUrl}/data/${chapterData.hash}/$url';
-      precacheImage(CachedNetworkImageProvider(imageUrl), context);
+      try {
+        final url = imageUrls[i];
+        final imageUrl = '${chapterData.baseUrl}/data/${chapterData.hash}/$url';
+        precacheImage(
+          CachedNetworkImageProvider(imageUrl),
+          context,
+        );
+      } catch (_) {}
     }
   }
 }
