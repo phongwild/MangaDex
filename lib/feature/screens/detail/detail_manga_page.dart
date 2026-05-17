@@ -9,7 +9,6 @@ import 'package:app/feature/cubit/comments_cubit.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
-import 'package:app/feature/models/manga_model.dart';
 import 'package:app/feature/models/tag_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/detail/widget/comment_widget.dart';
@@ -89,7 +88,6 @@ class __BodyPageState extends State<_BodyPage> {
   final ValueNotifier<List<Chapter>> listAllChapters = ValueNotifier([]);
   final ValueNotifier<bool> isFollowing = ValueNotifier(false);
   final ValueNotifier<bool> isFollowingLoading = ValueNotifier(false);
-  List<Manga> listFollows = [];
   final IsLogin _isLogin = IsLogin.getInstance();
   @override
   void initState() {
@@ -114,9 +112,9 @@ class __BodyPageState extends State<_BodyPage> {
 
   Future<void> _initFollowStatus() async {
     if (_isLogin.isLoggedIn) {
-      final listId =
-          await context.read<UserCubit>().checkListFollowManga(limit: 500);
-      isFollowing.value = listId.contains(widget.idManga);
+      final isFollow =
+          await context.read<UserCubit>().checkListFollowManga(widget.idManga);
+      isFollowing.value = isFollow;
     }
   }
 
@@ -295,8 +293,8 @@ class __BodyPageState extends State<_BodyPage> {
                                         listener: (context, state) {
                                           handleUserState(state);
                                           if (state is CheckFollowManga) {
-                                            isFollowing.value = state.listId
-                                                .contains(widget.idManga);
+                                            isFollowing.value =
+                                                state.isFollowing;
                                           }
                                           if (state is UserError) {
                                             dlog('Lỗi: ${state.message}');
