@@ -37,7 +37,11 @@ class _ReadChapterPageState extends State<ReadChapterPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailMangaCubit()..getReadChapter(widget.idChapter),
+      create: (context) => DetailMangaCubit()
+        ..initReader(
+          widget.idManga,
+          widget.idChapter,
+        ),
       child: _BodyPage(
         idChapter: widget.idChapter,
         idManga: widget.idManga,
@@ -137,10 +141,13 @@ class __BodyPageState extends State<_BodyPage> {
           child: Stack(
             children: [
               BlocBuilder<DetailMangaCubit, DetailMangaState>(
-                buildWhen: (previous, current) {
-                  return current is ChapterStateLoaded;
-                },
+                buildWhen: (previous, current) => true,
                 builder: (context, state) {
+                  if (state is DetailMangaStateInitial) {
+                    return Center(
+                      child: LoadingShimmer().loadingCircle(),
+                    );
+                  }
                   if (state is DetailMangaStateError) {
                     return Center(
                       child: Text(
@@ -154,8 +161,15 @@ class __BodyPageState extends State<_BodyPage> {
                   if (state is DetailMangaStateLoading) {
                     return Center(child: LoadingShimmer().loadingCircle());
                   }
-                  if (state is ChapterStateLoaded) {
-                    final chapterData = state.chapterData;
+                  if (state is DetailMangaStateLoaded) {
+                    if (state.chapterData == null) {
+                      if (state.chapterData == null) {
+                        return Center(
+                          child: LoadingShimmer().loadingCircle(),
+                        );
+                      }
+                    }
+                    final chapterData = state.chapterData!;
                     totalPages = chapterData.data.length;
                     preloadImages(chapterData.data, chapterData);
                     return ValueListenableBuilder<bool>(
@@ -255,7 +269,6 @@ class __BodyPageState extends State<_BodyPage> {
                           context.read<DetailMangaCubit>().getDetailManga(
                                 widget.idManga,
                                 true,
-                                offset: 1,
                               );
                         },
                       ),
