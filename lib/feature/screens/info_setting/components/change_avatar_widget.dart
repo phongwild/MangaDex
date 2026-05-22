@@ -14,7 +14,6 @@ import '../../../../core_ui/design_system/app_button.dart';
 
 class ChangeAvatarWidget extends StatefulWidget {
   const ChangeAvatarWidget({super.key});
-
   @override
   State<ChangeAvatarWidget> createState() => _ChangeAvatarWidgetState();
 }
@@ -49,36 +48,41 @@ class _ChangeAvatarWidgetState extends State<ChangeAvatarWidget> {
             width: double.infinity,
             child: Column(
               children: [
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: ValueListenableBuilder<File?>(
-                    valueListenable: _avatarImage,
-                    builder: (context, value, child) {
-                      return GestureDetector(
-                        onTap: _pickImage,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: value != null
-                              ? Image.file(
-                                  value,
-                                  width: 95,
-                                  height: 95,
-                                  fit: BoxFit.cover,
-                                )
-                              : Container(
-                                  width: 95,
-                                  height: 95,
-                                  color: AppColors.gray300,
-                                  child: const Icon(
-                                    IconlyLight.profile,
-                                    color: Colors.white,
-                                    size: 40,
+                ValueListenableBuilder<File?>(
+                  valueListenable: _avatarImage,
+                  builder: (context, value, child) {
+                    return GestureDetector(
+                      onTap: _pickImage,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: value != null
+                            ? Image.file(
+                                value,
+                                width: 95,
+                                height: 95,
+                                fit: BoxFit.cover,
+                              )
+                            : _isLogin.avatar != null &&
+                                    _isLogin.avatar!.isNotEmpty
+                                ? Image.network(
+                                    _isLogin.avatar!,
+                                    width: 95,
+                                    height: 95,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    width: 95,
+                                    height: 95,
+                                    color: AppColors.gray300,
+                                    child: const Icon(
+                                      IconlyLight.profile,
+                                      color: Colors.white,
+                                      size: 40,
+                                    ),
                                   ),
-                                ),
-                        ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
