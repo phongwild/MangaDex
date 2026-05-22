@@ -5,6 +5,7 @@ import 'package:app/feature/dio/dio_client.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/models/manga_model.dart';
+import 'package:app/feature/utils/manga_filter_config.dart';
 import 'package:app/feature/utils/translate_lang.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,15 +51,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       );
 
       if (!isFeed) {
-        emit(
-          DetailMangaStateLoaded(
-            manga,
-            const [],
-            0,
-            '',
-          ),
-        );
-
+        emit(DetailMangaStateLoaded(manga, const [], 0, ''));
         return;
       }
 
@@ -73,6 +66,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
           'translatedLanguage[]': TranslateLang().language,
           'limit': _limit,
           'order[chapter]': 'desc',
+          'contentRating[]': ContentRatingManager().selected
         },
       );
 
@@ -82,6 +76,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
           'translatedLanguage[]': TranslateLang().language,
           'limit': 1,
           'order[chapter]': 'asc',
+          'contentRating[]': ContentRatingManager().selected
         },
       );
 
@@ -90,11 +85,8 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       final List<dynamic> firstChapterData =
           firstChapterResponse.data['data'] ?? [];
 
-      final chapters = chaptersData
-          .map(
-            (e) => ChapterWrapper.fromJson(e),
-          )
-          .toList();
+      final chapters =
+          chaptersData.map((e) => ChapterWrapper.fromJson(e)).toList();
 
       _chapters.addAll(chapters);
 
@@ -116,11 +108,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
     } catch (e) {
       dlog(e.toString());
 
-      emit(
-        DetailMangaStateError(
-          e.toString(),
-        ),
-      );
+      emit(DetailMangaStateError(e.toString()));
     }
   }
 
@@ -140,13 +128,14 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
 
       _isLoadingMore = true;
 
-      final response = await DioClient.create().get(
-        '$urlManga/$idManga/feed',
-        queryParameters: {
+      final response = await callApiGet(
+        endPoint: '$urlManga/$idManga/feed',
+        json: {
           'offset': _offset,
           'translatedLanguage[]': TranslateLang().language,
           'limit': _limit,
           'order[chapter]': 'desc',
+          'contentRating[]': ContentRatingManager().selected
         },
       );
 
@@ -235,11 +224,17 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
     String idChapter,
   ) async {
     try {
-      emit(DetailMangaStateLoading());
+      final currentState = state;
 
-      final response = await callApiGet(
-        endPoint: '$urlReadChapter/$idChapter',
+      if (currentState is! DetailMangaStateLoaded) {
+        return;
+      }
+
+      emit(
+        currentState.copyWith(isChapterLoading: true),
       );
+
+      final response = await callApiGet(endPoint: '$urlReadChapter/$idChapter');
 
       if (response.statusCode == 200) {
         final data = ChapterData.fromJson(
@@ -247,7 +242,10 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
         );
 
         emit(
-          ChapterStateLoaded(data),
+          currentState.copyWith(
+            chapterData: data,
+            isChapterLoading: false,
+          ),
         );
       } else {
         emit(
@@ -314,5 +312,13 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
     } catch (e) {
       dlog('Lỗi khi tải full chapters: $e');
     }
+  }
+
+  Future<void> initReader(
+    String mangaId,
+    String chapterId,
+  ) async {
+    await getDetailManga(mangaId, true);
+    await getReadChapter(chapterId);
   }
 }
