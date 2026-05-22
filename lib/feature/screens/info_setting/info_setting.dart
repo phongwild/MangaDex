@@ -1,7 +1,6 @@
 import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/feature/screens/info_setting/components/change_avatar_widget.dart';
 import 'package:app/feature/screens/info_setting/components/change_username_widget.dart';
-import 'package:app/feature/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core_ui/app_theme.dart/app_text_style.dart';
@@ -18,7 +17,6 @@ class InfoSetting extends StatelessWidget {
 
 class _BodyPage extends StatefulWidget {
   const _BodyPage();
-
   @override
   State<_BodyPage> createState() => __BodyPageState();
 }

@@ -15,8 +15,9 @@ class ChangeUsernameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController usernameCtrl = TextEditingController();
-    final IsLogin _isLogin = IsLogin.getInstance();
+    final IsLogin isLogin = IsLogin.getInstance();
+    final TextEditingController usernameCtrl =
+        TextEditingController(text: isLogin.username);
 
     void updateUsername() {
       if (usernameCtrl.text.isEmpty) {
@@ -49,7 +50,7 @@ class ChangeUsernameWidget extends StatelessWidget {
           BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
               if (state is AuthUpdateProfileSuccess) {
-                _isLogin.updateUsername(usernameCtrl.value.toString());
+                isLogin.updateUsername(usernameCtrl.value.toString());
                 usernameCtrl.value = TextEditingValue.empty;
                 showToast('Cập nhật username thành công >.< !!');
                 return;
