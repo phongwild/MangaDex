@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:app/core/app_log.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/widget/loading/shimmer.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
+import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/models/chapter_data_model.dart';
 import 'package:app/feature/models/chapter_model.dart';
 import 'package:app/feature/screens/reading/widget/chapter_control_bar.dart';
 import 'package:app/feature/screens/reading/widget/horizontal_style_widget.dart';
+import 'package:app/feature/utils/is_login.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,7 +77,8 @@ class __BodyPageState extends State<_BodyPage> {
   final ValueNotifier<bool> _showControls = ValueNotifier(true);
   final ValueNotifier<bool> styleReading = ValueNotifier(false);
   final ValueNotifier<String> idCurrentChapter = ValueNotifier('');
-
+  final IsLogin _isLogin = IsLogin.getInstance();
+  late final UserCubit _userCubit;
   Timer? _hideTimer;
   int totalPages = 1;
 
@@ -95,27 +99,52 @@ class __BodyPageState extends State<_BodyPage> {
   @override
   void initState() {
     super.initState();
+    _userCubit = context.read<UserCubit>();
     idCurrentChapter.value = widget.idChapter;
     _startHideTimer();
   }
 
+  Future<void> saveProgress() async {
+    try {
+      dlog('SAVE_PROGRESS_START');
+
+      if (!_isLogin.isLoggedIn) {
+        dlog('NOT_LOGIN');
+        return;
+      }
+
+      final currentChapter = widget.listChapters.firstWhere(
+        (e) => e.id == idCurrentChapter.value,
+      );
+
+      dlog('SAVE_CHAPTER: ${currentChapter.id}');
+
+      await _userCubit.saveReadingProgress(
+        mangaId: widget.idManga,
+        chapterId: idCurrentChapter.value,
+        chapterNumber: currentChapter.attributes.chapter,
+        chapterTitle: currentChapter.attributes.title,
+        page: currentPage.value,
+      );
+
+      dlog('SAVE_PROGRESS_SUCCESS');
+    } catch (e) {
+      dlog('SAVE_PROGRESS_ERROR: $e');
+    }
+  }
+
   void updateChapter(String newId) async {
     if (idCurrentChapter.value == newId) return;
+
+    // save chapter cũ trước
+    await saveProgress();
+
     idCurrentChapter.value = newId;
     currentPage.value = 0;
-    await context.read<DetailMangaCubit>().getReadChapter(newId);
+
     if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(
-        const Duration(milliseconds: 100),
-      );
-      if (!mounted) return;
-      if (_pageController.hasClients) {
-        try {
-          _pageController.jumpToPage(0);
-        } catch (_) {}
-      }
-    });
+
+    await context.read<DetailMangaCubit>().getReadChapter(newId);
   }
 
   @override
@@ -124,10 +153,12 @@ class __BodyPageState extends State<_BodyPage> {
     if (_pageController.hasClients) {
       _pageController.dispose();
     }
+
     currentPage.dispose();
     _showControls.dispose();
     styleReading.dispose();
     idCurrentChapter.dispose();
+
     super.dispose();
   }
 
@@ -163,11 +194,9 @@ class __BodyPageState extends State<_BodyPage> {
                   }
                   if (state is DetailMangaStateLoaded) {
                     if (state.chapterData == null) {
-                      if (state.chapterData == null) {
-                        return Center(
-                          child: LoadingShimmer().loadingCircle(),
-                        );
-                      }
+                      return Center(
+                        child: LoadingShimmer().loadingCircle(),
+                      );
                     }
                     final chapterData = state.chapterData!;
                     totalPages = chapterData.data.length;
@@ -232,7 +261,12 @@ class __BodyPageState extends State<_BodyPage> {
                                 Icons.arrow_back_ios_rounded,
                                 color: Colors.white,
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () async {
+                                final navigator = Navigator.of(context);
+                                await saveProgress();
+                                if (!mounted) return;
+                                navigator.pop();
+                              },
                             ),
                           ),
                           ValueListenableBuilder(

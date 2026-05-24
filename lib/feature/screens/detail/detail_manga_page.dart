@@ -9,6 +9,7 @@ import 'package:app/feature/cubit/comments_cubit.dart';
 import 'package:app/feature/cubit/detail_manga_cubit.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/models/chapter_model.dart';
+import 'package:app/feature/models/reading_progress_model.dart';
 import 'package:app/feature/models/tag_model.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/screens/detail/widget/comment_widget.dart';
@@ -88,12 +89,14 @@ class __BodyPageState extends State<_BodyPage> {
   final ValueNotifier<List<Chapter>> listAllChapters = ValueNotifier([]);
   final ValueNotifier<bool> isFollowing = ValueNotifier(false);
   final ValueNotifier<bool> isFollowingLoading = ValueNotifier(false);
+  final ValueNotifier<ReadingProgress?> readingProgress = ValueNotifier(null);
   final IsLogin _isLogin = IsLogin.getInstance();
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _initFollowStatus();
+      _initReadingProgress();
       _addHistory();
     });
   }
@@ -116,6 +119,15 @@ class __BodyPageState extends State<_BodyPage> {
           await context.read<UserCubit>().checkListFollowManga(widget.idManga);
       isFollowing.value = isFollow;
     }
+  }
+
+  Future<void> _initReadingProgress() async {
+    if (!_isLogin.isLoggedIn) return;
+
+    final progress =
+        await context.read<UserCubit>().getReadingProgress(widget.idManga);
+
+    readingProgress.value = progress;
   }
 
   // Hàm xử lý trạng thái theo dõi
@@ -361,27 +373,36 @@ class __BodyPageState extends State<_BodyPage> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10),
-                                      child: ButtonAppWidget(
-                                        text: 'Đọc từ chap 1',
-                                        color: AppColors.bgMain,
-                                        isBoxShadow: false,
-                                        textColor: AppColors.black,
-                                        onTap: () {
-                                          if (firstChapter == null) {
-                                            showToast(
-                                              'Truyện chưa có chương nào :<',
-                                              isError: true,
-                                            );
-                                            return;
-                                          }
-                                          Navigator.pushNamed(context,
-                                              NettromdexRouter.readChapter,
-                                              arguments: ReadChapterPage(
-                                                idChapter: firstChapter,
-                                                idManga: widget.idManga,
-                                                listChapters: chapters,
-                                                chapter: '1',
-                                              ));
+                                      child: ValueListenableBuilder<
+                                          ReadingProgress?>(
+                                        valueListenable: readingProgress,
+                                        builder: (context, progress, child) {
+                                          final hasProgress = progress != null;
+
+                                          return ButtonAppWidget(
+                                            text: hasProgress
+                                                ? 'Đọc tiếp chap ${progress.chapterNumber}'
+                                                : 'Đọc từ chap 1',
+                                            color: AppColors.bgMain,
+                                            isBoxShadow: false,
+                                            textColor: AppColors.black,
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                NettromdexRouter.readChapter,
+                                                arguments: ReadChapterPage(
+                                                  idChapter: hasProgress
+                                                      ? progress.chapterId!
+                                                      : firstChapter,
+                                                  idManga: widget.idManga,
+                                                  listChapters: chapters,
+                                                  chapter: hasProgress
+                                                      ? progress.chapterNumber
+                                                      : '1',
+                                                ),
+                                              );
+                                            },
+                                          );
                                         },
                                       ),
                                     ),
