@@ -3,6 +3,7 @@ import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/feature/dio/dio_client.dart';
 import 'package:app/feature/models/manga_model.dart';
 import 'package:app/feature/models/reading_progress_model.dart';
+import 'package:app/feature/utils/manga_filter_config.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -292,24 +293,28 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
   }
 }
 
-// ⚡️ Hàm chạy trên Isolate để tải danh sách Manga từ API
 Future<List<Manga>> fetchMangaList(List<dynamic> listIdManga) async {
-  List<Manga> listManga = [];
+  final results = await Future.wait(
+    listIdManga.map((idManga) async {
+      try {
+        final mangaResponse = await DioClient.create().get(
+          '$mangaDexApi/manga/$idManga',
+          queryParameters: {
+            'includes[]': 'cover_art',
+            'availableTranslatedLanguage[]': translateLang.language,
+            'order[latestUploadedChapter]': 'desc',
+            'contentRating[]': ContentRatingManager().selected
+          },
+        );
 
-  for (String idManga in listIdManga) {
-    final mangaResponse = await DioClient.create().get(
-      '$mangaDexApi/manga/$idManga',
-      queryParameters: {
-        'includes[]': 'cover_art',
-        'availableTranslatedLanguage[]': translateLang.language,
-        'order[latestUploadedChapter]': 'desc'
-      },
-    );
+        if (mangaResponse.statusCode == 200) {
+          return Manga.fromJson(mangaResponse.data['data']);
+        }
+      } catch (_) {}
 
-    if (mangaResponse.statusCode == 200) {
-      listManga.add(Manga.fromJson(mangaResponse.data['data']));
-    }
-  }
+      return null;
+    }),
+  );
 
-  return listManga;
+  return results.whereType<Manga>().toList();
 }
