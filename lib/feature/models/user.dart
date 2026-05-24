@@ -1,3 +1,4 @@
+import 'package:app/feature/models/reading_progress_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
@@ -6,7 +7,6 @@ part 'user.g.dart';
 class User {
   @JsonKey(name: '_id')
   final String? sId;
-
   final String? username;
   final String? email;
   final String? avatar;
@@ -19,6 +19,9 @@ class User {
 
   final List<History>? history;
 
+  @JsonKey(name: 'reading_progress')
+  final List<ReadingProgress>? readingProgress;
+
   const User({
     this.sId,
     this.username,
@@ -29,6 +32,7 @@ class User {
     this.updatedAt,
     this.followList,
     this.history,
+    this.readingProgress,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -39,16 +43,14 @@ class User {
 @JsonSerializable(includeIfNull: false)
 class History {
   final String? mangaId;
-
   @JsonKey(name: '_id')
   final String? sId;
-
-  final String? createdAt;
+  final String? updatedAt;
 
   const History({
     this.mangaId,
     this.sId,
-    this.createdAt,
+    this.updatedAt,
   });
 
   factory History.fromJson(Map<String, dynamic> json) =>

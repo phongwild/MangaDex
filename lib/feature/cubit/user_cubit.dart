@@ -2,6 +2,7 @@ import 'package:app/core/app_log.dart';
 import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/feature/dio/dio_client.dart';
 import 'package:app/feature/models/manga_model.dart';
+import 'package:app/feature/models/reading_progress_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -213,6 +214,80 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     } catch (e) {
       dlog('Error: $e');
       emit(UserError('Lỗi: $e'));
+    }
+  }
+
+  //reading progress
+  Future<void> saveReadingProgress({
+    required String mangaId,
+    required String chapterId,
+    required int page,
+    String? chapterTitle,
+    String? chapterNumber,
+    bool completed = false,
+  }) async {
+    try {
+      final uid = await SharedPref.getString('uid');
+
+      if (uid.isEmpty) {
+        throw Exception('UID is empty');
+      }
+
+      await callApiPost(
+        '$baseUrl/reading/$uid',
+        {
+          'mangaId': mangaId,
+          'chapterId': chapterId,
+          'chapterTitle': chapterTitle,
+          'chapterNumber': chapterNumber,
+          'page': page,
+          'completed': completed,
+        },
+      );
+    } catch (e) {
+      dlog('saveReadingProgress error: $e');
+    }
+  }
+
+  Future<ReadingProgress?> getReadingProgress(
+    String mangaId,
+  ) async {
+    try {
+      final uid = await SharedPref.getString('uid');
+
+      if (uid.isEmpty) {
+        return null;
+      }
+
+      final response = await callApiGet(
+        endPoint: '$baseUrl/reading/$uid/$mangaId',
+      );
+
+      if (response.statusCode != 200) {
+        dlog(
+          'getReadingProgress invalid status: ${response.statusCode}',
+        );
+
+        return null;
+      }
+
+      final data = response.data;
+
+      if (data == null) {
+        return null;
+      }
+
+      if (data['data'] == null) {
+        return null;
+      }
+
+      return ReadingProgress.fromJson(
+        data['data'],
+      );
+    } catch (e) {
+      dlog('getReadingProgress error: $e');
+
+      return null;
     }
   }
 }

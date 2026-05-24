@@ -20,6 +20,9 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       history: (json['history'] as List<dynamic>?)
           ?.map((e) => History.fromJson(e as Map<String, dynamic>))
           .toList(),
+      readingProgress: (json['reading_progress'] as List<dynamic>?)
+          ?.map((e) => ReadingProgress.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$UserToJson(User instance) {
@@ -40,13 +43,14 @@ Map<String, dynamic> _$UserToJson(User instance) {
   writeNotNull('updatedAt', instance.updatedAt);
   writeNotNull('follow_list', instance.followList);
   writeNotNull('history', instance.history);
+  writeNotNull('reading_progress', instance.readingProgress);
   return val;
 }
 
 History _$HistoryFromJson(Map<String, dynamic> json) => History(
       mangaId: json['mangaId'] as String?,
       sId: json['_id'] as String?,
-      createdAt: json['createdAt'] as String?,
+      updatedAt: json['updatedAt'] as String?,
     );
 
 Map<String, dynamic> _$HistoryToJson(History instance) {
@@ -60,6 +64,6 @@ Map<String, dynamic> _$HistoryToJson(History instance) {
 
   writeNotNull('mangaId', instance.mangaId);
   writeNotNull('_id', instance.sId);
-  writeNotNull('createdAt', instance.createdAt);
+  writeNotNull('updatedAt', instance.updatedAt);
   return val;
 }
