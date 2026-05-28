@@ -5,15 +5,23 @@ import 'package:app/feature/router/nettromdex_router.dart';
 import 'package:app/feature/utils/image_app.dart';
 import 'package:app/feature/utils/time_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../../models/relationship_model.dart';
 import '../../../utils/parse_cover_art.dart';
 import '../../detail/detail_manga_page.dart';
 
 class ListFollowHistory extends StatelessWidget {
-  const ListFollowHistory({super.key, required this.mangaList, this.onRefresh});
+  const ListFollowHistory({
+    super.key,
+    required this.mangaList,
+    this.onRefresh,
+    this.onDelete,
+  });
   final List<Manga> mangaList;
   final Future<void> Function()? onRefresh;
+  final Future<void> Function(String mangaId)? onDelete;
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -35,93 +43,120 @@ class ListFollowHistory extends StatelessWidget {
           );
           final coverArt = coverArtId.attributes?.fileName ?? '';
 
-          return GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                NettromdexRouter.detailManga,
-                arguments: DetailMangaPage(
-                  idManga: manga.id,
-                  coverArt: parseCoverArt(manga.id, coverArt),
-                  lastUpdate: manga.attributes.updatedAt != null
-                      ? timeAgo(manga.attributes.updatedAt!)
-                      : 'N/a',
-                  title: manga.attributes.getPreferredTitle(),
+          return Slidable(
+            key: ValueKey(manga.id),
+            closeOnScroll: true,
+            useTextDirection: false,
+            endActionPane: ActionPane(
+              motion: const StretchMotion(),
+              dismissible: DismissiblePane(
+                onDismissed: () async {
+                  await onDelete?.call(manga.id);
+                },
+              ),
+              children: [
+                CustomSlidableAction(
+                  onPressed: (_) async {
+                    await onDelete?.call(manga.id);
+                  },
+                  foregroundColor: Colors.white70,
+                  backgroundColor: const Color(0xffff453a),
+                  borderRadius: BorderRadius.circular(16),
+                  child: const Icon(
+                    IconlyLight.delete,
+                    size: 28,
+                  ),
                 ),
-              );
-            },
-            child: SizedBox(
-              width: double.infinity,
-              height: 165,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RepaintBoundary(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: ImageApp(
-                        imageUrl: coverArt.isNotEmpty
-                            ? parseCoverArt(manga.id, coverArt)
-                            : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
-                        height: 160,
-                        width: 110,
-                        fit: BoxFit.cover,
-                        errorWidget: const Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            color: Colors.white54,
-                            size: 50,
+              ],
+            ),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  NettromdexRouter.detailManga,
+                  arguments: DetailMangaPage(
+                    idManga: manga.id,
+                    coverArt: parseCoverArt(manga.id, coverArt),
+                    lastUpdate: manga.attributes.updatedAt != null
+                        ? timeAgo(manga.attributes.updatedAt!)
+                        : 'N/a',
+                    title: manga.attributes.getPreferredTitle(),
+                  ),
+                );
+              },
+              child: SizedBox(
+                width: double.infinity,
+                height: 165,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RepaintBoundary(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: ImageApp(
+                          imageUrl: coverArt.isNotEmpty
+                              ? parseCoverArt(manga.id, coverArt)
+                              : 'https://storage-ct.lrclib.net/file/cuutruyen/uploads/manga/1106/cover/processed-0a5b2ead13a8186f4ae75739fe8b5a47.jpg',
+                          height: 160,
+                          width: 110,
+                          fit: BoxFit.cover,
+                          errorWidget: const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
+                              color: Colors.white54,
+                              size: 50,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            manga.attributes.getPreferredTitle(),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppsTextStyle.text16Weight600.copyWith(
-                              color: const Color(0xff374151),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              manga.attributes.getPreferredTitle(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppsTextStyle.text16Weight600.copyWith(
+                                color: const Color(0xff374151),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            manga.attributes.getPreferredDescription(),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppsTextStyle.text14Weight400.copyWith(
-                              color: const Color(0xff374151),
+                            const SizedBox(height: 5),
+                            Text(
+                              manga.attributes.getPreferredDescription(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppsTextStyle.text14Weight400.copyWith(
+                                color: const Color(0xff374151),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'C. ${manga.attributes.lastChapter ?? 'N/a'}',
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppsTextStyle.text14Weight600
-                                .copyWith(color: const Color(0xff868d98)),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            manga.attributes.updatedAt != null
-                                ? timeAgo(manga.attributes.updatedAt!)
-                                : 'N/a',
-                            style: AppsTextStyle.text14Weight400.copyWith(
-                              color: const Color(0xff868d98),
+                            const SizedBox(height: 5),
+                            Text(
+                              'C. ${manga.attributes.lastChapter ?? 'N/a'}',
+                              maxLines: 5,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppsTextStyle.text14Weight600
+                                  .copyWith(color: const Color(0xff868d98)),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 5),
+                            Text(
+                              manga.attributes.updatedAt != null
+                                  ? timeAgo(manga.attributes.updatedAt!)
+                                  : 'N/a',
+                              style: AppsTextStyle.text14Weight400.copyWith(
+                                color: const Color(0xff868d98),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

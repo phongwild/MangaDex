@@ -1,6 +1,7 @@
 import 'package:app/core/app_log.dart';
 import 'package:app/feature/cubit/user_cubit.dart';
 import 'package:app/feature/router/nettromdex_router.dart';
+import 'package:app/feature/utils/toast_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,6 +37,10 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
   void fetchFollowedManga() {
     final offset = currentPage.value;
     context.read<UserCubit>().listFollowManga(offset: offset, limit: limit);
+  }
+
+  void removeManga(String mangaId) {
+    context.read<UserCubit>().unFollowManga(mangaId);
   }
 
   void changePage(int newPage) {
@@ -115,7 +120,20 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
   }
 
   Widget _buildContent() {
-    return BlocBuilder<UserCubit, UserState>(
+    return BlocConsumer<UserCubit, UserState>(
+      listenWhen: (previous, current) =>
+          current is UnFollowMangaSuccess ||
+          current is AlreadyRemovedManga ||
+          current is UserError,
+      listener: (context, state) {
+        if (state is UnFollowMangaSuccess) {
+          showToast('Xoá truyện thành công');
+        }
+
+        if (state is UserError) {
+          showToast('Có lỗi xảy ra khi xoá truyện', isError: true);
+        }
+      },
       buildWhen: (previous, current) =>
           current is ListFollowMangaLoaded || current is UserLoading,
       builder: (context, state) {
@@ -142,6 +160,10 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
                     : ListFollowHistory(
                         mangaList: state.mangas,
                         onRefresh: () async {
+                          fetchFollowedManga();
+                        },
+                        onDelete: (mangaId) async {
+                          removeManga(mangaId);
                           fetchFollowedManga();
                         },
                       ),

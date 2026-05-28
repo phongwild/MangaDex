@@ -1,6 +1,7 @@
 import 'package:app/core_ui/app_theme.dart/app_color/app_colors.dart';
 import 'package:app/core_ui/app_theme.dart/app_text_style.dart';
 import 'package:app/core_ui/design_system/app_button.dart';
+import 'package:app/feature/screens/user/widgets/list_follow_history.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:app/feature/utils/toast_app.dart';
 import 'package:app/feature/widgets/button_app_widget.dart';
@@ -12,7 +13,6 @@ import '../../../../../core_ui/widget/loading/shimmer.dart';
 import '../../../../cubit/user_cubit.dart';
 import '../../../../router/nettromdex_router.dart';
 import '../../../more/widget/item_offset_widget.dart';
-import '../../../search/widgets/item_manga_widget.dart';
 
 class HistoryMangaView extends StatefulWidget {
   const HistoryMangaView({super.key});
@@ -40,6 +40,10 @@ class _HistoryMangaViewState extends State<HistoryMangaView> {
   void fetchHistory() {
     final offset = currentPage.value;
     context.read<UserCubit>().listHistory(offset: offset, limit: limit);
+  }
+
+  void removeManga(String mangaId) {
+    context.read<UserCubit>().removeHistory(mangaId);
   }
 
   void changePage(int newPage) {
@@ -124,6 +128,9 @@ class _HistoryMangaViewState extends State<HistoryMangaView> {
             if (state is ClearHistoryMangaSuccess) {
               showToast('Xoá lịch sử đọc truyện thành công');
             }
+            if (state is RemoveHistoryMangaSuccess) {
+              showToast('Xoá lịch sử đọc truyện thành công');
+            }
           },
           builder: (context, state) {
             return AppButton(
@@ -173,9 +180,13 @@ class _HistoryMangaViewState extends State<HistoryMangaView> {
               return Expanded(
                 child: Stack(
                   children: [
-                    ListMangaWidget(
+                    ListFollowHistory(
                       mangaList: state.mangas,
                       onRefresh: () async {
+                        fetchHistory();
+                      },
+                      onDelete: (mangaId) async {
+                        removeManga(mangaId);
                         fetchHistory();
                       },
                     ),
