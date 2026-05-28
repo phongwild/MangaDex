@@ -154,6 +154,31 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     }
   }
 
+  //RemoveHistory
+  Future<void> removeHistory(String idManga) async {
+    try {
+      final uid = await SharedPref.getString('uid');
+
+      final response = await callApiPost(
+        '$baseUrl/history/remove/$uid',
+        {'mangaId': idManga},
+      );
+
+      if (response.statusCode == 200) {
+        emit(RemoveHistoryMangaSuccess());
+      } else {
+        emit(
+          UserError(
+            'Lỗi: ${response.statusCode} - ${response.data['message'] ?? 'Không rõ lỗi'}',
+          ),
+        );
+      }
+    } catch (e) {
+      dlog('removeHistory error: $e');
+      emit(UserError('Lỗi: $e'));
+    }
+  }
+
   Future<void> listHistory({int offset = 0, int limit = 10}) async {
     // if (state is ListHistoryMangaLoaded) return;
     try {
