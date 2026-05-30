@@ -65,6 +65,9 @@ class DefaultFirebaseOptions {
     projectId: 'assignmentdanentang',
     databaseURL: 'https://assignmentdanentang-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'assignmentdanentang.firebasestorage.app',
+    androidClientId: '515834641326-449lfhfu873bi2b3lr929a06tsturd11.apps.googleusercontent.com',
+    iosClientId: '515834641326-kb725hrlcspbm56tc4f4dph9p1li7rj1.apps.googleusercontent.com',
     iosBundleId: 'com.phongzero.nettromdex',
   );
+
 }
