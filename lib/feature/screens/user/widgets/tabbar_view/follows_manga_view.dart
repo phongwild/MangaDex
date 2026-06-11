@@ -129,10 +129,6 @@ class _FollowsMangaViewState extends State<FollowsMangaView> {
         if (state is UnFollowMangaSuccess) {
           showToast('Xoá truyện thành công');
         }
-
-        if (state is UserError) {
-          showToast('Có lỗi xảy ra khi xoá truyện', isError: true);
-        }
       },
       buildWhen: (previous, current) =>
           current is ListFollowMangaLoaded || current is UserLoading,

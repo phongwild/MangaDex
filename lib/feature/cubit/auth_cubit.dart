@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app/core/app_log.dart';
 import 'package:app/core/cache/shared_prefs.dart';
+import 'package:app/feature/models/login_response.dart';
 import 'package:app/feature/utils/is_login.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
@@ -16,14 +17,11 @@ final IsLogin _isLogin = IsLogin.getInstance();
 
 class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
   AuthCubit() : super(AuthInitial());
-
-  final String baseURL = 'https://api-manga-user.vercel.app';
-  final String devURL = 'http://192.168.10.106:3000';
   //Register
   Future<void> register(String username, String email, String password) async {
     try {
       emit(AuthLoading());
-      final res = await callApiPost('$baseURL/user/register', {
+      final res = await callApiPost('/auth/register', {
         'username': username,
         'email': email,
         'password': password,
@@ -43,7 +41,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
     try {
       emit(AuthLoading());
 
-      final response = await callApiPost('$baseURL/user/verify-otp', {
+      final response = await callApiPost('/auth/verify-otp', {
         'email': email,
         'otp': otp,
       });
@@ -71,30 +69,25 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
   Future<void> login(String email, String password) async {
     try {
       emit(AuthLoading());
-      final response = await callApiPost('$baseURL/user/login', {
+      final response = await callApiPost('/auth/login', {
         'email': email,
         'password': password,
       });
       dlog('STATUS: ${response.statusCode}');
       dlog('DATA: ${response.data}');
       if (response.statusCode == 200) {
-        final user = User.fromJson(response.data);
-        await SharedPref.putString('uid', user.sId!);
-        var cookies = response.headers['set-cookie'];
-        if (cookies != null && cookies.isNotEmpty) {
-          // Lưu cookie vào SharedPreferences
-          await _isLogin.login(
-            cookies.first,
-            user.username ?? '',
-            user.email ?? '',
-            user.avatar ?? '',
-            user.sId!,
-          );
-          dlog('JWT đã được lưu: ${await _isLogin.getJwt()}');
-        }
+        final login = LoginResponse.fromJson(response.data);
+        await _isLogin.login(
+          login.accessToken,
+          login.user.username ?? '',
+          login.user.email ?? '',
+          login.user.avatar ?? '',
+          login.user.sId!,
+          login.refreshToken,
+        );
         await getProfile();
         // Emit trạng thái thành công
-        emit(AuthLoginSuccess(user: user));
+        emit(AuthLoginSuccess(user: login.user));
       } else if (response.statusCode == 400) {
         emit(AuthWrongEmailOrPassword());
       } else {
@@ -109,30 +102,27 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
   Future<void> loginGoogle(String idToken) async {
     try {
       emit(AuthLoading());
-      final response = await callApiPost('$baseURL/auth/login', {
+      final response = await callApiPost('/auth/login/google', {
         'idToken': idToken,
       });
       if (response.statusCode == 200) {
-        final user = User.fromJson(response.data);
-        if (user.sId == null) {
+        final login = LoginResponse.fromJson(response.data);
+        if (login.user.sId == null) {
           throw Exception("User id null");
         }
-        await SharedPref.putString('uid', user.sId!);
-        var cookies = response.headers['set-cookie'];
-        if (cookies != null && cookies.isNotEmpty) {
-          // Lưu cookie vào SharedPreferences
-          await _isLogin.login(
-            cookies.first,
-            user.username ?? '',
-            user.email ?? '',
-            user.avatar ?? '',
-            user.sId!,
-          );
-          dlog('JWT đã được lưu: ${await _isLogin.getJwt()}');
-        }
+        await _isLogin.login(
+          login.accessToken,
+          login.user.username ?? '',
+          login.user.email ?? '',
+          login.user.avatar ?? '',
+          login.user.sId!,
+          login.refreshToken,
+        );
+        dlog('ACCESS TOKEN: ${login.accessToken}');
+        dlog('REFRESH TOKEN: ${login.refreshToken}');
         await getProfile();
         // Emit trạng thái thành công
-        emit(AuthLoginSuccess(user: user));
+        emit(AuthLoginSuccess(user: login.user));
       } else if (response.statusCode == 400) {
         emit(AuthWrongEmailOrPassword());
       } else {
@@ -149,10 +139,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
   Future<void> getProfile() async {
     try {
       emit(AuthLoading());
-      final response = await callApiGet(
-        endPoint: '$baseURL/user/profile',
-        jwtToken: await _isLogin.getJwt(),
-      );
+      final response = await callApiGet(endPoint: '/user/profile');
       if (response.statusCode == 200) {
         final user = User.fromJson(response.data);
         emit(AuthProfileLoaded(user: user));
@@ -167,7 +154,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
   Future<void> logout() async {
     try {
       emit(AuthLoading());
-      final response = await callApiGet(endPoint: '$baseURL/user/logout');
+      final response = await callApiGet(endPoint: '/auth/logout');
       if (response.statusCode == 200) {
         await _isLogin.logout();
         emit(AuthLogoutSuccess());
@@ -183,7 +170,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
       emit(AuthChangePassLoading());
       final uid = await SharedPref.getString('uid');
       final response = await callApiPut(
-        '$baseURL/user/change-password/$uid',
+        '/auth/change-password/$uid',
         {
           'oldPassword': oldPass,
           'newPassword': newPass,
@@ -219,7 +206,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
       });
 
       final uploadResponse = await callApiPost(
-        '$baseURL/upload',
+        '/upload',
         formData,
       );
 
@@ -238,7 +225,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
       }
 
       final updateResponse = await callApiPut(
-        '$baseURL/user/update-profile/$uid',
+        '/user/update-profile/$uid',
         {'avatar': uploadedImageUrl},
       );
 
@@ -268,7 +255,7 @@ class AuthCubit extends Cubit<AuthState> with NetWorkMixin {
       }
 
       final response = await callApiPut(
-        '$baseURL/user/update-profile/$uid',
+        '/user/update-profile/$uid',
         user.toJson(),
       );
 

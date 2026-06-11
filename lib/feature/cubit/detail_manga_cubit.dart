@@ -12,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'detail_manga_state.dart';
 
-const String urlManga = 'https://api-manga-user.vercel.app/mangadex/manga';
 const String urlReadChapter =
     'https://api-manga-user.vercel.app/mangadex/at-home/server';
 
@@ -39,7 +38,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       emit(DetailMangaStateLoading());
 
       final response = await callApiGet(
-        endPoint: '$urlManga/$idManga',
+        endPoint: '/mangadex/manga/$idManga',
       );
 
       if (response.data['data'] == null) {
@@ -59,8 +58,8 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       _chapters.clear();
       _hasMore = true;
 
-      final chaptersResponse = await DioClient.create().get(
-        '$urlManga/$idManga/feed',
+      final chaptersResponse = await DioClient.instance.get(
+        '/mangadex/manga/$idManga/feed',
         queryParameters: {
           'offset': _offset,
           'translatedLanguage[]': TranslateLang().language,
@@ -70,8 +69,8 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
         },
       );
 
-      final firstChapterResponse = await DioClient.create().get(
-        '$urlManga/$idManga/feed',
+      final firstChapterResponse = await DioClient.instance.get(
+        '/mangadex/manga/$idManga/feed',
         queryParameters: {
           'translatedLanguage[]': TranslateLang().language,
           'limit': 1,
@@ -129,7 +128,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
       _isLoadingMore = true;
 
       final response = await callApiGet(
-        endPoint: '$urlManga/$idManga/feed',
+        endPoint: '/mangadex/manga/$idManga/feed',
         json: {
           'offset': _offset,
           'translatedLanguage[]': TranslateLang().language,
@@ -281,7 +280,7 @@ class DetailMangaCubit extends Cubit<DetailMangaState> with NetWorkMixin {
           offset < totalChapter;
           offset += batchSize) {
         final response = await callApiGet(
-          endPoint: '$urlManga/$idManga/feed',
+          endPoint: '/mangadex/manga/$idManga/feed',
           json: {
             'offset': offset,
             'translatedLanguage[]': TranslateLang().language,

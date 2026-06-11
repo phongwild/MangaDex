@@ -13,8 +13,6 @@ import '../utils/translate_lang.dart';
 
 part 'user_state.dart';
 
-const String baseUrl = 'https://api-manga-user.vercel.app';
-const String mangaDexApi = 'https://api-manga-user.vercel.app/mangadex';
 final translateLang = TranslateLang();
 final ConnectionUtils connectionUtils = ConnectionUtils();
 
@@ -25,8 +23,8 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     try {
       final uid = await SharedPref.getString('uid');
 
-      final response = await callApiGet(
-          endPoint: '$baseUrl/follow/check/$uid?mangaId=$mangaId');
+      final response =
+          await callApiGet(endPoint: '/follow/check/$uid?mangaId=$mangaId');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -51,7 +49,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
 
       String uid = await SharedPref.getString('uid');
       final response = await callApiGet(
-        endPoint: '$baseUrl/follow/$uid',
+        endPoint: '/follow/$uid',
         json: {
           'offset': offset,
           'limit': limit,
@@ -87,7 +85,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     try {
       String uid = await SharedPref.getString('uid');
       final response = await callApiPost(
-        '$baseUrl/follow/add/$uid',
+        '/follow/add/$uid',
         {'mangaId': idManga},
       );
 
@@ -113,7 +111,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     try {
       String uid = await SharedPref.getString('uid');
       final response = await callApiPost(
-        '$baseUrl/follow/remove/$uid',
+        '/follow/remove/$uid',
         {'mangaId': idManga},
       );
       if (response.statusCode == 200) {
@@ -137,7 +135,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     try {
       String uid = await SharedPref.getString('uid');
       final response = await callApiPost(
-        '$baseUrl/history/add/$uid',
+        '/history/add/$uid',
         {'mangaId': idManga},
       );
       if (response.statusCode == 200) {
@@ -160,7 +158,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       final uid = await SharedPref.getString('uid');
 
       final response = await callApiPost(
-        '$baseUrl/history/remove/$uid',
+        '/history/remove/$uid',
         {'mangaId': idManga},
       );
 
@@ -185,7 +183,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       emit(UserLoading());
       String uid = await SharedPref.getString('uid');
       final historyResponse = await callApiGet(
-        endPoint: '$baseUrl/history/$uid',
+        endPoint: '/history/$uid',
         json: {
           'offset': offset,
           'limit': limit,
@@ -227,7 +225,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     try {
       emit(ClearHistoryLoading());
       String uid = await SharedPref.getString('uid');
-      final response = await callApiDelete('$baseUrl/history/clear/$uid');
+      final response = await callApiDelete('/history/clear/$uid');
       if (response.statusCode == 200) {
         final removed = response.data['removed'];
         final remaining = response.data['remaining'];
@@ -260,7 +258,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       }
 
       await callApiPost(
-        '$baseUrl/reading/$uid',
+        '/reading/$uid',
         {
           'mangaId': mangaId,
           'chapterId': chapterId,
@@ -286,7 +284,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       }
 
       final response = await callApiGet(
-        endPoint: '$baseUrl/reading/$uid/$mangaId',
+        endPoint: '/reading/$uid/$mangaId',
       );
 
       if (response.statusCode != 200) {
@@ -322,8 +320,8 @@ Future<List<Manga>> fetchMangaList(List<dynamic> listIdManga) async {
   final results = await Future.wait(
     listIdManga.map((idManga) async {
       try {
-        final mangaResponse = await DioClient.create().get(
-          '$mangaDexApi/manga/$idManga',
+        final mangaResponse = await DioClient.instance.get(
+          'mangadex/manga/$idManga',
           queryParameters: {
             'includes[]': 'cover_art',
             'availableTranslatedLanguage[]': translateLang.language,

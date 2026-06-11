@@ -12,7 +12,6 @@ import '../utils/manga_filter_config.dart';
 
 part 'manga_state.dart';
 
-String baseUrl = 'https://api-manga-user.vercel.app/mangadex/';
 final translateLang = TranslateLang();
 final ConnectionUtils connectionUtils = ConnectionUtils();
 
@@ -198,8 +197,8 @@ Future<Map<String, dynamic>> _fetchManga(List<dynamic> param) async {
       'availableTranslatedLanguage[]': translateLang,
     };
 
-    final response = await DioClient.create().get(
-      '${baseUrl}manga',
+    final response = await DioClient.instance.get(
+      '/mangadex/manga',
       queryParameters: queryParams,
     );
 
@@ -231,8 +230,8 @@ Future<Map<String, dynamic>> _fetchSearchManga(
 
     final orderBy = followedCount ? 'followedCount' : 'latestUploadedChapter';
 
-    final response = await DioClient.create().get(
-      '${baseUrl}manga',
+    final response = await DioClient.instance.get(
+      '/mangadex/manga',
       queryParameters: {
         'includes[]': 'cover_art',
         'includedTagsMode': 'AND',

@@ -13,6 +13,7 @@ class IsLogin {
   bool _isLoggedIn = false;
   String? _uid;
   String? _jwt;
+  String? _refreshToken;
   String? _username;
   String? _email;
   String? _avatar;
@@ -23,10 +24,11 @@ class IsLogin {
   String? get username => _username;
   String? get email => _email;
   String? get avatar => _avatar;
+  String? get refreshToken => _refreshToken;
 
   // Đăng nhập và lưu thông tin user
   Future<void> login(String token, String? username, String? email,
-      String? avatar, String? id) async {
+      String? avatar, String? id, String? refreshToken) async {
     _isLoggedIn = true;
     _jwt = token;
     _username = username;
@@ -38,6 +40,11 @@ class IsLogin {
     await SharedPref.putString('username', username!);
     await SharedPref.putString('email', email!);
     await SharedPref.putString('avatar', avatar!);
+  }
+
+  Future<void> updateToken(String token) async {
+    _jwt = token;
+    await SharedPref.putString('jwt', token);
   }
 
   // Đăng xuất và xóa toàn bộ thông tin

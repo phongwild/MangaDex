@@ -8,8 +8,6 @@ import '../models/tag_model.dart';
 
 part 'tag_state.dart';
 
-String baseUrl = 'https://api-manga-user.vercel.app/mangadex/';
-
 class TagCubit extends Cubit<TagState> with NetWorkMixin {
   TagCubit() : super(TagStateInitial());
 
@@ -19,7 +17,7 @@ class TagCubit extends Cubit<TagState> with NetWorkMixin {
 
       emit(TagLoading());
 
-      final response = await callApiGet(endPoint: '${baseUrl}manga/tag');
+      final response = await callApiGet(endPoint: '/mangadex/manga/tag');
 
       if (response.statusCode == 200) {
         final data = response.data?['data'] as List<dynamic>? ?? [];

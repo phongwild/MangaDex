@@ -10,7 +10,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../../../core/cache/secures_storage.dart';
 import '../../cubit/auth_cubit.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -44,23 +43,6 @@ class _bodyState extends State<_body> {
   void initState() {
     super.initState();
     // saveLogin();
-  }
-
-  void saveLogin() async {
-    String? isLoggedIn = await readSecureData('isLoggedIn');
-    if (isLoggedIn == 'true') {
-      String? email = await readSecureData('email');
-      String? password = await readSecureData('password');
-      dlog('email: $email, password: $password, isLoggedIn: $isLoggedIn');
-      context.read<AuthCubit>().login(email!, password!);
-    }
-  }
-
-  Future<void> saveLoginInfo(String email, String password) async {
-    await writeSecureData('email', emailController.text.trim());
-    await writeSecureData('password', passController.text);
-    await writeSecureData('isLoggedIn', 'true');
-    dlog('✅ Đã lưu thông tin đăng nhập!');
   }
 
   @override
@@ -136,8 +118,6 @@ class _bodyState extends State<_body> {
                       }
                       if (state is AuthLoginSuccess) {
                         showToast('Đăng nhập thành công!');
-                        saveLoginInfo(
-                            emailController.text.trim(), passController.text);
                         Navigator.of(context).pushNamedAndRemoveUntil(
                           NettromdexRouter.bottomNav,
                           (router) => false,

@@ -8,8 +8,6 @@ import '../../core/cache/shared_prefs.dart';
 
 part 'comments_state.dart';
 
-const String baseUrl = 'https://api-manga-user.vercel.app';
-
 class CommentsCubit extends Cubit<CommentsState> with NetWorkMixin {
   CommentsCubit() : super(CommentsStateInitial());
 
@@ -17,7 +15,7 @@ class CommentsCubit extends Cubit<CommentsState> with NetWorkMixin {
     if (state is CommentsStateLoading) return;
     try {
       emit(CommentsStateLoading());
-      final response = await callApiGet(endPoint: '$baseUrl/comments/$mangaID');
+      final response = await callApiGet(endPoint: '/comments/$mangaID');
       if (response.statusCode == 200) {
         final List<Comment> data = (response.data['data'] as List)
             .map((e) => Comment.fromJson(e as Map<String, dynamic>))
@@ -36,7 +34,7 @@ class CommentsCubit extends Cubit<CommentsState> with NetWorkMixin {
     try {
       emit(CommentSendLoading());
       final uid = await SharedPref.getString('uid');
-      final response = await callApiPost('$baseUrl/comments/post/$mangaID', {
+      final response = await callApiPost('/comments/post/$mangaID', {
         'userId': uid,
         'content': content,
       });
@@ -54,7 +52,7 @@ class CommentsCubit extends Cubit<CommentsState> with NetWorkMixin {
   Future<void> deleteComment(String mangaID, String commentID) async {
     try {
       final response =
-          await callApiDelete('$baseUrl/comments/delete/$mangaID/$commentID');
+          await callApiDelete('/comments/delete/$mangaID/$commentID');
       if (response.statusCode == 200) {
         emit(CommentDeleteSuccess());
       } else {
@@ -76,7 +74,7 @@ class CommentsCubit extends Cubit<CommentsState> with NetWorkMixin {
       emit(ReplySendLoading());
       final uid = await SharedPref.getString('uid');
       final response = await callApiPost(
-        '$baseUrl/comments/reply/$mangaID/$commentID',
+        '/comments/reply/$mangaID/$commentID',
         {
           'userId': uid,
           'content': content,
@@ -97,7 +95,7 @@ class CommentsCubit extends Cubit<CommentsState> with NetWorkMixin {
       String mangaID, String commentID, String replyID) async {
     try {
       final response = await callApiDelete(
-        '$baseUrl/comments/reply/$mangaID/$commentID/$replyID',
+        '/comments/reply/$mangaID/$commentID/$replyID',
       );
       if (response.statusCode == 200) {
         emit(ReplyDeleteSuccess());
