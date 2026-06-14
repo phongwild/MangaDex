@@ -6,8 +6,8 @@ import 'package:flutter/foundation.dart';
 class DioClient {
   DioClient._();
 
-  static const _prodApi = 'https://api-manga-user.vercel.app';
-  static const _devApi = 'http://192.168.0.119:3000';
+  static const _prodApi = 'https://api-manga-user.vercel.app/api';
+  static const _devApi = 'http://192.168.0.119:3000/api';
 
   static String get baseUrl {
     return kReleaseMode ? _prodApi : _devApi;
