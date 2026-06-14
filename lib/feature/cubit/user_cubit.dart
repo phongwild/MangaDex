@@ -47,9 +47,8 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     try {
       emit(UserLoading());
 
-      String uid = await SharedPref.getString('uid');
       final response = await callApiGet(
-        endPoint: '/follow/$uid',
+        endPoint: '/follow',
         json: {
           'offset': offset,
           'limit': limit,
@@ -71,6 +70,7 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
         List<Manga> listManga =
             await compute(fetchMangaList, listIdManga.toList());
 
+        // Emit state sau khi fetch thành công
         emit(ListFollowMangaLoaded(listManga, total, totalPages, currentPage));
       } else {
         emit(const UserError('Lỗi khi lấy danh sách manga'));
@@ -181,9 +181,8 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
     // if (state is ListHistoryMangaLoaded) return;
     try {
       emit(UserLoading());
-      String uid = await SharedPref.getString('uid');
       final historyResponse = await callApiGet(
-        endPoint: '/history/$uid',
+        endPoint: '/history',
         json: {
           'offset': offset,
           'limit': limit,
@@ -321,7 +320,7 @@ Future<List<Manga>> fetchMangaList(List<dynamic> listIdManga) async {
     listIdManga.map((idManga) async {
       try {
         final mangaResponse = await DioClient.instance.get(
-          'mangadex/manga/$idManga',
+          '/mangadex/manga/$idManga',
           queryParameters: {
             'includes[]': 'cover_art',
             'availableTranslatedLanguage[]': translateLang.language,
