@@ -3,9 +3,7 @@ import 'package:app/core/cache/shared_prefs.dart';
 import 'package:app/feature/dio/dio_client.dart';
 import 'package:app/feature/models/manga_model.dart';
 import 'package:app/feature/models/reading_progress_model.dart';
-import 'package:app/feature/utils/manga_filter_config.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/utils/app_connection_utils.dart';
@@ -56,22 +54,20 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> listIdManga = response.data['data'];
+        final List<Manga> data = (response.data['data'] as List)
+            .map((e) => Manga.fromJson(e))
+            .toList();
         final total = response.data['total'];
         final currentPage = response.data['currentPage'];
         final totalPages = response.data['totalPages'];
 
-        if (listIdManga.isEmpty) {
+        if (data.isEmpty) {
           emit(const ListFollowMangaLoaded([], 0, 0, 0));
           return;
         }
 
-        // 🔥 Chạy xử lý trên Isolate
-        List<Manga> listManga =
-            await compute(fetchMangaList, listIdManga.toList());
-
         // Emit state sau khi fetch thành công
-        emit(ListFollowMangaLoaded(listManga, total, totalPages, currentPage));
+        emit(ListFollowMangaLoaded(data, total, totalPages, currentPage));
       } else {
         emit(const UserError('Lỗi khi lấy danh sách manga'));
       }
@@ -190,22 +186,17 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       );
 
       if (historyResponse.statusCode == 200) {
-        List<dynamic> rawData = historyResponse.data['data'];
-        List<String> listIdManga =
-            rawData.map((e) => e['mangaId'].toString()).toList();
+        final List<Manga> data = (historyResponse.data['data'] as List)
+            .map((e) => Manga.fromJson(e))
+            .toList();
 
-        if (listIdManga.isEmpty) {
+        if (data.isEmpty) {
           emit(const ListHistoryMangaLoaded([], 0, 0, 0));
           return;
         }
 
-        // 🔥 Chạy xử lý trên Isolate
-        List<Manga> listManga =
-            await compute(fetchMangaList, listIdManga.toList());
-
-        // Emit state sau khi fetch thành công
         emit(ListHistoryMangaLoaded(
-          listManga,
+          data,
           historyResponse.data['total'],
           historyResponse.data['totalPages'],
           historyResponse.data['currentPage'],
@@ -313,30 +304,4 @@ class UserCubit extends Cubit<UserState> with NetWorkMixin {
       return null;
     }
   }
-}
-
-Future<List<Manga>> fetchMangaList(List<dynamic> listIdManga) async {
-  final results = await Future.wait(
-    listIdManga.map((idManga) async {
-      try {
-        final mangaResponse = await DioClient.instance.get(
-          '/mangadex/manga/$idManga',
-          queryParameters: {
-            'includes[]': 'cover_art',
-            'availableTranslatedLanguage[]': translateLang.language,
-            'order[latestUploadedChapter]': 'desc',
-            'contentRating[]': ContentRatingManager().selected
-          },
-        );
-
-        if (mangaResponse.statusCode == 200) {
-          return Manga.fromJson(mangaResponse.data['data']);
-        }
-      } catch (_) {}
-
-      return null;
-    }),
-  );
-
-  return results.whereType<Manga>().toList();
 }
